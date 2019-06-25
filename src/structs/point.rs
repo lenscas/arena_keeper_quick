@@ -41,25 +41,25 @@ impl Point {
     ///     assert!(line[coordinate].y == coordinate);
     /// }
     /// ```
-    /// Diagonal line:
-    /// ```
-    /// # use arena::structs::point::Point;
-    /// let point = Point {x:0,y:0};
-    /// let point2 = Point {x:3,y:3};
-    /// let line = point.make_line(point2);
-    /// let mut x : usize = 0;
-    /// let mut y : usize = 0;
-    /// for coordinate in 0 ..= 6 {
-    ///     assert_eq!(line[coordinate].x,x);
-    ///     assert_eq!(line[coordinate].y,y);
-    ///     if coordinate % 2 == 0 {
-    ///         y += 1;
-    ///     } else {
-    ///         x += 1;
-    ///     }
-    ///     
-    /// }
-    /// ```
+    // Diagonal line:
+    // ```
+    // # use arena::structs::point::Point;
+    // let point = Point {x:0,y:0};
+    // let point2 = Point {x:3,y:3};
+    // let line = point.make_line(point2);
+    // let mut x : usize = 0;
+    // let mut y : usize = 0;
+    // for coordinate in 0 ..= 6 {
+    //     assert_eq!(line[coordinate].x,x);
+    //     assert_eq!(line[coordinate].y,y);
+    //     if coordinate % 2 == 0 {
+    //         y += 1;
+    //     } else {
+    //         x += 1;
+    //     }
+    //
+    // }
+    // ```
     pub fn make_line(self, other : Point) -> Vec<Point> {
         if other.x != self.x && self.y == other.y {
             if self.x > other.x {
@@ -80,7 +80,7 @@ impl Point {
         } else {
             self.make_diagonal_line(other)
         }
-        
+
     }
     /// This function is used to get all points in a diagonal line.
     /// Warning: This function breaks when asked to draw either a horizontal or vertical line
@@ -102,7 +102,7 @@ impl Point {
     ///     } else {
     ///         x += 1;
     ///     }
-    ///     
+    ///
     /// }
     /// ```
     /// Broken:
@@ -121,7 +121,32 @@ impl Point {
     /// assert_eq!(line.len(), 2);
     /// ```
     pub fn make_diagonal_line(self,other : Point) -> Vec<Point> {
-        let mut coordinates = vec![];
+        let x0 = self.x as f32;
+        let x1 = other.x as f32;
+        let y0 = self.y as f32;
+        let y1 = other.y as f32;
+        let deltax : f32 = x1 - x0;
+        let deltay : f32 = y1 - y0;
+        let deltaerr : f32 = f32::abs(deltay / deltax);   // Assume deltax != 0 (line is not vertical),
+            // note that this division needs to be done in a way that preserves the fractional part
+        let mut error : f32 = 0.0; // No error at start
+        let mut y : i32 = y0 as i32;
+        let mut points : Vec<Point> = Vec::new();
+        points.push(self);
+        println!("for starts!");
+        for x in x0 as i32 .. x1 as i32 {
+            println!("{},{}", x,y);
+            points.push( Point{x : x as usize,y:y as usize});
+            error += deltaerr;
+            if error >= 0.5 {
+                y += f32::signum(deltay) as i32;
+                error -= 1.0;
+            }
+
+        }
+        points.push(other);
+        points
+        /*let mut coordinates = vec![];
         let dx:i32 = i32::abs(other.x as i32 - self.x as i32);
         let dy:i32 = i32::abs(other.y as i32 - self.y as i32);
         let sx:i32 = {
@@ -142,20 +167,29 @@ impl Point {
         let mut current_x:i32 = self.x as i32;
         let mut current_y:i32 = self.y as i32;
         coordinates.push(Point { x: current_x as usize, y: current_y as usize });
+        println!("Start loop!");
         while current_x != other.x as i32 && current_y != other.y as i32 {
             let error2:i32 = 2 * error;
+            println!("before if");
             if error2 >= i32::abs(dy) {
                 error -= dy;
                 current_x += sx;
+                println!("{},{}",current_x,current_y);
                 coordinates.push(Point { x: current_x as usize, y: current_y as usize });
+                println!("after push 1");
             } else if error2 <= i32::abs(dx) {
                 error += dx;
                 current_y += sy;
+                println!("{},{}",current_x,current_y);
                 coordinates.push(Point { x: current_x as usize, y: current_y as usize });
+                println!("after push 2");
+            } else {
+
             }
         }
         coordinates.push(other);
         coordinates
+        */
     }
     /// This function makes a vertical line of size N starting from self.
     /// Example
@@ -239,12 +273,12 @@ impl <T> PointWithItem<T> {
     ///     } else {
     ///         x += 1;
     ///     }
-    ///     
+    ///
     /// }
     /// ```
     pub fn make_line<Q>(self, other : Point, map : impl Fn(&Point) -> Q) -> Vec<PointWithItem<Q>> {
         let point : Point = self.into();
-        point.make_line(other).iter().map(|v| 
+        point.make_line(other).iter().map(|v|
             PointWithItem {
                 x : v.x,
                 y : v.y,

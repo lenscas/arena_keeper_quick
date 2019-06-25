@@ -1,5 +1,7 @@
 
 
+use crate::structs::cell::CellFeature;
+use crate::structs::point::PointWithItem;
 use crate::structs::cell::CellType;
 use crate::structs::cell::Cell;
 /// A structure that contains the map
@@ -33,8 +35,8 @@ impl Field {
                 feature : None
             };
             grid.insert(cell_spot, cell);
-            
-        }        
+
+        }
         Self {
             grid,
             len,
@@ -44,7 +46,7 @@ impl Field {
     /// used to calculate the index for the cell position in the list using an X,Y coordinate
     fn calc_cell(&self, mut x:isize,mut y:isize) -> usize {
         if x >= self.len as isize {
-            x = self.len as isize - 1 
+            x = self.len as isize - 1
         }
 
         if y >= self.height as isize {
@@ -69,6 +71,15 @@ impl Field {
             )
             .cloned()
             .collect()
+    }
+    pub fn add_feature_to_cells(&mut self, cells : Vec<PointWithItem<CellFeature>>) {
+        cells.iter().for_each(|v| {
+            let place = self.calc_cell(v.x as isize,v.y as isize);
+            if let Some(cell) = self.grid.get_mut(place) {
+                cell.feature = Some(v.item.clone());
+            }
+
+        });
     }
     /// Just a method for testing. Marks the given square as clicked
     pub fn clicked_on(&mut self, x :usize, y:usize){

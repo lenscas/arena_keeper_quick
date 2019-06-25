@@ -1,3 +1,6 @@
+use crate::structs::cell::CellFeature;
+use crate::structs::point::PointWithItem;
+use crate::structs::point::Point;
 use crate::funcs::math::sub_from_highest;
 use quicksilver::prelude::MouseButton;
 use crate::funcs::math::sub_save;
@@ -36,7 +39,7 @@ impl State for GameState {
             self.cam_x = sub_save(self.cam_x,1);
         }
         if check_multiple(board,&[Key::Right,Key::D]) {
-            self.cam_x += 1; 
+            self.cam_x += 1;
         }
         if check_multiple(board,&[Key::Up,Key::W]) {
             self.cam_y = sub_save(self.cam_y,1);
@@ -53,7 +56,7 @@ impl State for GameState {
         };
         Ok(())
     }
-    
+
     fn draw(&mut self, window: &mut Window) -> Result<()> {
         window.clear(Color::WHITE)?;
         self.draw_grid(window)?;
@@ -97,16 +100,26 @@ impl GameState {
             if let Some(click_point) = self.clicked {
                 let dif_x = sub_from_highest(grid_pos.0, click_point.0);
                 let dif_y = sub_from_highest(grid_pos.1, click_point.1);
-                if dif_x > dif_y {
-                    for x in click_point.0 ..= grid_pos.0 {
-                        window.draw(&Rectangle::new( self.grid_to_screen((x, click_point.1)), (cell_sizef, cell_sizef)), Col(Color::WHITE));
-                    }
-                } else {
-                    for y in click_point.1 ..= grid_pos.1 {
-                        window.draw(&Rectangle::new( self.grid_to_screen((click_point.0,y )), (cell_sizef, cell_sizef)), Col(Color::WHITE));
-                    }
-                }
+                let line =
+                    if dif_x > dif_y {
+                        let point = if click_point.0 < grid_pos.0 {
+                            Point {x : click_point.0,y: click_point.1}
+                        } else {
+                            Point {x : grid_pos.0,y: click_point.1}
+                        };
+                        point.make_horizontal_line(dif_x)
+                    } else {
+                        let point = if click_point.1 < grid_pos.1 {
+                            Point {x : click_point.0,y: click_point.1}
+                        } else {
+                            Point {x : click_point.0,y: grid_pos.1}
+                        };
+                        point.make_vertical_line(dif_y)
+                    };
+                line.iter().for_each(|v| window.draw(&Rectangle::new(self.grid_to_screen((v.x,v.y)),(cell_sizef,cell_sizef)),Col(Color::WHITE)));
                 if !key.is_down() {
+                    let line :Vec<PointWithItem<CellFeature>> = line.iter().map(|v|v.add_item(CellFeature::Wall)).collect();
+                    self.grid.add_feature_to_cells(line);
                     self.clicked = None;
                 }
             } else if key.is_down() {
@@ -117,7 +130,7 @@ impl GameState {
         } else {
             self.clicked = None;
         }
-        
+
         Ok(())
     }
     fn draw_grid(&self, window : &mut Window) -> Result<()> {
@@ -132,17 +145,22 @@ impl GameState {
         part.iter().enumerate().for_each(
             |v| {
                 let color = Col(
-                    match v.1.cell_type {
-                        CellType::Water  => Color::BLUE,
-                        CellType::Ground => Color::ORANGE,
-                        CellType::Grass  => Color::GREEN,
-                        CellType::Stone  => Color::from_rgba(50,50,50,1.0),
-                        CellType::Clicked => Color::PURPLE
+                    match &v.1.feature {
+                        Some(feature) => match feature {
+                            CellFeature::Wall => Color::INDIGO
+                        },
+                        None => match v.1.cell_type {
+                            CellType::Water  => Color::BLUE,
+                            CellType::Ground => Color::ORANGE,
+                            CellType::Grass  => Color::GREEN,
+                            CellType::Stone  => Color::from_rgba(50,50,50,1.0),
+                            CellType::Clicked => Color::PURPLE
+                        }
                     }
                 );
                 let x = (v.1.x - (self.cam_x as isize - width as isize / 2)) * cell_size as isize;
                 let y = (v.1.y - (self.cam_y as isize - height as isize / 2)) * cell_size as isize;
-                window.draw(&Rectangle::new((x as f32 , y as f32), (cell_size as f32,cell_size as f32)), color); 
+                window.draw(&Rectangle::new((x as f32 , y as f32), (cell_size as f32,cell_size as f32)), color);
             }
         );
         Ok(())
