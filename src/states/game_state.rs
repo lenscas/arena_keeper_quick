@@ -17,17 +17,15 @@ use quicksilver::{
 };
 pub struct GameState {
     grid : Field,
-    cam_x : usize,
-    cam_y : usize,
+    cam : Point,
     scroll : usize,
-    clicked : Option<(usize,usize)>
+    clicked : Option<(Point)>
 }
 impl State for GameState {
      fn new() -> Result<Self> {
         Ok(Self {
             grid : Field::new(101,81,1032),
-            cam_x : 101/2 + 1,
-            cam_y : 81/2 +1,
+            cam : (101/2 + 1,81/2 +1).into(),
             scroll : 100,
             clicked : None
         })
@@ -36,16 +34,16 @@ impl State for GameState {
         let board = window.keyboard();
 
         if check_multiple(board,&[Key::Left,Key::A]) {
-            self.cam_x = sub_save(self.cam_x,1);
+            self.cam.x = sub_save(self.cam.x,1);
         }
         if check_multiple(board,&[Key::Right,Key::D]) {
-            self.cam_x += 1;
+            self.cam.x += 1;
         }
         if check_multiple(board,&[Key::Up,Key::W]) {
-            self.cam_y = sub_save(self.cam_y,1);
+            self.cam.y = sub_save(self.cam.y,1);
         }
         if check_multiple(board,&[Key::Down,Key::S]) {
-            self.cam_y += 1;
+            self.cam.y += 1;
         }
         let scroll = window.mouse().wheel().y as isize;
         if scroll > self.scroll as isize {
@@ -68,24 +66,24 @@ impl GameState {
     fn calc_size (&self) -> usize {
         self.scroll / 5
     }
-    fn grid_to_screen(&self, loc : (usize,usize)) -> (f32,f32) {
+    fn grid_to_screen(&self, loc : &Point) -> (f32,f32) {
         let cell_size = self.calc_size() as f32;
         let width = 800. / cell_size;
         let len = 600. / cell_size;
-        let x = (loc.0 as f32 - (self.cam_x as f32 - width as f32 / 2.)) * cell_size as f32;
-        let y = (loc.1 as f32 - (self.cam_y as f32 - len as f32 / 2.)) * cell_size as f32;
+        let x = (loc.x as f32 - (self.cam.x as f32 - width as f32 / 2.)) * cell_size as f32;
+        let y = (loc.y as f32 - (self.cam.y as f32 - len as f32 / 2.)) * cell_size as f32;
         (x,y)
     }
-    fn screen_to_grid(&self, loc : quicksilver::geom::Vector) -> Option<(usize,usize)> {
+    fn screen_to_grid(&self, loc : quicksilver::geom::Vector) -> Option<Point> {
         let cell_size = self.calc_size() as f32;
         let x = loc.x / cell_size;
-        let x = x + (self.cam_x as f32 - (800.0 / cell_size as f32) /2.);
+        let x = x + (self.cam.x as f32 - (800.0 / cell_size as f32) /2.);
         let y = loc.y / cell_size;
-        let y = y + (self.cam_y as f32 - (600.0 / cell_size as f32) / 2.);
+        let y = y + (self.cam.y as f32 - (600.0 / cell_size as f32) / 2.);
         if x <0. || y < 0. {
             None
         } else {
-            Some((x as usize, y as usize))
+            Some((x as usize, y as usize).into())
         }
 
     }
@@ -95,28 +93,28 @@ impl GameState {
         let mouse = window.mouse();
         let key = mouse[MouseButton::Left];
         if let Some(grid_pos) = self.screen_to_grid(mouse.pos()) {
-            let screen_pos = self.grid_to_screen(grid_pos);
+            let screen_pos = self.grid_to_screen(&grid_pos);
             window.draw(&Rectangle::new(screen_pos, (cell_sizef, cell_sizef)), Col(Color::WHITE) );
-            if let Some(click_point) = self.clicked {
-                let dif_x = sub_from_highest(grid_pos.0, click_point.0);
-                let dif_y = sub_from_highest(grid_pos.1, click_point.1);
+            if let Some(click_point) = &self.clicked {
+                let dif_x = sub_from_highest(grid_pos.x, click_point.x);
+                let dif_y = sub_from_highest(grid_pos.y, click_point.y);
                 let line =
                     if dif_x > dif_y {
-                        let point = if click_point.0 < grid_pos.0 {
-                            Point {x : click_point.0,y: click_point.1}
+                        let point = if click_point.x < grid_pos.x {
+                            Point {x : click_point.x,y: click_point.y}
                         } else {
-                            Point {x : grid_pos.0,y: click_point.1}
+                            Point {x : grid_pos.x,y: click_point.y}
                         };
                         point.make_horizontal_line(dif_x)
                     } else {
-                        let point = if click_point.1 < grid_pos.1 {
-                            Point {x : click_point.0,y: click_point.1}
+                        let point = if click_point.y < grid_pos.y {
+                            Point {x : click_point.x,y: click_point.y}
                         } else {
-                            Point {x : click_point.0,y: grid_pos.1}
+                            Point {x : click_point.x,y: grid_pos.y}
                         };
                         point.make_vertical_line(dif_y)
                     };
-                line.iter().for_each(|v| window.draw(&Rectangle::new(self.grid_to_screen((v.x,v.y)),(cell_sizef,cell_sizef)),Col(Color::WHITE)));
+                line.iter().for_each(|v| window.draw(&Rectangle::new(self.grid_to_screen(v),(cell_sizef,cell_sizef)),Col(Color::WHITE)));
                 if !key.is_down() {
                     let line :Vec<PointWithItem<CellFeature>> = line.iter().map(|v|v.add_item(CellFeature::Wall)).collect();
                     self.grid.add_feature_to_cells(line);
@@ -137,8 +135,8 @@ impl GameState {
         let cell_size = self.calc_size();
         let height = 600 / cell_size;
         let width = 800 / cell_size;
-        let start_x = Self::calc_start(self.cam_x, width);
-        let start_y = Self::calc_start(self.cam_y, height);
+        let start_x = Self::calc_start(self.cam.x, width);
+        let start_y = Self::calc_start(self.cam.y, height);
         let end_x = 1 + start_x + width as isize;
         let end_y = 1 + start_y + height as isize;
         let part = self.grid.get_part(start_x, start_y, end_x + 1, end_y);
@@ -157,8 +155,8 @@ impl GameState {
                         }
                     }
                 );
-                let x = (v.1.x - (self.cam_x as isize - width as isize / 2)) * cell_size as isize;
-                let y = (v.1.y - (self.cam_y as isize - height as isize / 2)) * cell_size as isize;
+                let x = (v.1.x - (self.cam.x as isize - width as isize / 2)) * cell_size as isize;
+                let y = (v.1.y - (self.cam.y as isize - height as isize / 2)) * cell_size as isize;
                 window.draw(&Rectangle::new((x as f32 , y as f32), (cell_size as f32,cell_size as f32)), color);
             }
         );

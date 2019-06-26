@@ -5,6 +5,12 @@ pub struct Point {
 }
 
 impl Point {
+    pub fn new(value : (usize,usize)) -> Self {
+        Point {
+            x : value.0,
+            y : value.1
+        }
+    }
     /// a way to add an item to a coordinate.
     /// ```
     /// # use arena::structs::point::Point;
@@ -220,6 +226,11 @@ impl<Q> From<PointWithItem<Q>> for Point {
             x : point.x,
             y : point.y
         }
+    }
+}
+impl From<(usize,usize)> for Point {
+    fn from(point : (usize,usize)) -> Self {
+        Self::new(point)
     }
 }
 
