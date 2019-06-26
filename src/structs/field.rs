@@ -1,5 +1,6 @@
 
 
+use crate::structs::point::Point;
 use crate::structs::cell::CellFeature;
 use crate::structs::point::PointWithItem;
 use crate::structs::cell::CellType;
@@ -27,8 +28,7 @@ impl Field {
             let cell_type = CellType::from(num);
             let cell = Cell {
                 cell_type,
-                x : (cell_spot % len) as isize ,
-                y : (cell_spot / len) as isize,
+                loc : ((cell_spot % len),(cell_spot / len)).into(),
                 feature : None
             };
             grid.insert(cell_spot, cell);
@@ -41,37 +41,39 @@ impl Field {
         }
     }
     /// used to calculate the index for the cell position in the list using an X,Y coordinate
-    fn calc_cell(&self, mut x:isize,mut y:isize) -> usize {
-        if x >= self.len as isize {
-            x = self.len as isize - 1
+    fn calc_cell(&self, point : Point) -> usize {
+        let mut x = point.x;
+        let mut y = point.y;
+        if x >= self.len {
+            x = self.len - 1
         }
 
-        if y >= self.height as isize {
-            y = self.height as isize - 1
+        if y >= self.height {
+            y = self.height - 1
         };
-        (( y * (self.len as isize) ) + x) as usize
+        (y * self.len ) + x
     }
     /// Gets every cell between 2 points. Used to only render the cells that are on the screen.
-    pub fn get_part(&self, x_start:isize, y_start : isize, x_end : isize, y_end : isize ) -> Vec<Cell> {
-        let to_start = self.calc_cell(x_start, y_start);
-        let to_end = self.calc_cell(x_end + 1, y_end);
+    pub fn get_part(&self, start : Point, end : Point) -> Vec<Cell> {
+        let to_start = self.calc_cell(start);
+        let to_end = self.calc_cell(end);
         let first_split = self.grid.split_at(to_start).1;
         let second_split = first_split.split_at(1 + to_end - to_start).0;
         second_split
             .iter()
             .filter(
                 |v|
-                    v.x >= x_start &&
-                    v.x <= x_end   &&
-                    v.y >= y_start &&
-                    v.y <= y_end
+                    v.loc.x >= start.x &&
+                    v.loc.x <= end.x   &&
+                    v.loc.y >= start.y &&
+                    v.loc.y <= end.y
             )
             .cloned()
             .collect()
     }
     pub fn add_feature_to_cells(&mut self, cells : Vec<PointWithItem<CellFeature>>) {
         cells.iter().for_each(|v| {
-            let place = self.calc_cell(v.x as isize,v.y as isize);
+            let place = self.calc_cell(v.into());
             if let Some(cell) = self.grid.get_mut(place) {
                 cell.feature = Some(v.item.clone());
             }

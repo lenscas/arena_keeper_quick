@@ -1,4 +1,6 @@
+
 /// A simple single coordinate
+#[derive(Clone,Copy)]
 pub struct Point {
     pub x : usize,
     pub y : usize
@@ -222,6 +224,14 @@ impl Point {
 }
 impl<Q> From<PointWithItem<Q>> for Point {
     fn from(point : PointWithItem<Q>) -> Self {
+        Point {
+            x : point.x,
+            y : point.y
+        }
+    }
+}
+impl<Q> From<&PointWithItem<Q>> for Point {
+    fn from(point : &PointWithItem<Q>) -> Self {
         Point {
             x : point.x,
             y : point.y

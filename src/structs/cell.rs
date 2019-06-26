@@ -1,3 +1,4 @@
+use crate::structs::point::Point;
 /// The type of the cell
 #[derive(Clone)]
 pub enum CellType {
@@ -31,6 +32,5 @@ pub enum CellFeature {
 pub struct Cell {
     pub cell_type : CellType,
     pub feature : Option<CellFeature>,
-    pub x : isize,
-    pub y : isize
+    pub loc : Point
 }
