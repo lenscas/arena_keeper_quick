@@ -25,7 +25,7 @@ pub struct GameState {
 impl State for GameState {
      fn new() -> Result<Self> {
         Ok(Self {
-            grid : Field::new(101,81),
+            grid : Field::new(101,81,1032),
             cam_x : 101/2 + 1,
             cam_y : 81/2 +1,
             scroll : 100,
@@ -153,8 +153,7 @@ impl GameState {
                             CellType::Water  => Color::BLUE,
                             CellType::Ground => Color::ORANGE,
                             CellType::Grass  => Color::GREEN,
-                            CellType::Stone  => Color::from_rgba(50,50,50,1.0),
-                            CellType::Clicked => Color::PURPLE
+                            CellType::Stone  => Color::from_rgba(50,50,50,1.0)
                         }
                     }
                 );

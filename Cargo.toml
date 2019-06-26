@@ -7,3 +7,4 @@ edition = "2018"
 [dependencies]
 quicksilver = "*"
 immi = "*"
+noise = "0.5.1"

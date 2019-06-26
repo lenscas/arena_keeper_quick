@@ -4,6 +4,11 @@ use crate::structs::cell::CellFeature;
 use crate::structs::point::PointWithItem;
 use crate::structs::cell::CellType;
 use crate::structs::cell::Cell;
+use noise::Value;
+use noise::utils::NoiseMapBuilder;
+use noise::utils::PlaneMapBuilder;
+use noise::Seedable;
+
 /// A structure that contains the map
 pub struct Field {
     grid : Vec<Cell>,
@@ -11,23 +16,15 @@ pub struct Field {
     pub height : usize
 }
 impl Field {
-    pub fn new(len : usize, height : usize) -> Self {
+    pub fn new(len : usize, height : usize, seed : u32) -> Self {
         let mut grid = Vec::<Cell>::new();
         let amount = len * height;
         grid.reserve(amount);
+        let noise_gen = Value::new().set_seed(seed);
+        let map = PlaneMapBuilder::new(&noise_gen).set_size(len,height).build();
         for cell_spot in 0 ..= amount {
-            let cell_type =
-                if (cell_spot / len) % 2 == 0 {
-                    if cell_spot % 2 == 0 {
-                        CellType::Grass
-                    } else {
-                        CellType::Water
-                    }
-                } else if cell_spot % 2 == 0 {
-                    CellType::Stone
-                } else {
-                    CellType::Ground
-                };
+            let num = map.get_value( cell_spot % len, cell_spot / len);
+            let cell_type = CellType::from(num);
             let cell = Cell {
                 cell_type,
                 x : (cell_spot % len) as isize ,
@@ -80,12 +77,5 @@ impl Field {
             }
 
         });
-    }
-    /// Just a method for testing. Marks the given square as clicked
-    pub fn clicked_on(&mut self, x :usize, y:usize){
-        let in_arr = y * self.len + x;
-        assert!(in_arr < self.grid.len(), format!("Given location ({},{}) does not exist", x,y));
-        let cell = self.grid.get_mut(in_arr).unwrap();
-        cell.cell_type = CellType::Clicked;
     }
 }
