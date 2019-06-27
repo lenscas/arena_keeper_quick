@@ -41,7 +41,7 @@ impl Field {
         }
     }
     /// used to calculate the index for the cell position in the list using an X,Y coordinate
-    fn calc_cell(&self, point : Point) -> usize {
+    fn calc_cell(&self, point : &Point) -> usize {
         let mut x = point.x;
         let mut y = point.y;
         if x >= self.len {
@@ -55,8 +55,8 @@ impl Field {
     }
     /// Gets every cell between 2 points. Used to only render the cells that are on the screen.
     pub fn get_part(&self, start : Point, end : Point) -> Vec<Cell> {
-        let to_start = self.calc_cell(start);
-        let to_end = self.calc_cell(end);
+        let to_start = self.calc_cell(&start);
+        let to_end = self.calc_cell(&end);
         let first_split = self.grid.split_at(to_start).1;
         let second_split = first_split.split_at(1 + to_end - to_start).0;
         second_split
@@ -73,11 +73,15 @@ impl Field {
     }
     pub fn add_feature_to_cells(&mut self, cells : Vec<PointWithItem<CellFeature>>) {
         cells.iter().for_each(|v| {
-            let place = self.calc_cell(v.into());
+            let place = self.calc_cell(&v.into());
             if let Some(cell) = self.grid.get_mut(place) {
                 cell.feature = Some(v.item.clone());
             }
 
         });
+    }
+    pub fn get_cell(&self, point : &Point) -> Option<&Cell> {
+        let index = self.calc_cell(point);
+        self.grid.get(index)
     }
 }

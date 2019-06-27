@@ -1,4 +1,5 @@
 
+use crate::help_states::characters::Characters;
 use crate::structs::point::Point;
 use crate::funcs::math::sub_save;
 use crate::funcs::controls::check_multiple;
@@ -16,18 +17,21 @@ use quicksilver::{
 pub struct GameState {
     grid : Field,
     cam : CameraWork,
-    clicked : Option<(Point)>
+    clicked : Option<(Point)>,
+    characters : Characters
 }
 impl State for GameState {
      fn new() -> Result<Self> {
         Ok(Self {
             grid : Field::new(101,81,1032),
             clicked : None,
+            characters : Characters::new(),
             cam : CameraWork {
                 cam : (101/2 + 1,81/2 +1).into(),
                 scroll : 100,
                 width : 800,
-                height : 600
+                height : 600,
+
             }
         })
     }
@@ -53,6 +57,7 @@ impl State for GameState {
             let scroll = (self.cam.scroll as isize - scroll) as usize;
             self.cam.scroll = scroll;
         };
+        self.characters.update(&self.grid);
         Ok(())
     }
 
@@ -60,6 +65,7 @@ impl State for GameState {
         window.clear(Color::WHITE)?;
         Grid::new(&self.cam,&self.grid).render(window)?;
         Mouse::new(&self.cam,&mut self.clicked,&mut self.grid).render(window)?;
+        self.characters.render(&self.cam, window);
         Ok(())
     }
 }

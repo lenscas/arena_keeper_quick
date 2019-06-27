@@ -1,6 +1,6 @@
 
 /// A simple single coordinate
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy, PartialEq)]
 pub struct Point {
     pub x : usize,
     pub y : usize
