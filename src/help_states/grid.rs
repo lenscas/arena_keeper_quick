@@ -1,16 +1,17 @@
-use crate::structs::field::Field;
-use crate::structs::cell::{
-    CellFeature,
-    CellType
+use crate::structs::{
+    grid::{
+        CellFeature,
+        CellType,
+        Field,
+    },
+    CameraWork
 };
-
-use crate::structs::camera_work::CameraWork;
-
 use quicksilver::{
     Result,
     graphics::{Color},
     lifecycle::{Window}
 };
+
 pub struct Grid<'a> {
     cam : &'a CameraWork,
     grid : &'a Field,
@@ -23,14 +24,6 @@ impl<'a> Grid<'a> {
         }
     }
     pub fn render(&self, window : &mut Window) -> Result<()> {
-        /*let cell_size = self.cam.calc_size();
-        let height = self.cam.height / cell_size;
-        let width = self.cam.width / cell_size;
-        let start_x = CameraWork::calc_start(self.cam.cam.x, width);
-        let start_y = CameraWork::calc_start(self.cam.cam.y, height);
-        let end_x = 1 + start_x + width as isize;
-        let end_y = 1 + start_y + height as isize;
-        */
         let (start,end) = self.cam.get_outer_cell_points();
         let part = self.grid.get_part(start,end);
         part.iter().enumerate().for_each(

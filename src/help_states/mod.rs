@@ -1,4 +1,8 @@
 //! This contains structures that render specific parts of the game
-pub mod grid;
-pub mod mouse;
-pub mod characters;
+pub use grid::Grid;
+pub use mouse::Mouse;
+pub use characters::Characters;
+
+mod grid;
+mod mouse;
+mod characters;

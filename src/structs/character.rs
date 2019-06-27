@@ -1,13 +1,22 @@
+use super::{
+	grid::{
+		Field,
+		CellType,
+		CellFeature
+	},
+	point::Point,
+	CameraWork,
 
-use crate::structs::camera_work::CameraWork;
-use quicksilver::lifecycle::Window;
-use crate::structs::field::Field;
-use crate::structs::point::Point;
-use rand::distributions::Alphanumeric;
-use rand::prelude::*;
-use quicksilver::graphics::Color;
-use crate::structs::cell::CellType;
-use crate::structs::cell::CellFeature;
+};
+
+use quicksilver::{
+	lifecycle::Window,
+	graphics::Color
+};
+use rand::{
+	prelude::*,
+	distributions::Alphanumeric
+};
 
 pub struct Character {
 	_name : String,

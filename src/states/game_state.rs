@@ -1,19 +1,27 @@
 
-use crate::help_states::characters::Characters;
-use crate::structs::point::Point;
-use crate::funcs::math::sub_save;
-use crate::funcs::controls::check_multiple;
-use quicksilver::prelude::Key;
-
-use crate::structs::field::Field;
-use crate::help_states::grid::Grid;
-use crate::help_states::mouse::Mouse;
-use crate::structs::camera_work::CameraWork;
+use crate::{
+    help_states::{
+        Characters,
+        Grid,
+        Mouse
+    },
+    structs::{
+        point::Point,
+        grid::Field,
+        CameraWork
+    },
+    funcs::{
+        math::sub_save,
+        controls::check_multiple
+    }
+};
 use quicksilver::{
     Result,
+    prelude::Key,
     graphics::{Color},
     lifecycle::{State, Window},
 };
+
 pub struct GameState {
     grid : Field,
     cam : CameraWork,

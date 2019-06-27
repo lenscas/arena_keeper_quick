@@ -1,7 +1,6 @@
 use crate::structs::point::Point;
-
-use quicksilver::prelude::Background::Col;
 use quicksilver::{
+    prelude::Background::Col,
     graphics::{Color},
     lifecycle::Window,
     geom::{Rectangle}

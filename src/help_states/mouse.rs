@@ -1,15 +1,24 @@
-use crate::structs::camera_work::CameraWork;
-use crate::funcs::math::sub_from_highest;
-use crate::structs::point::{Point,PointWithItem};
-use crate::structs::cell::CellFeature;
-use crate::structs::field::Field;
-
-use quicksilver::prelude::MouseButton;
+use crate::{
+    structs::{
+        CameraWork,
+        point::{
+            Point,
+            PointWithItem
+        },
+        grid::{
+            CellFeature,
+            Field
+        }
+    },
+    funcs::math::sub_from_highest
+};
 use quicksilver::{
     Result,
     graphics::{Color},
-    lifecycle::Window
+    lifecycle::Window,
+    prelude::MouseButton
 };
+
 pub struct Mouse<'a> {
     cam : &'a CameraWork,
     clicked : &'a mut Option<Point>,

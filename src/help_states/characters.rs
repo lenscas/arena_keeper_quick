@@ -1,7 +1,9 @@
-use crate::structs::camera_work::CameraWork;
+use crate::structs::{
+	CameraWork,
+	grid::Field,
+	Character
+};
 use quicksilver::lifecycle::Window;
-use crate::structs::field::Field;
-use crate::structs::character::Character;
 
 #[derive(Default)]
 pub struct Characters {

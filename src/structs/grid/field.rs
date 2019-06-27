@@ -1,14 +1,22 @@
+use crate::structs::point::{
+    Point,
+    PointWithItem
+};
 
+use super::{
+    Cell,
+    CellFeature,
+    CellType
+};
 
-use crate::structs::point::Point;
-use crate::structs::cell::CellFeature;
-use crate::structs::point::PointWithItem;
-use crate::structs::cell::CellType;
-use crate::structs::cell::Cell;
-use noise::Value;
-use noise::utils::NoiseMapBuilder;
-use noise::utils::PlaneMapBuilder;
-use noise::Seedable;
+use noise::{
+    Value,
+    utils::{
+        NoiseMapBuilder,
+        PlaneMapBuilder
+    },
+    Seedable
+};
 
 /// A structure that contains the map
 pub struct Field {
