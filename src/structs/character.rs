@@ -1,3 +1,4 @@
+use pathfinding::prelude::absdiff;
 use super::{
 	grid::{
 		Field,
@@ -17,14 +18,9 @@ use rand::{
 	prelude::*,
 	distributions::Alphanumeric
 };
-#[derive(PartialEq)]
-enum NextPath {
-	Left,
-	Right,
-	Up,
-	Down,
-	None
-}
+use pathfinding::directed::astar::astar;
+
+
 pub struct Character {
 	_name : String,
 	location : Point,
@@ -32,7 +28,8 @@ pub struct Character {
 	time_until_new : usize,
 	walk_speed : usize,
 	time_till_walk : usize,
-	next_path : NextPath
+	path : Option<Vec<Point>>,
+	time_until_recalc : usize
 }
 impl Default for Character {
     fn default() -> Self {
@@ -50,82 +47,111 @@ impl Character {
 		Self {
 			_name : s,
 			location : (1,1).into(),
-			point_of_interest : (3,3).into(),
+			point_of_interest : (10,10).into(),
 			time_until_new : 500,
 			walk_speed : rng.gen_range(1,8),
 			time_till_walk : 0,
-			next_path : NextPath::None
+			path : None,
+			time_until_recalc : 0
 		}
 	}
-	pub fn calc_path(&mut self, grid : &Field, rng : &mut ThreadRng) {
-		//println!("{},{}",self.point_of_interest.x,self.point_of_interest.y);
-		
-		self.next_path = NextPath::None;
-		
-		let new_pos =
-			if self.location.x != self.point_of_interest.x {
-				self.walk_horizontal()
-			} else if self.location.y != self.point_of_interest.y {
-				self.walk_vertical()
-			} else if rng.gen() {
-				self.walk_horizontal()
-			} else {
-				self.walk_vertical()
-			};
-		if self.check_walkable_tile(grid, &new_pos.1) {
-			self.next_path = new_pos.0;
+	pub fn update_par(&mut self, grid : &Field){
+		if self.path.is_none() {
+			self.calc_path(grid);
+		} else if self.time_until_recalc == 0 {
+			self.calc_path(grid);
+			if let Some(path) = &self.path {
+				self.time_until_recalc = path.len() * 10;
+			}
 		} else {
-			match new_pos.0 {
-				NextPath::Down=> println!("Down"),
-				NextPath::Up=> println!("Up"),
-				NextPath::Left=> println!("Left"),
-				NextPath::Right=> println!("Right"),
-				NextPath::None=> println!("None"),
-			}
-			if new_pos.0 == NextPath::None {
-				println!("Its none");
-				return
-			}
-			let new_point = 
-				if new_pos.0 == NextPath::Left || new_pos.0 == NextPath::Right {
-					self.walk_vertical()
-				} else {
-					self.walk_horizontal()
-				};
-			
-			if self.check_walkable_tile(grid, &new_point.1) {
-				self.next_path = new_point.0
-			} else {
-				self.next_path = NextPath::None
-			}
+			self.time_until_recalc -= 1;
 		}
+	}
+	fn calc_path(&mut self, grid : &Field) {
+		//println!("{},{}",self.point_of_interest.x,self.point_of_interest.y);
+		self.path = 
+			astar(
+				&(self.location.x,self.location.y),
+				|&var| {
+					let point : Point = var.into(); 
+					
+					let mut possibles = vec![
+						(point.x,point.y+1),
+						(point.x+1,point.y),
+					];
+					if point.y > 0 {
+						possibles.push((point.x,point.y-1));	
+					}
+					if point.x > 0 {
+						possibles.push((point.x - 1,point.y));
+					}
+					possibles.into_iter()
+					.filter(|v| self.check_walkable_tile(grid, &v.into()))
+					.map(|p| (p, self.calculate_cost(grid,&p.into())))
+				},
+				|&(x, y)| absdiff(x, self.point_of_interest.x) + absdiff(y, self.point_of_interest.y),
+				|&p| self.point_of_interest == p.into()
+			)
+			.map(
+				|v| 
+					v.0.iter()
+					.map(
+						|b| b.into()
+					)
+					.collect()
+			);
 	}
 	pub fn update(&mut self, grid : &Field) {
+		
 		let mut rng = rand::thread_rng();
 		if self.time_until_new == 0 || self.location == self.point_of_interest {
 			self.time_until_new = rng.gen();
 			self.point_of_interest = (
 				rng.gen_range(0,grid.len),
 				rng.gen_range(0,grid.height)
-			).into()
+			).into();
+			self.path = None;
 		}
 		self.time_until_new -= 1;
 		if self.time_till_walk > 0 {
 			self.time_till_walk -= 1;
 			return
 		}
-		self.time_till_walk = self.walk_speed * self.get_walk_speed_penalty(grid);
-		match self.next_path {
-			NextPath::Down  => self.location.y += 1,
-			NextPath::Up    => self.location.y -=1,
-			NextPath::Left  => self.location.x -=1,
-			NextPath::Right => self.location.x +=1,
-			NextPath::None  => {}
+		println!("try update");
+		self.time_till_walk = self.calculate_cost(grid, &self.location);
+		match &self.path {
+			None => {
+				println!("No path set??");
+			},
+			Some(path) => {
+				match path.iter().cloned().enumerate().find(|v| v.1 == self.location) {
+					None => {
+						println!("No path?");
+					},
+					Some(next) => {
+						match path.get(next.0 + 1) {
+							None => {},
+							Some(next) => {
+								if self.check_walkable_tile(grid, &next) {
+									self.location = *next;
+									println!("at : {},{}\nto: {},{}",self.location.x,self.location.y,self.point_of_interest.x,self.point_of_interest.y);
+								} else {
+									self.path = None;
+								}
+							}
+						}
+						
+					}
+				}
+			}
 		}
 		
 	}
-	pub fn get_walk_speed_penalty(&self, grid : &Field) -> usize {
-		if let Some(cell) = grid.get_cell(&self.location) {
+	fn calculate_cost(&self, grid : &Field, check_on : &Point) -> usize {
+		self.get_walk_speed_penalty(grid, check_on) * self.walk_speed
+	}
+	pub fn get_walk_speed_penalty(&self, grid : &Field, check_on : &Point) -> usize {
+		if let Some(cell) = grid.get_cell(check_on) {
 			match cell.cell_type {
 				CellType::Water => 10,
 				CellType::Grass => 1,
@@ -138,34 +164,6 @@ impl Character {
 	}
 	pub fn render(&self, cam : &CameraWork, window : &mut Window) {
 		cam.draw_full_square_on_grid(&self.location, Color::BLACK, window);
-	}
-	fn walk_horizontal(&mut self) -> (NextPath,Point) {
-		let mut new_pos = self.location;
-		let dir = 
-			if new_pos.x < self.point_of_interest.x {
-				new_pos.x += 1;
-				NextPath::Right
-			} else if new_pos.x == 0 {
-				NextPath::None
-			} else {
-				new_pos.x -= 1;
-				NextPath::Left
-			};
-		(dir,new_pos)
-	}
-	fn walk_vertical(&mut self) -> (NextPath,Point) {
-		let mut new_pos = self.location;
-		let dir = 
-			if new_pos.y < self.point_of_interest.y {
-				new_pos.y += 1;
-				NextPath::Down
-			} else if new_pos.y == 0 {
-				NextPath::None
-			} else {
-				new_pos.y -= 1;
-				NextPath::Up
-			};
-		(dir,new_pos)
 	}
 	fn check_walkable_tile(&self, grid : &Field, point : &Point) -> bool {
 		match &grid.get_cell(point) {
