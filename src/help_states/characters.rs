@@ -20,9 +20,8 @@ impl Characters {
 	}
 	#[cfg(target_arch = "wasm32")]
 	fn update_paralel(&mut self, grid : &Field) {
-		let mut rng = rand::thread_rng();
 		self.characters.iter_mut().for_each(
-			|v| v.calc_path(grid,&mut rng)
+			|v| v.update_par(grid)
 				
 		);
 	}
