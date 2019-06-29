@@ -28,7 +28,7 @@ pub struct Character {
 	time_until_new : usize,
 	walk_speed : usize,
 	time_till_walk : usize,
-	path : Option<Vec<Point>>,
+	path : Option<std::collections::VecDeque<Point>>,
 	time_until_recalc : usize
 }
 impl Default for Character {
@@ -68,7 +68,6 @@ impl Character {
 		}
 	}
 	fn calc_path(&mut self, grid : &Field) {
-		//println!("{},{}",self.point_of_interest.x,self.point_of_interest.y);
 		self.path = 
 			astar(
 				&(self.location.x,self.location.y),
@@ -117,30 +116,20 @@ impl Character {
 			self.time_till_walk -= 1;
 			return
 		}
-		println!("try update");
 		self.time_till_walk = self.calculate_cost(grid, &self.location);
-		match &self.path {
+		match &mut self.path {
 			None => {
-				println!("No path set??");
 			},
 			Some(path) => {
-				match path.iter().cloned().enumerate().find(|v| v.1 == self.location) {
+				match path.pop_front() {
 					None => {
-						println!("No path?");
 					},
 					Some(next) => {
-						match path.get(next.0 + 1) {
-							None => {},
-							Some(next) => {
-								if self.check_walkable_tile(grid, &next) {
-									self.location = *next;
-									println!("at : {},{}\nto: {},{}",self.location.x,self.location.y,self.point_of_interest.x,self.point_of_interest.y);
-								} else {
-									self.path = None;
-								}
-							}
+						if self.check_walkable_tile(grid, &next) {
+							self.location = next;
+						} else {
+							self.path = None;
 						}
-						
 					}
 				}
 			}

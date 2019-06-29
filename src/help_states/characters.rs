@@ -36,7 +36,7 @@ impl Characters {
 	pub fn update(&mut self, grid : &Field) {
 		self.time_until_spawn -= 1;
 		if self.time_until_spawn == 0 {
-			self.time_until_spawn = 5000;
+			self.time_until_spawn = 10;
 			self.characters.push(Character::new());
 		}
 		
