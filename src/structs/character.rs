@@ -59,9 +59,9 @@ impl Character {
 	}
 	pub fn calc_path(&mut self, grid : &Field, rng : &mut ThreadRng) {
 		//println!("{},{}",self.point_of_interest.x,self.point_of_interest.y);
-		
+
 		self.next_path = NextPath::None;
-		
+
 		let new_pos =
 			if self.location.x != self.point_of_interest.x {
 				self.walk_horizontal()
@@ -75,24 +75,16 @@ impl Character {
 		if self.check_walkable_tile(grid, &new_pos.1) {
 			self.next_path = new_pos.0;
 		} else {
-			match new_pos.0 {
-				NextPath::Down=> println!("Down"),
-				NextPath::Up=> println!("Up"),
-				NextPath::Left=> println!("Left"),
-				NextPath::Right=> println!("Right"),
-				NextPath::None=> println!("None"),
-			}
 			if new_pos.0 == NextPath::None {
-				println!("Its none");
 				return
 			}
-			let new_point = 
+			let new_point =
 				if new_pos.0 == NextPath::Left || new_pos.0 == NextPath::Right {
 					self.walk_vertical()
 				} else {
 					self.walk_horizontal()
 				};
-			
+
 			if self.check_walkable_tile(grid, &new_point.1) {
 				self.next_path = new_point.0
 			} else {
@@ -122,7 +114,7 @@ impl Character {
 			NextPath::Right => self.location.x +=1,
 			NextPath::None  => {}
 		}
-		
+
 	}
 	pub fn get_walk_speed_penalty(&self, grid : &Field) -> usize {
 		if let Some(cell) = grid.get_cell(&self.location) {
@@ -141,7 +133,7 @@ impl Character {
 	}
 	fn walk_horizontal(&mut self) -> (NextPath,Point) {
 		let mut new_pos = self.location;
-		let dir = 
+		let dir =
 			if new_pos.x < self.point_of_interest.x {
 				new_pos.x += 1;
 				NextPath::Right
@@ -155,7 +147,7 @@ impl Character {
 	}
 	fn walk_vertical(&mut self) -> (NextPath,Point) {
 		let mut new_pos = self.location;
-		let dir = 
+		let dir =
 			if new_pos.y < self.point_of_interest.y {
 				new_pos.y += 1;
 				NextPath::Down
