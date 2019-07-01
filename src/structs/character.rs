@@ -1,3 +1,4 @@
+use crate::structs::BuyableCharacter;
 use pathfinding::prelude::absdiff;
 use super::{
 	grid::{
@@ -38,6 +39,18 @@ impl Default for Character {
 }
 
 impl Character {
+	pub fn from_bought_char(bought_char : BuyableCharacter) -> Self {
+		Self {
+			location : (1,1).into(),
+			_name : bought_char.get_name(),
+			walk_speed : bought_char.get_speed(),
+			point_of_interest : (10,10).into(),
+			time_until_new : 500,
+			time_till_walk : 0,
+			path : None,
+			time_until_recalc : 0
+		}
+	}
 	pub fn new() -> Self {
 		let mut rng = rand::thread_rng();
 		let s = rng
