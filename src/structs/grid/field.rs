@@ -63,7 +63,7 @@ impl Field {
             .cloned()
             .collect()
     }
-    pub fn add_feature_to_cell(&mut self, cell: PointWithItem<CellFeature>) {
+    pub fn add_feature_to_cell(&mut self, cell: &PointWithItem<CellFeature>) {
         let feature = cell.item.clone();
         let place = self.calc_cell(&cell.into());
         if let Some(place) = self.grid.get_mut(place) {
@@ -71,12 +71,7 @@ impl Field {
         }
     }
     pub fn add_feature_to_cells(&mut self, cells: Vec<PointWithItem<CellFeature>>) {
-        cells.iter().for_each(|v| {
-            let place = self.calc_cell(&v.into());
-            if let Some(cell) = self.grid.get_mut(place) {
-                cell.feature = Some(v.item.clone());
-            }
-        });
+        cells.iter().for_each(|v| self.add_feature_to_cell(v));
     }
     pub fn get_cell(&self, point: &Point) -> Option<&Cell> {
         let index = self.calc_cell(point);

@@ -75,7 +75,7 @@ impl<'a> Mouse<'a> {
     ) -> Result<()> {
         if key.is_down() {
             self.grid
-                .add_feature_to_cell(click_pos.add_item(CellFeature::Bed(None)))
+                .add_feature_to_cell(&click_pos.add_item(CellFeature::Bed(None)))
         }
         Ok(())
     }

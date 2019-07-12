@@ -116,7 +116,7 @@ impl Character {
                     });
                 if let Some(bed) = &bed {
                     let point = bed.loc.add_item(CellFeature::Bed(Some(self.id)));
-                    grid.add_feature_to_cell(point);
+                    grid.add_feature_to_cell(&point);
                 }
                 bed.map(|v| v.loc).unwrap_or_else(|| {
                     (rng.gen_range(0, grid.len), rng.gen_range(0, grid.height)).into()
