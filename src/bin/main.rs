@@ -13,7 +13,7 @@ pub struct MainState {
 impl State for MainState {
     fn new() -> Result<Self> {
         Ok(Self {
-            game_state: GameState::new()?,
+            game_state: GameState::new(rand::random()),
         })
     }
     fn draw(&mut self, window: &mut Window) -> Result<()> {

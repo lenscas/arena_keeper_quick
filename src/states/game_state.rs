@@ -21,10 +21,11 @@ pub struct GameState {
     characters: Characters,
     selected: ClickMode,
 }
-impl State for GameState {
-    fn new() -> Result<Self> {
-        Ok(Self {
-            grid: Field::new(101, 81, 1032),
+
+impl GameState {
+    pub fn new(seed : u32) -> Self {
+        Self {
+            grid: Field::new(101, 81, seed),
             clicked: None,
             characters: Characters::new(),
             cam: CameraWork {
@@ -34,9 +35,9 @@ impl State for GameState {
                 height: 600,
             },
             selected: ClickMode::Bed,
-        })
+        }
     }
-    fn update(&mut self, window: &mut Window) -> Result<()> {
+    pub fn update(&mut self, window: &mut Window) -> Result<()> {
         let board = window.keyboard();
 
         if check_multiple(board, &[Key::Left, Key::A]) {
@@ -62,7 +63,7 @@ impl State for GameState {
         Ok(())
     }
 
-    fn draw(&mut self, window: &mut Window) -> Result<()> {
+    pub fn draw(&mut self, window: &mut Window) -> Result<()> {
         window.clear(Color::WHITE)?;
         Grid::new(&self.cam, &self.grid).render(window)?;
         Mouse {
@@ -76,4 +77,3 @@ impl State for GameState {
         Ok(())
     }
 }
-impl GameState {}
