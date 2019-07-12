@@ -1,11 +1,11 @@
 use super::Point;
 
 pub struct PointWithItem<T> {
-    pub x : usize,
-    pub y : usize,
-    pub item : T
+    pub x: usize,
+    pub y: usize,
+    pub item: T,
 }
-impl <T> PointWithItem<T> {
+impl<T> PointWithItem<T> {
     /// A way to get all points between two points. Usefull to draw lines over the grid
     /// # Examples
     /// Horizontal line:
@@ -53,14 +53,16 @@ impl <T> PointWithItem<T> {
     ///
     /// }
     /// ```
-    pub fn make_line<Q>(self, other : Point, map : impl Fn(&Point) -> Q) -> Vec<PointWithItem<Q>> {
-        let point : Point = self.into();
-        point.make_line(other).iter().map(|v|
-            PointWithItem {
-                x : v.x,
-                y : v.y,
-                item : map(v)
-            }
-        ).collect()
+    pub fn make_line<Q>(self, other: Point, map: impl Fn(&Point) -> Q) -> Vec<PointWithItem<Q>> {
+        let point: Point = self.into();
+        point
+            .make_line(other)
+            .iter()
+            .map(|v| PointWithItem {
+                x: v.x,
+                y: v.y,
+                item: map(v),
+            })
+            .collect()
     }
 }

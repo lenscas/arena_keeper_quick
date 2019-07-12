@@ -1,10 +1,10 @@
 pub use self::camera_work::CameraWork;
 pub use self::character::Character;
 
-pub mod grid;
-pub mod point;
 mod camera_work;
 mod character;
+pub mod grid;
+pub mod point;
 
 /*
 pub mod field;
