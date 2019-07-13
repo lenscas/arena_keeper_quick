@@ -8,6 +8,6 @@ edition = "2018"
 quicksilver = "*"
 immi = "*"
 noise = "0.5.1"
-rand = "*"
+rand = { version="*", features = ["stdweb"] }
 rayon = "*"
 pathfinding = "1.1.12"
