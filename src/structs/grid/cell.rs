@@ -5,6 +5,6 @@ use crate::structs::point::Point;
 #[derive(Clone)]
 pub struct Cell {
     pub cell_type: CellType,
-    pub feature: Option<CellFeature>,
+    pub feature: CellFeature,
     pub loc: Point,
 }

@@ -40,6 +40,8 @@ impl Character {
             time_until_recalc: 0,
         }
     }
+    /// This function updates everything that multiple characters can do at the same time.
+    /// Always execute update_par before update
     pub fn update_par(&mut self, grid: &Field) {
         if self.path.is_none() {
             self.calc_path(grid);
@@ -52,6 +54,7 @@ impl Character {
             self.time_until_recalc -= 1;
         }
     }
+    /// calculates the path from the current point to the point_of_interest and stores it inside self.path
     fn calc_path(&mut self, grid: &Field) {
         if (!self.check_walkable_tile(grid, &self.point_of_interest))
             || self.location == self.point_of_interest
@@ -88,6 +91,8 @@ impl Character {
         .map(|v| v.0.iter().map(|b| b.into()).collect());
         self.path = path;
     }
+    /// This is similar to update_par but updates everything that can't happen at the same time with other characters.
+    /// Always execute update_par before update
     pub fn update(&mut self, grid: &mut Field) {
         let mut rng = rand::thread_rng();
         if self.time_until_new == 0 || self.location == self.point_of_interest {
@@ -95,23 +100,17 @@ impl Character {
             self.point_of_interest = if rng.gen() {
                 let bed = grid
                     .find_cell_by(|v| {
-                        v.clone()
-                            .feature
-                            .map(|v| match v {
-                                CellFeature::Bed(x) => x.map(|b| b == self.id).unwrap_or(false),
-                                _ => false,
-                            })
-                            .unwrap_or(false)
+                        match v.feature {
+                            CellFeature::Bed(x) => x.map(|b| b == self.id).unwrap_or(false),
+                            _ => false,
+                        }
                     })
                     .or_else(|| {
                         grid.find_cell_by(|v| {
-                            v.clone()
-                                .feature
-                                .map(|v| match v {
-                                    CellFeature::Bed(x) => x.is_none(),
-                                    _ => false,
-                                })
-                                .unwrap_or(false)
+                            match v.feature {
+                                CellFeature::Bed(x) => x.is_none(),
+                                _ => false,
+                            }
                         })
                     });
                 if let Some(bed) = &bed {
@@ -151,40 +150,33 @@ impl Character {
     fn calculate_cost(&self, grid: &Field, check_on: &Point) -> usize {
         self.get_walk_speed_penalty(grid, check_on) * self.walk_speed
     }
-    pub fn get_walk_speed_penalty_of_type(&self, cell_type: &CellType) -> usize {
-        match cell_type {
-            CellType::Water => 10,
-            CellType::Grass => 1,
-            CellType::Ground => 2,
-            CellType::Stone => 3,
-        }
-    }
-    pub fn get_walk_speed_penalty(&self, grid: &Field, check_on: &Point) -> usize {
+    fn get_walk_speed_penalty(&self, grid: &Field, check_on: &Point) -> usize {
         if let Some(cell) = grid.get_cell(check_on) {
-            if let Some(feature) = &cell.feature {
-                match feature {
-                    CellFeature::Bed(_) => 5,
-                    _ => self.get_walk_speed_penalty_of_type(&cell.cell_type),
+            match &cell.feature {
+                CellFeature::Bed(_) => 5,
+                _ => match &cell.cell_type {
+                    CellType::Water => 10,
+                    CellType::Grass => 1,
+                    CellType::Ground => 2,
+                    CellType::Stone => 3,
                 }
-            } else {
-                self.get_walk_speed_penalty_of_type(&cell.cell_type)
             }
         } else {
             unreachable!()
         }
     }
+    /// Renders the character.
     pub fn render(&self, cam: &CameraWork, window: &mut Window) {
         cam.draw_full_square_on_grid(&self.location, Color::BLACK, window);
     }
+    /// Checks wheter this character can walk on a given tile
     fn check_walkable_tile(&self, grid: &Field, point: &Point) -> bool {
         match &grid.get_cell(point) {
             None => false,
-            Some(feature) => match &feature.feature {
-                None => true,
-                Some(feature) => match feature {
-                    CellFeature::Wall => false,
-                    CellFeature::Bed(_) => true,
-                },
+            Some(cell) => match &cell.feature {
+                CellFeature::None => true,
+                CellFeature::Wall => false,
+                CellFeature::Bed(_) => true,
             },
         }
     }

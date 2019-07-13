@@ -5,7 +5,7 @@ use crate::{
 };
 use quicksilver::{
     graphics::Color,
-    lifecycle::{State, Window},
+    lifecycle::{Window},
     prelude::Key,
     Result,
 };

@@ -17,15 +17,13 @@ impl<'a> Grid<'a> {
         let part = self.grid.get_part(start, end);
         part.iter().enumerate().for_each(|v| {
             let color = match &v.1.feature {
-                Some(feature) => match feature {
-                    CellFeature::Wall => Color::INDIGO,
-                    CellFeature::Bed(_) => Color::from_rgba(60, 60, 60, 0.5),
-                },
-                None => match v.1.cell_type {
-                    CellType::Water => Color::BLUE,
+                CellFeature::Wall   => Color::INDIGO,
+                CellFeature::Bed(_) => Color::from_rgba(60, 60, 60, 0.5),
+                CellFeature::None   => match v.1.cell_type {
+                    CellType::Water  => Color::BLUE,
                     CellType::Ground => Color::ORANGE,
-                    CellType::Grass => Color::GREEN,
-                    CellType::Stone => Color::from_rgba(50, 50, 50, 1.0),
+                    CellType::Grass  => Color::GREEN,
+                    CellType::Stone  => Color::from_rgba(50, 50, 50, 1.0),
                 },
             };
             self.cam.draw_full_square_on_grid(&v.1.loc, color, window);

@@ -6,6 +6,7 @@ pub enum CellType {
     Grass,
     Stone,
 }
+/// used to turn the noise map into the grid. Probably not usefull for anything else
 impl From<f64> for CellType {
     fn from(num: f64) -> Self {
         let num = num + 1.0;
