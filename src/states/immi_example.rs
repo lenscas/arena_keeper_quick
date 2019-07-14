@@ -23,10 +23,10 @@ struct ButtonState {
 }
 
 impl ButtonState {
-    fn new(font: Font, style: &FontStyle) -> Result<(Font, ButtonState)> {
-        let normal = font.render("Normal Button", &style)?;
-        let hovered = font.render("Hovered Button", &style)?;
-        let active = font.render("Active Button", &style)?;
+    fn new(font: Font, style: &FontStyle, name : String) -> Result<(Font, ButtonState)> {
+        let normal = font.render(name, &style)?;
+        let hovered = font.render(name, &style)?;
+        let active = font.render(name, &style)?;
         Ok((font, ButtonState { normal, hovered, active }))
     }
 }
@@ -59,6 +59,7 @@ impl State for ImmiExample {
             // Draw a button widget and if it's clicked, print test
             match image_button::draw(&ui_context, ui_state, &button.normal, &button.hovered, &button.active, &Alignment::center()) {
                 Interaction::Clicked => println!("Test!"),
+                Interaction::Hovered => print!("hover?"),
                 _ => ()
             }
 

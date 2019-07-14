@@ -245,4 +245,8 @@ impl From<(usize,usize)> for Point {
         Self::new(point)
     }
 }
-
+impl From<&(usize,usize)> for Point {
+    fn from(point : &(usize,usize)) -> Self {
+        Self::new(*point)
+    }
+}
