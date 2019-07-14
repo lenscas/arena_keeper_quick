@@ -6,7 +6,7 @@
 /// assert_eq!(sub_save(20,10) , 10);
 /// assert_eq!(sub_save(0,10)  , 0);
 /// ```
-pub fn sub_save(first: usize,second:usize) -> usize {
+pub fn sub_save(first: usize, second: usize) -> usize {
     if first <= second {
         0
     } else {
@@ -21,7 +21,7 @@ pub fn sub_save(first: usize,second:usize) -> usize {
 /// assert_eq!(sub_from_highest(20,10) , 10);
 /// assert_eq!(sub_from_highest(10,20) , 10);
 /// ```
-pub fn sub_from_highest(first:usize, second :usize) -> usize {
+pub fn sub_from_highest(first: usize, second: usize) -> usize {
     if first < second {
         second - first
     } else {
