@@ -21,17 +21,18 @@ impl Characters {
 	fn update_paralel(&mut self, grid : &Field) {
 		self.characters.iter_mut().for_each(
 			|v| v.update_par(grid)
-				
+
 		);
 	}
 	#[cfg(not(target_arch = "wasm32"))]
 	fn update_paralel(&mut self, grid : &Field) {
 		use rayon::prelude::*;
 		self.characters.par_iter_mut().for_each(
+
 			|v| v.update_par(grid)
-				
+
 		);
-	} 
+	}
 	pub fn update(&mut self, grid : &Field) {
 		self.update_paralel(grid);
 		self.characters.iter_mut().for_each(|v|v.update(grid));

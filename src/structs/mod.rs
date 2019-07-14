@@ -4,9 +4,12 @@ pub use buyable_character::BuyableCharacter;
 
 pub mod grid;
 pub mod point;
+pub mod gui_elements;
+
 mod camera_work;
 mod character;
 mod buyable_character;
+
 /*
 pub mod field;
 pub mod cell;

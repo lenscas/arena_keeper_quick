@@ -1,50 +1,33 @@
+use crate::structs::gui_elements::load_from;
+use crate::structs::gui_elements::button::State;
+use crate::structs::gui_elements::button::Builder;
+use crate::structs::gui_elements::Render;
 use crate::{
     help_states::characters::Characters,
-    structs::BuyableCharacter
+    structs::BuyableCharacter,
 };
 
 use quicksilver::{
     Result,
-    Future,
-    combinators::result,
     graphics::{
-        FontStyle,
-        Color,
-        ImmiStatus,
-        create_immi_ctx,
-        ImmiRender,
-        Font,
-        Image
+        Color
     },
     lifecycle::{
-        Asset,
         Window
     }
 };
 
 use immi::{
     Alignment,
-    widgets::{Interaction, image_button}
+    widgets::{Interaction}
 };
+
 pub struct Shop {
     money : u32,
     ui_state: immi::UiState,
-    assets: Vec<(Asset<(Font, ButtonState)>, BuyableCharacter)>,
-}
-struct ButtonState {
-    normal: Image,
-    hovered: Image,
-    active: Image,
+    assets: Vec<(Render<State>,BuyableCharacter)>
 }
 
-impl ButtonState {
-    fn new(font: Font, style: &FontStyle,name : String) -> Result<(Font, ButtonState)> {
-        let normal = font.render(&name, &style)?;
-        let hovered = font.render("Hovered Button", &style)?;
-        let active = font.render("Active Button", &style)?;
-        Ok((font, ButtonState { normal, hovered, active }))
-    }
-}
 impl Default for Shop {
     fn default() -> Self {
         Self::new()
@@ -54,25 +37,43 @@ impl Default for Shop {
 impl Shop {
     pub fn new() -> Self {
         let chars = vec![
-                BuyableCharacter::new(),
-                BuyableCharacter::new(),
-                BuyableCharacter::new()
-            ];
-        let chars_ui = chars.iter().cloned().map(
-            |v| {
+            BuyableCharacter::new(),
+            BuyableCharacter::new(),
+            BuyableCharacter::new(),
+        ];
+        let chars_ui = chars.iter().cloned().enumerate().map(
+            |(count,v)| {
                 let name = v.get_name();
-                let asset = Asset::new(
-                    Font::load("font.ttf").and_then(
-                        move |font| {
-                            let style = FontStyle::new(48.0, Color::BLACK);
-                            result(ButtonState::new(font, &style, name))
-                        }
-                    )
+                let builder = Builder::new_single_text(name);
+                let asset = load_from(
+                    "font.ttf".into(),
+                    50.0,
+                    Color::BLACK,
+                    builder
                 );
-                (
-                    asset,
-                    v
-                )
+                let render = Render::new(
+                    Box::new(
+                        move |r ,draw | {
+                            let mut place = count as f32 * 0.22;
+                            //*
+                            let alignment = if place < 0.75 {
+                                Alignment::top_left()
+                            } else if place < 1.3 {
+                                place -= 0.75;
+                                Alignment::left()
+                            } else if place < 2.5 {
+                                place -= 1.5;
+                                Alignment::bottom_left()
+                            } else {
+                                return;
+                            };
+                            //*/
+                            r(draw.rescale(0.4,0.4,&alignment).uniform_margin(place,0.0,0.0,0.0))
+                        }
+                    ),
+                    asset
+                );
+                (render,v)
             }
         ).collect();
         Self {
@@ -84,34 +85,26 @@ impl Shop {
     pub fn render(&mut self, window : &mut Window, characters_state : &mut Characters) -> Result<()> {
         let ui_state = &mut self.ui_state;
         let mut to_remove : Vec<usize> = Vec::new();
-        for (count,v) in self.assets.iter_mut().enumerate() {
-            v.0.execute(|(font, button)| {
-                // Set up IMMI resources
-                let ui_status = ImmiStatus::new(window);
-                let mut ui_render = ImmiRender::new_with_window(window, font);
-                let ui_context = create_immi_ctx(ui_status, &mut ui_render)
-                    // Only take up half the screen with the immi widgets
-                    .rescale(0.5, 0.5, &Alignment::top())
-                    .margin( (count * 3) as f32 /10.0,0.0,0.0,0.0);
 
-                // Draw a button widget and if it's clicked, print test
-                let interaction = image_button::draw(&ui_context, ui_state, &button.normal, &button.hovered, &button.active, &Alignment::top());
+
+        for (count,v) in self.assets.iter_mut().enumerate() {
+            v.0.render(window,ui_state,|draw,state,button| {
+                let interaction = button.render(&draw,state,Alignment::top_left());
                 if Interaction::Clicked == interaction {
                     to_remove.push(count);
                 };
-                Ok(())
             })?;
-            
         };
         to_remove.iter().for_each(|v|{
             let item = self.assets.remove(*v);
             if item.1.cost < self.money {
                 self.money -= item.1.cost;
-                characters_state.add_character(item.1);    
+                characters_state.add_character(item.1);
             }
             println!("{}",self.money);
-            
+
         });
+
         Ok(())
     }
 }
