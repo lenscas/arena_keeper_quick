@@ -1,3 +1,4 @@
+use crate::generated::assets::loaded::AssetManager;
 use crate::{
     funcs::{controls::check_multiple, math::sub_save},
     help_states::{Characters, Grid, Mouse, Shop},
@@ -36,7 +37,7 @@ impl GameState {
                 height: 600,
             },
             open_window: OpenWindow::Shop,
-            selected: ClickMode::Bed,
+            selected: ClickMode::Bed
         }
     }
     pub fn update(&mut self, window: &mut Window) -> Result<()> {
@@ -70,9 +71,10 @@ impl GameState {
             }
         }
         Ok(())
+
     }
 
-    pub fn draw(&mut self, window: &mut Window) -> Result<()> {
+    pub fn draw(&mut self, window: &mut Window, assets : &AssetManager) -> Result<()> {
         window.clear(Color::WHITE)?;
         match self.open_window {
             OpenWindow::Shop => self.shop.render(window, &mut self.characters)?,
@@ -85,7 +87,7 @@ impl GameState {
                     selected: &mut self.selected,
                 }
                 .render(window)?;
-                self.characters.render(&self.cam, window);
+                self.characters.render(&self.cam, window,assets);
             }
         }
         Ok(())

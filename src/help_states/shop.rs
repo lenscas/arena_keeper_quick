@@ -1,6 +1,6 @@
 use crate::structs::gui_elements::button::Builder;
 use crate::structs::gui_elements::button::State;
-use crate::structs::gui_elements::load_from;
+use crate::structs::gui_elements::font::load_from;
 use crate::structs::gui_elements::Render;
 use crate::{help_states::characters::Characters, structs::BuyableCharacter};
 

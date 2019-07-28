@@ -1,5 +1,6 @@
+use quicksilver::prelude::Background::Img;
 use crate::structs::point::Point;
-use quicksilver::{geom::Rectangle, graphics::Color, lifecycle::Window, prelude::Background::Col};
+use quicksilver::{geom::Rectangle, graphics::{Color,Image}, lifecycle::Window, prelude::Background::Col};
 
 pub struct CameraWork {
     pub cam: Point,
@@ -61,5 +62,11 @@ impl CameraWork {
             &Rectangle::new(screen_pos, (cell_sizef, cell_sizef)),
             Col(color),
         );
+    }
+    pub fn draw_image_on_square(&self, loc: &Point, image : &Image, window : &mut Window) {
+       let screen_pos = self.grid_to_screen(loc);
+       let cell_sizef = self.calc_size() as f32;
+       let size_as_rec = Rectangle::new(screen_pos, (cell_sizef,cell_sizef));
+       window.draw(&size_as_rec,Img(image));
     }
 }

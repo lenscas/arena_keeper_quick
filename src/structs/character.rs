@@ -1,3 +1,6 @@
+use crate::generated::assets::loaded::AssetManager;
+use crate::generated::assets::loaded::Images;
+use quicksilver::graphics::Image;
 use super::{
     grid::{CellFeature, CellType, Field},
     point::Point,
@@ -22,7 +25,7 @@ pub struct Character {
     walk_speed: usize,
     time_till_walk: usize,
     path: Option<VecDeque<Point>>,
-    time_until_recalc: usize,
+    time_until_recalc: usize
 }
 
 impl Character {
@@ -36,7 +39,7 @@ impl Character {
             time_until_new: 500,
             time_till_walk: 0,
             path: None,
-            time_until_recalc: 0,
+            time_until_recalc: 0
         }
     }
     /// This function updates everything that multiple characters can do at the same time.
@@ -97,9 +100,10 @@ impl Character {
         if self.time_until_new == 0 || self.location == self.point_of_interest {
             self.time_until_new = rng.gen();
             self.point_of_interest = if rng.gen() {
+                let id = self.id;
                 let bed = grid
                     .find_cell_by(|v| match v.feature {
-                        CellFeature::Bed(x) => x.map(|b| b == self.id).unwrap_or(false),
+                        CellFeature::Bed(x) => x.map(|b| b == id).unwrap_or(false),
                         _ => false,
                     })
                     .or_else(|| {
@@ -160,10 +164,16 @@ impl Character {
             unreachable!()
         }
     }
-    /// Renders the character.
-    pub fn render(&self, cam: &CameraWork, window: &mut Window) {
-        cam.draw_full_square_on_grid(&self.location, Color::BLACK, window);
+    fn get_image<'a>(&self,assets : &'a AssetManager)-> &'a Image {
+        assets.image(&Images::Human)
     }
+    /// Renders the character.
+    pub fn render(&self, cam: &CameraWork, window: &mut Window, assets: &AssetManager) {
+        //cam.draw_full_square_on_grid(&self.location, Color::BLACK, window);
+        let image = self.get_image(assets);
+        cam.draw_image_on_square(&self.location, image, window);
+    }
+
     /// Checks wheter this character can walk on a given tile
     fn check_walkable_tile(&self, grid: &Field, point: &Point) -> bool {
         match &grid.get_cell(point) {
