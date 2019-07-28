@@ -7,3 +7,4 @@ pub mod help_states;
 pub mod states;
 /// A collection of random but helpfull structures.
 pub mod structs;
+pub mod generated;
