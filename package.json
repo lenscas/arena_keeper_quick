@@ -1,0 +1,27 @@
+{
+  "name": "arena_keeper_quick",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "gen": "node_modules/.bin/ts-node ./scripts/generate.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lenscas/arena_keeper_quick.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lenscas/arena_keeper_quick/issues"
+  },
+  "homepage": "https://github.com/lenscas/arena_keeper_quick#readme",
+  "devDependencies": {
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "@types/node": "^12.6.8"
+  }
+}
