@@ -30,5 +30,6 @@ This allows the game to only start playing after every asset is loaded as loadin
 As of now, it only bundles pictures (.png) and fonts (.ttf) but more are planned in the future once I need them.
 
 
-##Credits:
+## Credits:
+
 Sprite is made by:[0x72](https://0x72.itch.io/)
