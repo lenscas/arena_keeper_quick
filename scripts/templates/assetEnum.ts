@@ -32,7 +32,7 @@ impl AssetManager {
 }
 `
 export const template = (name : string, values:string[])=> `
-#[derive(PartialEq,Eq,Hash)]
+#[derive(PartialEq,Eq,Hash,Clone,Copy)]
 pub enum ${name} {
 	${values.join(",\n\t")}
 }`
