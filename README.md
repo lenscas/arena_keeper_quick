@@ -9,7 +9,7 @@ This will allow you to get more people and buy more stuff for them.
 2. install [cargo-web](https://github.com/koute/cargo-web)
 3. install yarn and nodejs
 4. add some pictures (.png) to /species/human/images and /species/merfolk/images
-5. run the following commands in the given order `yarn` `yarn gen species` and `yarn gen assets`
+5. run `yarn` followed by `yarn gen all`
 ## Run
 After you ran the above commands, simply run `cargo run` to run the project in debug mode. You can also use `cargo web start` 
 to start a http server that will host a wasm build of the project. This allows you play the game in your browser.
@@ -31,3 +31,8 @@ This generates a function that will load every asset that exists in the static f
 This allows the game to only start playing after every asset is loaded as loading is asynchronous.
 
 As of now, it only bundles pictures (.png) and fonts (.ttf) but more are planned in the future once I need them.
+
+### All
+Command : `yarn gen all`
+
+This simply runs all other gen commands in the correct order for you. 
