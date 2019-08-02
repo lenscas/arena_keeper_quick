@@ -1,5 +1,5 @@
 /// The type of the cell
-#[derive(Clone)]
+#[derive(Clone,Copy)]
 pub enum CellType {
     Ground,
     Water,

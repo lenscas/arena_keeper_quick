@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Species config",
+  "description": "Configuration for the various species that arena keeper containns",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "speeds" : {
+      "type" : "object",
+      "additionalProperties": false,
+      "properties": {
+        "Ground" : {
+          "type":"number"
+        },
+        "Water" : {
+          "type":"number"
+        },
+        "Grass" : {
+          "type":"number"
+        },
+        "Stone" : {
+          "type":"number"
+        }
+      } 
+    }
+  }
+}

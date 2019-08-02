@@ -3,7 +3,7 @@ use crate::generated::assets::loaded::AssetManager;
 use crate::generated::assets::loaded::Images;
 use quicksilver::graphics::Image;
 use super::{
-    grid::{CellFeature, CellType, Field},
+    grid::{CellFeature, Field},
     point::Point,
     CameraWork,
 };
@@ -11,7 +11,7 @@ use crate::structs::BuyableCharacter;
 use pathfinding::prelude::absdiff;
 
 use pathfinding::directed::astar::astar;
-use quicksilver::{graphics::Color, lifecycle::Window};
+use quicksilver::{lifecycle::Window};
 use rand::prelude::*;
 use std::collections::VecDeque;
 
@@ -27,7 +27,7 @@ pub struct Character {
     time_till_walk: usize,
     path: Option<VecDeque<Point>>,
     time_until_recalc: usize,
-    _species: Species,
+    species: Species,
     image: Images
 }
 
@@ -43,7 +43,7 @@ impl Character {
             time_till_walk: 0,
             path: None,
             time_until_recalc: 0,
-            _species:bought_char.get_species(),
+            species:bought_char.get_species(),
             image : bought_char.get_image()
         }
     }
@@ -158,12 +158,7 @@ impl Character {
         if let Some(cell) = grid.get_cell(check_on) {
             match &cell.feature {
                 CellFeature::Bed(_) => 5,
-                _ => match &cell.cell_type {
-                    CellType::Water => 10,
-                    CellType::Grass => 1,
-                    CellType::Ground => 2,
-                    CellType::Stone => 3,
-                },
+                _ => self.species.calc_speed(cell.cell_type)
             }
         } else {
             unreachable!()

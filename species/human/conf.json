@@ -1,0 +1,9 @@
+{
+    "$schema": "../../scripts/types/conf.schema.json",
+    "speeds" : {
+        "Ground" : 5,
+        "Water" : 15,
+        "Grass" : 1,
+        "Stone" : 15
+    }
+}
