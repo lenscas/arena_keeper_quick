@@ -4,5 +4,4 @@ pub use cell_feature::CellFeature;
 pub use field::Field;
 mod cell;
 mod cell_feature;
-mod cell_type;
 mod field;
