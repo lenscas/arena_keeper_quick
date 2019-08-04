@@ -32,4 +32,4 @@ As of now, it only bundles pictures (.png) and fonts (.ttf) but more are planned
 
 ## Credits:
 
-Sprite is made by:[0x72](https://0x72.itch.io/)
+Sprites are made by:[0x72](https://0x72.itch.io/) and [disfey](https://disfey.itch.io/)
