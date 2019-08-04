@@ -1,7 +1,7 @@
 {
     "$schema": "../../scripts/types/conf.schema.json",
     "speeds" : {
-        "Ground" : 4,
+        "Sand" : 4,
         "Water" : 1,
         "Grass" : 4,
         "Stone" : 15

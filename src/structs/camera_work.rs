@@ -1,12 +1,13 @@
 use quicksilver::prelude::Background::Img;
 use crate::structs::point::Point;
-use quicksilver::{geom::Rectangle, graphics::{Color,Image}, lifecycle::Window, prelude::Background::Col};
+use quicksilver::{geom::{Rectangle,Transform}, graphics::{Color,Image}, lifecycle::Window, prelude::Background::Col};
 
 pub struct CameraWork {
     pub cam: Point,
     pub scroll: usize,
     pub width: usize,
     pub height: usize,
+    pub start_z : u32
 }
 impl CameraWork {
     fn calc_start(cam: usize, line_size: usize) -> usize {
@@ -55,18 +56,23 @@ impl CameraWork {
         let end_y = 1 + start_y + height;
         ((start_x, start_y).into(), (end_x, end_y).into())
     }
-    pub fn draw_full_square_on_grid(&self, loc: &Point, color: Color, window: &mut Window) {
+    pub fn draw_full_square_on_grid(&mut self, loc: &Point, color: Color, window: &mut Window) {
         let screen_pos = self.grid_to_screen(loc);
         let cell_sizef = self.calc_size() as f32;
-        window.draw(
+        self.start_z +=1;
+        window.draw_ex(
             &Rectangle::new(screen_pos, (cell_sizef, cell_sizef)),
             Col(color),
+            Transform::rotate(0),
+            self.start_z
         );
     }
-    pub fn draw_image_on_square(&self, loc: &Point, image : &Image, window : &mut Window) {
+    pub fn draw_image_on_square(&mut self, loc: &Point, image : &Image, window : &mut Window) {
        let screen_pos = self.grid_to_screen(loc);
        let cell_sizef = self.calc_size() as f32;
        let size_as_rec = Rectangle::new(screen_pos, (cell_sizef,cell_sizef));
-       window.draw(&size_as_rec,Img(image));
+       self.start_z +=1;
+       window.draw_ex(&size_as_rec,Img(image),Transform::rotate(0),
+            self.start_z);
     }
 }

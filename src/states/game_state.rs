@@ -35,6 +35,7 @@ impl GameState {
                 scroll: 100,
                 width: 800,
                 height: 600,
+                start_z : 0
             },
             open_window: OpenWindow::Shop,
             selected: ClickMode::Bed
@@ -79,15 +80,15 @@ impl GameState {
         match self.open_window {
             OpenWindow::Shop => self.shop.render(window, &mut self.characters)?,
             OpenWindow::Game => {
-                Grid::new(&self.cam, &self.grid).render(window)?;
+                Grid::new(&mut self.cam, &self.grid).render(assets,window)?;
                 Mouse {
-                    cam: &self.cam,
+                    cam: &mut self.cam,
                     clicked: &mut self.clicked,
                     grid: &mut self.grid,
                     selected: &mut self.selected,
                 }
                 .render(window)?;
-                self.characters.render(&self.cam, window,assets);
+                self.characters.render(&mut self.cam, window,assets);
             }
         }
         Ok(())

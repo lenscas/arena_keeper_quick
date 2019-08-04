@@ -10,7 +10,7 @@ use crate::{
 use quicksilver::{graphics::Color, lifecycle::Window, prelude::MouseButton, Result};
 
 pub struct Mouse<'a> {
-    pub cam: &'a CameraWork,
+    pub cam: &'a mut CameraWork,
     pub clicked: &'a mut Option<Point>,
     pub grid: &'a mut Field,
     pub selected: &'a mut ClickMode,

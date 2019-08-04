@@ -168,7 +168,7 @@ impl Character {
         assets.image(&self.image)
     }
     /// Renders the character.
-    pub fn render(&self, cam: &CameraWork, window: &mut Window, assets: &AssetManager) {
+    pub fn render(&self, cam: &mut CameraWork, window: &mut Window, assets: &AssetManager) {
         //cam.draw_full_square_on_grid(&self.location, Color::BLACK, window);
         let image = self.get_image(assets);
         cam.draw_image_on_square(&self.location, image, window);

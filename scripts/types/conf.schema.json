@@ -8,23 +8,23 @@
     "$schema": {
       "type": "string"
     },
-    "speeds" : {
-      "type" : "object",
+    "speeds": {
+      "type": "object",
       "additionalProperties": false,
       "properties": {
-        "Ground" : {
-          "type":"number"
+        "Grass": {
+          "type": "number"
         },
-        "Water" : {
-          "type":"number"
+        "Sand": {
+          "type": "number"
         },
-        "Grass" : {
-          "type":"number"
+        "Stone": {
+          "type": "number"
         },
-        "Stone" : {
-          "type":"number"
+        "Water": {
+          "type": "number"
         }
-      } 
+      }
     }
   }
 }

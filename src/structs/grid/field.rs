@@ -1,10 +1,13 @@
-use crate::structs::point::{Point, PointWithItem};
+use crate::{
+    generated::tiles::CellType,
+    structs::point::{Point, PointWithItem}
+};
 
-use super::{Cell, CellFeature, CellType};
+use super::{Cell, CellFeature};
 
 use noise::{
     utils::{NoiseMapBuilder, PlaneMapBuilder},
-    Seedable, Value,
+    Seedable, OpenSimplex,
 };
 
 use rayon::prelude::*;
@@ -21,7 +24,7 @@ impl Field {
         let mut grid = Vec::<Cell>::new();
         let amount = len * height;
         grid.reserve(amount);
-        let noise_gen = Value::new().set_seed(seed);
+        let noise_gen = OpenSimplex::new().set_seed(seed);
         let map = PlaneMapBuilder::new(&noise_gen)
             .set_size(len, height)
             .build();

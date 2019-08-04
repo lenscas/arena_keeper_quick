@@ -3,7 +3,7 @@ import { Conf } from "../../types/conf";
 
 export const createSpeciesEnum = (list : Array<{type: string, config : Conf}>) => (
 `
-use crate::structs::grid::CellType;
+use crate::generated::tiles::CellType;
 use rand::Rng;
 use rand::distributions::Standard;
 use rand::distributions::Distribution;
