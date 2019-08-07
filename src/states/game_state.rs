@@ -2,7 +2,7 @@ use crate::generated::assets::loaded::AssetManager;
 use crate::{
     funcs::{controls::check_multiple, math::sub_save},
     help_states::{Characters, Grid, Mouse, Shop},
-    structs::{grid::Field, point::Point, CameraWork,FullContext,gui_2::Context},
+    structs::{grid::Field, gui_2::Context, point::Point, CameraWork, FullContext},
 };
 use quicksilver::{graphics::Color, lifecycle::Window, prelude::Key, Result};
 #[derive(PartialEq)]
@@ -36,15 +36,14 @@ impl GameState {
                 scroll: 100,
                 width: 800,
                 height: 600,
-                start_z : 0
+                start_z: 0,
             },
-            updates : 0,
+            updates: 0,
             open_window: OpenWindow::Shop,
-            selected: ClickMode::Bed
+            selected: ClickMode::Bed,
         }
     }
     pub fn update(&mut self, window: &mut Window) -> Result<()> {
-        
         let board = window.keyboard();
         if self.open_window != OpenWindow::Game && board[Key::Escape].is_down() {
             self.open_window = OpenWindow::Game;
@@ -75,22 +74,22 @@ impl GameState {
             }
         }
         Ok(())
-
     }
-    pub fn draw(&mut self, window: &mut Window, assets : &AssetManager) -> Result<()> {
-        self.updates +=1;
+    pub fn draw(&mut self, window: &mut Window, assets: &AssetManager) -> Result<()> {
+        self.updates += 1;
         if self.updates == 1 {
             self.shop.first_render(assets);
         }
         window.clear(Color::WHITE)?;
         match self.open_window {
             OpenWindow::Shop => {
-                let mut full_context = FullContext::new(window,Context::new(),&mut self.cam, assets);
+                let mut full_context =
+                    FullContext::new(window, Context::new(), &mut self.cam, assets);
                 self.shop.render(&mut full_context, &mut self.characters)?;
                 full_context.render_gui();
-            },
+            }
             OpenWindow::Game => {
-                Grid::new(&mut self.cam, &self.grid).render(assets,window)?;
+                Grid::new(&mut self.cam, &self.grid).render(assets, window)?;
                 Mouse {
                     cam: &mut self.cam,
                     clicked: &mut self.clicked,
@@ -98,7 +97,7 @@ impl GameState {
                     selected: &mut self.selected,
                 }
                 .render(window)?;
-                self.characters.render(&mut self.cam, window,assets);
+                self.characters.render(&mut self.cam, window, assets);
             }
         }
         Ok(())

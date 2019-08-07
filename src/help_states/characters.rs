@@ -31,9 +31,9 @@ impl Characters {
         self.update_paralel(grid);
         self.characters.iter_mut().for_each(|v| v.update(grid));
     }
-    pub fn render(&mut self, cam: &mut CameraWork, window: &mut Window, assets : &AssetManager) {
+    pub fn render(&mut self, cam: &mut CameraWork, window: &mut Window, assets: &AssetManager) {
         self.characters
             .iter_mut()
-            .for_each(|v| v.render(cam, window,assets));
+            .for_each(|v| v.render(cam, window, assets));
     }
 }

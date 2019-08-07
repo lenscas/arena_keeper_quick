@@ -1,9 +1,9 @@
-use quicksilver::geom::Rectangle;
+use super::State;
 use crate::generated::assets::loaded::AssetManager;
 use crate::generated::assets::loaded::Fonts;
+use quicksilver::geom::Rectangle;
 use quicksilver::graphics::FontStyle;
 use quicksilver::Result;
-use super::State;
 
 pub struct Builder {
     pub normal: String,
@@ -26,16 +26,20 @@ impl Builder {
         }
     }
 }
-impl Builder 
-{
-    pub fn to_state(&self, font :Fonts, style : FontStyle, assets : &AssetManager, location : Rectangle) -> Result<State>
-    {
+impl Builder {
+    pub fn to_state(
+        &self,
+        font: Fonts,
+        style: FontStyle,
+        assets: &AssetManager,
+        location: Rectangle,
+    ) -> Result<State> {
         let font = assets.font(&font);
         Ok(State {
-            normal : font.render(&self.normal,&style)?,
-            hovered : font.render(&self.hovered,&style)?,
-            active : font.render(&self.active,&style)?,
-            location
-        })    
+            normal: font.render(&self.normal, &style)?,
+            hovered: font.render(&self.hovered, &style)?,
+            active: font.render(&self.active, &style)?,
+            location,
+        })
     }
 }

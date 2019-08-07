@@ -1,17 +1,17 @@
-use crate::generated::species::species::Species;
-use crate::generated::assets::loaded::AssetManager;
-use crate::generated::assets::loaded::Images;
-use quicksilver::graphics::Image;
 use super::{
     grid::{CellFeature, Field},
     point::Point,
     CameraWork,
 };
+use crate::generated::assets::loaded::AssetManager;
+use crate::generated::assets::loaded::Images;
+use crate::generated::species::species::Species;
 use crate::structs::BuyableCharacter;
 use pathfinding::prelude::absdiff;
+use quicksilver::graphics::Image;
 
 use pathfinding::directed::astar::astar;
-use quicksilver::{lifecycle::Window};
+use quicksilver::lifecycle::Window;
 use rand::prelude::*;
 use std::collections::VecDeque;
 
@@ -28,7 +28,7 @@ pub struct Character {
     path: Option<VecDeque<Point>>,
     time_until_recalc: usize,
     species: Species,
-    image: Images
+    image: Images,
 }
 
 impl Character {
@@ -43,8 +43,8 @@ impl Character {
             time_till_walk: 0,
             path: None,
             time_until_recalc: 0,
-            species:bought_char.get_species(),
-            image : bought_char.get_image()
+            species: bought_char.get_species(),
+            image: bought_char.get_image(),
         }
     }
     /// This function updates everything that multiple characters can do at the same time.
@@ -158,13 +158,13 @@ impl Character {
         if let Some(cell) = grid.get_cell(check_on) {
             match &cell.feature {
                 CellFeature::Bed(_) => 5,
-                _ => self.species.calc_speed(cell.cell_type)
+                _ => self.species.calc_speed(cell.cell_type),
             }
         } else {
             unreachable!()
         }
     }
-    fn get_image<'a>(&self,assets : &'a AssetManager)-> &'a Image {
+    fn get_image<'a>(&self, assets: &'a AssetManager) -> &'a Image {
         assets.image(&self.image)
     }
     /// Renders the character.

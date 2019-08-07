@@ -1,13 +1,13 @@
 use crate::{
     generated::tiles::CellType,
-    structs::point::{Point, PointWithItem}
+    structs::point::{Point, PointWithItem},
 };
 
 use super::{Cell, CellFeature};
 
 use noise::{
     utils::{NoiseMapBuilder, PlaneMapBuilder},
-    Seedable, OpenSimplex,
+    OpenSimplex, Seedable,
 };
 
 use rayon::prelude::*;

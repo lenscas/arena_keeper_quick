@@ -1,6 +1,6 @@
-#[derive(Clone,Copy)]
+#[derive(Clone, Copy)]
 pub enum Interaction {
     None,
     Clicked,
-    Hover
+    Hover,
 }
