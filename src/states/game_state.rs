@@ -2,7 +2,7 @@ use crate::generated::assets::loaded::AssetManager;
 use crate::{
     funcs::{controls::check_multiple, math::sub_save},
     help_states::{Characters, Grid, Mouse, Shop},
-    structs::{grid::Field, point::Point, CameraWork},
+    structs::{grid::Field, point::Point, CameraWork,FullContext,gui_2::Context},
 };
 use quicksilver::{graphics::Color, lifecycle::Window, prelude::Key, Result};
 #[derive(PartialEq)]
@@ -21,6 +21,7 @@ pub struct GameState {
     characters: Characters,
     selected: ClickMode,
     shop: Shop,
+    updates: u64,
     open_window: OpenWindow,
 }
 impl GameState {
@@ -37,11 +38,13 @@ impl GameState {
                 height: 600,
                 start_z : 0
             },
+            updates : 0,
             open_window: OpenWindow::Shop,
             selected: ClickMode::Bed
         }
     }
     pub fn update(&mut self, window: &mut Window) -> Result<()> {
+        
         let board = window.keyboard();
         if self.open_window != OpenWindow::Game && board[Key::Escape].is_down() {
             self.open_window = OpenWindow::Game;
@@ -74,11 +77,18 @@ impl GameState {
         Ok(())
 
     }
-
     pub fn draw(&mut self, window: &mut Window, assets : &AssetManager) -> Result<()> {
+        self.updates +=1;
+        if self.updates == 1 {
+            self.shop.first_render(assets);
+        }
         window.clear(Color::WHITE)?;
         match self.open_window {
-            OpenWindow::Shop => self.shop.render(window, &mut self.characters)?,
+            OpenWindow::Shop => {
+                let mut full_context = FullContext::new(window,Context::new(),&mut self.cam, assets);
+                self.shop.render(&mut full_context, &mut self.characters)?;
+                full_context.render_gui();
+            },
             OpenWindow::Game => {
                 Grid::new(&mut self.cam, &self.grid).render(assets,window)?;
                 Mouse {

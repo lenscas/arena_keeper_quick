@@ -1,10 +1,9 @@
+use quicksilver::geom::Rectangle;
+use crate::generated::assets::loaded::AssetManager;
+use crate::generated::assets::loaded::Fonts;
 use quicksilver::graphics::FontStyle;
 use quicksilver::Result;
-
 use super::State;
-use crate::structs::gui_elements::finalize::Finalize;
-
-use quicksilver::graphics::Font;
 
 pub struct Builder {
     pub normal: String,
@@ -27,9 +26,16 @@ impl Builder {
         }
     }
 }
-impl Finalize for Builder {
-    type to = State;
-    fn to_state(self, font: Font, style: FontStyle) -> Result<(Font, Self::to)> {
-        State::new(font, &style, &self.normal, &self.hovered, &self.active)
+impl Builder 
+{
+    pub fn to_state(&self, font :Fonts, style : FontStyle, assets : &AssetManager, location : Rectangle) -> Result<State>
+    {
+        let font = assets.font(&font);
+        Ok(State {
+            normal : font.render(&self.normal,&style)?,
+            hovered : font.render(&self.hovered,&style)?,
+            active : font.render(&self.active,&style)?,
+            location
+        })    
     }
 }
