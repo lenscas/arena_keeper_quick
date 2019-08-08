@@ -1,16 +1,15 @@
+use crate::structs::FullContext;
 use crate::states::game_state::ClickMode;
 use crate::{
     funcs::math::sub_from_highest,
     structs::{
         grid::{CellFeature, Field},
         point::{Point, PointWithItem},
-        CameraWork,
     },
 };
-use quicksilver::{graphics::Color, lifecycle::Window, prelude::MouseButton, Result};
+use quicksilver::{graphics::Color, prelude::MouseButton, Result};
 
 pub struct Mouse<'a> {
-    pub cam: &'a mut CameraWork,
     pub clicked: &'a mut Option<Point>,
     pub grid: &'a mut Field,
     pub selected: &'a mut ClickMode,
@@ -18,7 +17,7 @@ pub struct Mouse<'a> {
 impl<'a> Mouse<'a> {
     fn draw_wall(
         &mut self,
-        window: &mut Window,
+        context : &mut FullContext,
         key: quicksilver::input::ButtonState,
         grid_pos: Point,
     ) -> Result<()> {
@@ -53,7 +52,7 @@ impl<'a> Mouse<'a> {
                 point.make_vertical_line(dif_y)
             };
             line.iter()
-                .for_each(|v| self.cam.draw_full_square_on_grid(v, Color::WHITE, window));
+                .for_each(|v| context.draw_full_square_on_grid(v, Color::WHITE));
             if !key.is_down() {
                 let line: Vec<PointWithItem<CellFeature>> =
                     line.iter().map(|v| v.add_item(CellFeature::Wall)).collect();
@@ -69,7 +68,7 @@ impl<'a> Mouse<'a> {
     }
     fn draw_bed(
         &mut self,
-        _: &mut Window,
+        _ : &mut FullContext,
         key: quicksilver::input::ButtonState,
         click_pos: Point,
     ) -> Result<()> {
@@ -79,16 +78,15 @@ impl<'a> Mouse<'a> {
         }
         Ok(())
     }
-    pub fn render(&mut self, window: &mut Window) -> Result<()> {
-        let mouse = window.mouse();
+    pub fn render(&mut self, context : &mut FullContext) -> Result<()> {
+        let mouse = context.mouse();
         let key = mouse[MouseButton::Left];
-        if let Some(grid_pos) = self.cam.screen_to_grid(mouse.pos()) {
-            self.cam
-                .draw_full_square_on_grid(&grid_pos, Color::WHITE, window);
+        if let Some(grid_pos) = context.screen_to_grid(mouse.pos()) {
+            context.draw_full_square_on_grid(&grid_pos, Color::WHITE);
 
             match self.selected {
-                ClickMode::Wall => self.draw_wall(window, key, grid_pos),
-                ClickMode::Bed => self.draw_bed(window, key, grid_pos),
+                ClickMode::Wall => self.draw_wall(context, key, grid_pos),
+                ClickMode::Bed => self.draw_bed(context, key, grid_pos),
             }
         } else {
             Ok(())

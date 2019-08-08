@@ -1,17 +1,14 @@
+use crate::structs::full_context::FullContext;
 use super::{
     grid::{CellFeature, Field},
     point::Point,
-    CameraWork,
 };
-use crate::generated::assets::loaded::AssetManager;
 use crate::generated::assets::loaded::Images;
 use crate::generated::species::species::Species;
 use crate::structs::BuyableCharacter;
 use pathfinding::prelude::absdiff;
-use quicksilver::graphics::Image;
 
 use pathfinding::directed::astar::astar;
-use quicksilver::lifecycle::Window;
 use rand::prelude::*;
 use std::collections::VecDeque;
 
@@ -164,14 +161,9 @@ impl Character {
             unreachable!()
         }
     }
-    fn get_image<'a>(&self, assets: &'a AssetManager) -> &'a Image {
-        assets.image(&self.image)
-    }
     /// Renders the character.
-    pub fn render(&self, cam: &mut CameraWork, window: &mut Window, assets: &AssetManager) {
-        //cam.draw_full_square_on_grid(&self.location, Color::BLACK, window);
-        let image = self.get_image(assets);
-        cam.draw_image_on_square(&self.location, image, window);
+    pub fn render(&self, context : &mut FullContext) {
+        context.draw_image_on_square(&self.location, self.image);
     }
 
     /// Checks wheter this character can walk on a given tile

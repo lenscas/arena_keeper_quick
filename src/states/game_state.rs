@@ -81,25 +81,23 @@ impl GameState {
             self.shop.first_render(assets);
         }
         window.clear(Color::WHITE)?;
+        let mut full_context = FullContext::new(window, Context::new(), &mut self.cam, assets);
         match self.open_window {
             OpenWindow::Shop => {
-                let mut full_context =
-                    FullContext::new(window, Context::new(), &mut self.cam, assets);
                 self.shop.render(&mut full_context, &mut self.characters)?;
-                full_context.render_gui();
             }
             OpenWindow::Game => {
-                Grid::new(&mut self.cam, &self.grid).render(assets, window)?;
+                Grid::new(&self.grid).render(&mut full_context)?;
                 Mouse {
-                    cam: &mut self.cam,
                     clicked: &mut self.clicked,
                     grid: &mut self.grid,
                     selected: &mut self.selected,
                 }
-                .render(window)?;
-                self.characters.render(&mut self.cam, window, assets);
+                .render(&mut full_context)?;
+                self.characters.render(&mut full_context);
             }
         }
+        full_context.render_gui();
         Ok(())
     }
 }

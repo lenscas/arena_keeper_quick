@@ -1,6 +1,5 @@
-use crate::generated::assets::loaded::AssetManager;
-use crate::structs::{grid::Field, BuyableCharacter, CameraWork, Character};
-use quicksilver::lifecycle::Window;
+use crate::structs::FullContext;
+use crate::structs::{grid::Field, BuyableCharacter, Character};
 
 #[derive(Default)]
 pub struct Characters {
@@ -31,9 +30,9 @@ impl Characters {
         self.update_paralel(grid);
         self.characters.iter_mut().for_each(|v| v.update(grid));
     }
-    pub fn render(&mut self, cam: &mut CameraWork, window: &mut Window, assets: &AssetManager) {
+    pub fn render(&mut self,context : &mut FullContext) {
         self.characters
             .iter_mut()
-            .for_each(|v| v.render(cam, window, assets));
+            .for_each(|v| v.render(context));
     }
 }
