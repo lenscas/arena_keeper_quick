@@ -163,7 +163,7 @@ impl Character {
     }
     /// Renders the character.
     pub fn render(&self, context : &mut FullContext) {
-        context.draw_image_on_square(&self.location, self.image);
+        context.draw_image_on_grid(&self.location, self.image);
     }
 
     /// Checks wheter this character can walk on a given tile

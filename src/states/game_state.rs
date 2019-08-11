@@ -4,9 +4,9 @@ use crate::{
     help_states::{Characters, Grid, Mouse, Shop},
     structs::{grid::Field, gui_2::Context, point::Point, CameraWork, FullContext},
 };
-use quicksilver::{graphics::Color, lifecycle::Window, prelude::Key, Result};
-#[derive(PartialEq)]
-enum OpenWindow {
+use quicksilver::{graphics::Color, lifecycle::Window, prelude::Key,geom::Line, Result};
+#[derive(PartialEq,Clone,Copy)]
+pub enum OpenWindow {
     Shop,
     Game,
 }
@@ -36,7 +36,6 @@ impl GameState {
                 scroll: 100,
                 width: 800,
                 height: 600,
-                start_z: 0,
             },
             updates: 0,
             open_window: OpenWindow::Shop,
@@ -81,23 +80,33 @@ impl GameState {
             self.shop.first_render(assets);
         }
         window.clear(Color::WHITE)?;
-        let mut full_context = FullContext::new(window, Context::new(), &mut self.cam, assets);
-        match self.open_window {
-            OpenWindow::Shop => {
-                self.shop.render(&mut full_context, &mut self.characters)?;
-            }
-            OpenWindow::Game => {
-                Grid::new(&self.grid).render(&mut full_context)?;
-                Mouse {
-                    clicked: &mut self.clicked,
-                    grid: &mut self.grid,
-                    selected: &mut self.selected,
+        
+        {
+            let mut full_context = FullContext::new(window, Context::new(), &mut self.cam, assets);
+            match self.open_window {
+                OpenWindow::Shop => {
+                    self.shop.render(&mut full_context, &mut self.characters)?;
                 }
-                .render(&mut full_context)?;
-                self.characters.render(&mut full_context);
+                OpenWindow::Game => {
+                    let mut grid = Grid::new(&self.grid);
+                    
+                    grid.render(&mut full_context)?;
+                    let mut mouse = Mouse {
+                        clicked: &mut self.clicked,
+                        grid: &mut self.grid,
+                        selected: &mut self.selected,
+                    };
+                    mouse.render(&mut full_context)?;
+                    self.characters.render(&mut full_context);
+                }
+            }
+            full_context.render_gui();
+            if let Some(next_screen) = full_context.get_next_screen() {
+                self.open_window = next_screen;
             }
         }
-        full_context.render_gui();
+        let line = Line::new((0,550),(800,550)).with_thickness(5);
+        window.draw(&line, Color::BLACK);
         Ok(())
     }
 }

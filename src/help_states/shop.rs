@@ -10,11 +10,13 @@ use quicksilver::{
     graphics::{Color, FontStyle},
     Result,
 };
+use crate::states::game_state::OpenWindow;
 
 #[derive(Default)]
 pub struct Shop {
     money: u32,
     assets: Vec<(State, BuyableCharacter)>,
+    go_to_game_button : Option<State>
 }
 
 impl Shop {
@@ -22,6 +24,7 @@ impl Shop {
         Self {
             money: 100,
             assets: Vec::new(),
+            go_to_game_button : None
         }
     }
     pub fn first_render(&mut self, assets: &AssetManager) {
@@ -49,6 +52,17 @@ impl Shop {
                 (button, v)
             })
             .collect();
+        let builder = Builder::new_single_text("World".to_string());
+        let style = FontStyle::new(50.1, Color::BLACK);
+        let button = builder
+            .to_state(
+                Fonts::Font,
+                style,
+                assets,
+                Rectangle::new((10,555), (40, 30)),
+            )
+            .unwrap();
+        self.go_to_game_button = Some(button);
     }
     pub fn render(
         &mut self,
@@ -74,6 +88,11 @@ impl Shop {
             }
             println!("{}", self.money);
         });
+        
+        if context.push_widget(self.go_to_game_button.clone().unwrap()) == Interaction::Clicked {
+            context.set_next_screen(Some(OpenWindow::Game));
+        }
+        
         Ok(())
     }
 }
