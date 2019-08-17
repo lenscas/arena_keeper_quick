@@ -21,7 +21,9 @@ pub fn sub_save(first: usize, second: usize) -> usize {
 /// assert_eq!(sub_from_highest(20,10) , 10);
 /// assert_eq!(sub_from_highest(10,20) , 10);
 /// ```
-pub fn sub_from_highest(first: usize, second: usize) -> usize {
+pub fn sub_from_highest<T>(first: T, second: T) -> T 
+where T : PartialOrd + std::ops::Sub<Output=T>
+{
     if first < second {
         second - first
     } else {
