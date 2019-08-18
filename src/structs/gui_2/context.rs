@@ -34,7 +34,7 @@ impl<'a> Context<'a> {
         widget.set_interaction(interaction);
         interaction
     }
-    pub fn push<T: 'a>(&mut self, widget: T, window: &Window)
+    pub fn push<T: 'a>(&mut self, widget: T)
     where
         T: Widget + Sized,
     {

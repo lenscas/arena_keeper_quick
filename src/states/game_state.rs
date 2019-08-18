@@ -5,7 +5,7 @@ use crate::{
     help_states::{Characters, Grid, Mouse, Shop},
     structs::{grid::Field, gui_2::Context, point::Point, CameraWork, FullContext},
 };
-use quicksilver::{graphics::Color, lifecycle::Window, input::{MouseButton, ButtonState},prelude::Key,geom::Line, Result};
+use quicksilver::{graphics::Color, lifecycle::Window,prelude::Key,geom::Line, Result};
 #[derive(PartialEq,Clone,Copy)]
 pub enum OpenWindow {
     Shop,

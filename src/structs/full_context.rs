@@ -1,3 +1,4 @@
+use quicksilver::geom::Rectangle;
 use quicksilver::prelude::Background::Img;
 use quicksilver::prelude::Background::Col;
 use quicksilver::graphics::Background;
@@ -57,6 +58,9 @@ impl<'a> FullContext<'a> {
         self.current_z +=1;
         self.window.draw_ex(draw, bkg,Transform::rotate(0),self.current_z);
     }
+    pub fn draw_image(&mut self, place : &Rectangle, image : Images) {
+        self.draw(place, Img(self.assets.image(&image)));
+    }
     pub fn render_gui(&mut self) {
         self.gui.render(self.window)
     }
@@ -64,7 +68,7 @@ impl<'a> FullContext<'a> {
         self.gui.get_interaction(widget, self.window)
     }
     pub fn push_widget(&mut self, widget: impl Widget + 'a) {
-        self.gui.push(widget, self.window)
+        self.gui.push(widget)
     }
     pub fn get_outer_cell_points(&self) -> (Point,Point){
         self.cam_works.get_outer_cell_points()
