@@ -60,7 +60,10 @@ impl<'a> FullContext<'a> {
     pub fn render_gui(&mut self) {
         self.gui.render(self.window)
     }
-    pub fn push_widget(&mut self, widget: impl Widget + 'a) -> Interaction {
+    pub fn get_interaction(&self, widget: &'a mut impl Widget) -> Interaction {
+        self.gui.get_interaction(widget, self.window)
+    }
+    pub fn push_widget(&mut self, widget: impl Widget + 'a) {
         self.gui.push(widget, self.window)
     }
     pub fn get_outer_cell_points(&self) -> (Point,Point){

@@ -64,18 +64,13 @@ impl Shop {
             .unwrap();
         self.go_to_game_button = Some(button);
     }
-    pub fn render(
-        &mut self,
-        context: &mut FullContext,
-        characters_state: &mut Characters,
-    ) -> Result<()> {
+    pub fn update(&mut self, context : &mut FullContext,characters_state: &mut Characters,) {
         let mut to_remove: Vec<usize> = Vec::new();
-        self.assets
-            .iter()
-            .cloned()
+         self.assets
+            .iter_mut()
             .enumerate()
             .for_each(|(count, button)| {
-                let interaction = context.push_widget(button.0);
+                let interaction = context.get_interaction(&mut button.0);
                 if let Interaction::Clicked = interaction {
                     to_remove.push(count)
                 }
@@ -88,11 +83,22 @@ impl Shop {
             }
             println!("{}", self.money);
         });
-        
-        if context.push_widget(self.go_to_game_button.clone().unwrap()) == Interaction::Clicked {
+        if self.go_to_game_button.iter_mut().map(|v| context.get_interaction(v)).any(|v| v == Interaction::Clicked) {
             context.set_next_screen(Some(OpenWindow::Game));
         }
-        
+    }
+    pub fn render(
+        &mut self,
+        context: &mut FullContext,
+    ) -> Result<()> {
+        self.assets
+            .iter()
+            .cloned()
+            .enumerate()
+            .for_each(|(count, button)| {
+                context.push_widget(button.0);
+            });
+        context.push_widget(self.go_to_game_button.clone().unwrap());
         Ok(())
     }
 }

@@ -15,6 +15,7 @@ pub struct State {
     pub hovered: Image,
     pub active: Image,
     pub location: Rectangle,
+    interaction : Interaction
 }
 
 impl State {
@@ -27,10 +28,11 @@ impl State {
             hovered,
             active,
             location,
+            interaction : Interaction::None
         }
     }
     pub fn new(
-        font: Font,
+        font: &Font,
         style: &FontStyle,
         normal: &str,
         hover: &str,
@@ -45,6 +47,7 @@ impl State {
             hovered,
             active,
             location,
+            interaction : Interaction::None
         })
     }
     pub fn new_single_text(
@@ -62,12 +65,13 @@ impl State {
             hovered,
             active,
             location,
+            interaction : Interaction::None
         })
     }
 }
 impl Widget for State {
-    fn render(&self, window: &mut Window, interaction: Interaction) {
-        match interaction {
+    fn render(&self, window: &mut Window) {
+        match self.interaction {
             Interaction::None => window.draw(&self.location, Img(&self.normal)),
             Interaction::Hover => window.draw(&self.location, Img(&self.hovered)),
             Interaction::Clicked => window.draw(&self.location, Img(&self.active)),
@@ -78,5 +82,8 @@ impl Widget for State {
             && point.y >= self.location.pos.y
             && point.x <= self.location.pos.x + self.location.size.x
             && point.y <= self.location.pos.y + self.location.size.y
+    }
+    fn set_interaction(&mut self, interaction : Interaction) {
+        self.interaction = interaction
     }
 }

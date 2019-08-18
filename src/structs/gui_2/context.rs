@@ -2,6 +2,7 @@ use crate::structs::gui_2::finalize::Interaction;
 use quicksilver::geom::Vector;
 use quicksilver::input::MouseButton;
 use quicksilver::lifecycle::Window;
+use quicksilver::input::ButtonState;
 
 #[derive(Default)]
 pub struct Context<'a> {
@@ -13,15 +14,15 @@ impl<'a> Context<'a> {
             elements: Vec::new(),
         }
     }
-    pub fn push<T: 'a>(&mut self, widget: T, window: &Window) -> Interaction
+    pub fn get_interaction<T:'a>(&self, widget: &mut T, window : &Window ) -> Interaction
     where
         T: Widget + Sized,
     {
         let mouse = window.mouse();
-        let clicked = mouse[MouseButton::Left].is_down();
-        let mouse_pos = mouse.pos();
+         let mouse_pos = mouse.pos();
+        let clicked = mouse[MouseButton::Left] == ButtonState::Pressed;
         let is_contained = widget.contains(mouse_pos);
-        let interaction = if is_contained {
+         let interaction = if is_contained {
             if clicked {
                 Interaction::Clicked
             } else {
@@ -30,30 +31,22 @@ impl<'a> Context<'a> {
         } else {
             Interaction::None
         };
-        self.elements.push(Box::new(widget));
+        widget.set_interaction(interaction);
         interaction
     }
+    pub fn push<T: 'a>(&mut self, widget: T, window: &Window)
+    where
+        T: Widget + Sized,
+    {
+        self.elements.push(Box::new(widget));
+    }
     pub fn render(&mut self, window: &mut Window) {
-        let mouse = window.mouse();
-        let clicked = mouse[MouseButton::Left].is_down();
-        let mouse_pos = mouse.pos();
-        self.elements.iter().for_each(|v| {
-            let is_contained = v.contains(mouse_pos);
-            let interaction = if is_contained {
-                if clicked {
-                    Interaction::Clicked
-                } else {
-                    Interaction::Hover
-                }
-            } else {
-                Interaction::None
-            };
-            v.render(window, interaction);
-        })
+        self.elements.iter().for_each(|v| v.render(window))
     }
 }
 
 pub trait Widget {
-    fn render(&self, window: &mut Window, interaction: Interaction);
+    fn render(&self, window: &mut Window);
     fn contains(&self, point: Vector) -> bool;
+    fn set_interaction(&mut self, interaction : Interaction);
 }
