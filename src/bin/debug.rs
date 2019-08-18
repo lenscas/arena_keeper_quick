@@ -35,7 +35,7 @@ impl State for DebugState {
             pause: false,
             first_click: None,
             drawn_rectangles: Vec::new(),
-            current_color : Color::from_rgba(0,0,0,0f32)
+            current_color : Color::from_rgba(0,0,0,1f32)
         })
     }
     fn draw(&mut self, window: &mut Window) -> Result<()> {
@@ -92,6 +92,7 @@ impl DebugState {
                 self.current_color = Color::from_rgba(random(),random(),random(),1f32);
                 println!("Point: {}\nsize: {}", left_corner,size);
             } else {
+                println!("inside first click");
                 self.first_click = Some(pos);
             }
         }
