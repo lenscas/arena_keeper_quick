@@ -74,7 +74,7 @@ impl State for DebugState {
         }
 
         let gamestate = &mut self.game_state;
-        self.assets.execute(|_| gamestate.update(window))
+        self.assets.execute(|assets| gamestate.update(window,assets))
     }
 }
 impl DebugState {
@@ -94,7 +94,7 @@ impl DebugState {
             } else {
                 self.first_click = Some(pos);
             }
-        } 
+        }
     }
     fn draw_paused(&mut self, window: &mut Window) {
         self.drawn_rectangles
