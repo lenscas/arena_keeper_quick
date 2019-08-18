@@ -58,7 +58,7 @@ impl State for DebugState {
             pause: false,
             first_click: None,
             drawn_rectangles: Vec::new(),
-            current_color : Color::from_rgba(0,0,0,0f32),
+            current_color : Color::from_rgba(0,0,0,1f32),
             command_getter : rx,
             _command_reader: handle,
         })
