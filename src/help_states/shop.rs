@@ -1,3 +1,4 @@
+use crate::help_states::BuyableInfo;
 use crate::generated::assets::loaded::AssetManager;
 use crate::generated::assets::loaded::Fonts;
 use crate::structs::gui_2::button::Builder;
@@ -16,7 +17,8 @@ use crate::states::game_state::OpenWindow;
 pub struct Shop {
     money: u32,
     assets: Vec<(State, BuyableCharacter)>,
-    go_to_game_button : Option<State>
+    go_to_game_button : Option<State>,
+    selected : Option<(usize, BuyableInfo)>
 }
 
 impl Shop {
@@ -24,7 +26,8 @@ impl Shop {
         Self {
             money: 100,
             assets: Vec::new(),
-            go_to_game_button : None
+            go_to_game_button : None,
+            selected : None
         }
     }
     pub fn first_render(&mut self, assets: &AssetManager) {
@@ -65,24 +68,27 @@ impl Shop {
         self.go_to_game_button = Some(button);
     }
     pub fn update(&mut self, context : &mut FullContext,characters_state: &mut Characters,) {
-        let mut to_remove: Vec<usize> = Vec::new();
-         self.assets
+        if let Some(selected) = &mut self.selected {
+            if selected.1.did_buy(context) {
+                let bought = self.assets.remove(selected.0).1;
+                if bought.cost < self.money {
+                    characters_state.add_character(bought);
+                    self.selected = None;
+                }
+            }
+        }
+        let selected = self.assets
             .iter_mut()
             .enumerate()
-            .for_each(|(count, button)| {
-                let interaction = context.get_interaction(&mut button.0);
-                if let Interaction::Clicked = interaction {
-                    to_remove.push(count)
-                }
-            });
-        to_remove.iter().for_each(|v| {
-            let item = self.assets.remove(*v);
-            if item.1.cost < self.money {
-                self.money -= item.1.cost;
-                characters_state.add_character(item.1);
-            }
-            println!("{}", self.money);
-        });
+            .map(|(count, button)| (count,context.get_interaction(&mut button.0)))
+            .filter(|v| v.1 == Interaction::Clicked)
+            .collect::<Vec<_>>()
+            .iter()
+            .find(|v| v.1 == Interaction::Clicked)
+            .map(|v| (v.0, BuyableInfo::new(&self.assets[v.0].1, context)));
+        if let Some(selected) = selected {
+            self.selected = Some(selected);
+        }
         if self.go_to_game_button.iter_mut().map(|v| context.get_interaction(v)).any(|v| v == Interaction::Clicked) {
             context.set_next_screen(Some(OpenWindow::Game));
         }
@@ -94,11 +100,13 @@ impl Shop {
         self.assets
             .iter()
             .cloned()
-            .enumerate()
-            .for_each(|(count, button)| {
-                context.push_widget(button.0);
+            .for_each(|(button,_)| {
+                context.push_widget(button);
             });
         context.push_widget(self.go_to_game_button.clone().unwrap());
+        if let Some(info) = &mut self.selected {
+            info.1.draw(context);
+        }
         Ok(())
     }
 }
