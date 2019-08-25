@@ -7,7 +7,7 @@ use crate::{
         point::{Point, PointWithItem},
     },
 };
-use quicksilver::{graphics::Color, prelude::MouseButton, Result};
+use quicksilver::{graphics::Color, prelude::MouseButton, input::ButtonState};
 
 pub struct Mouse<'a> {
     pub clicked: &'a mut Option<Point>,
@@ -20,7 +20,11 @@ impl<'a> Mouse<'a> {
         context : &mut FullContext,
         key: quicksilver::input::ButtonState,
         grid_pos: Point,
-    ) -> Result<()> {
+    ) {
+        if !key.is_down() {
+            *self.clicked = None;
+            return;
+        }
         if let Some(click_point) = &self.clicked {
             let dif_x = sub_from_highest(grid_pos.x, click_point.x);
             let dif_y = sub_from_highest(grid_pos.y, click_point.y);
@@ -59,37 +63,46 @@ impl<'a> Mouse<'a> {
                 self.grid.add_feature_to_cells(line);
                 *self.clicked = None;
             }
-        } else if key.is_down() {
-            *self.clicked = Some(grid_pos);
-        } else {
-            *self.clicked = None;
         }
-        Ok(())
     }
-    fn draw_bed(
+    fn place_bed(
         &mut self,
-        _ : &mut FullContext,
-        key: quicksilver::input::ButtonState,
         click_pos: Point,
-    ) -> Result<()> {
-        if key.is_down() {
-            self.grid
-                .add_feature_to_cell(&click_pos.add_item(CellFeature::Bed(None)))
-        }
-        Ok(())
+    ) {
+        self.grid
+            .add_feature_to_cell(&click_pos.add_item(CellFeature::Bed(None)))
     }
-    pub fn render(&mut self, context : &mut FullContext) -> Result<()> {
+    pub fn update(&mut self, context : &mut FullContext) {
+        let mouse = context.mouse();
+        if mouse[MouseButton::Left] == ButtonState::Pressed {
+            let click_point = context.screen_to_grid(mouse.pos());
+            match self.selected {
+                ClickMode::Wall=> {
+                    if self.clicked.is_none() {
+                        *self.clicked = click_point
+                    }
+                },
+                ClickMode::Bed => {
+                    if let Some(click_point) = click_point {
+                        self.place_bed(click_point)
+                    }
+
+                }
+
+            }
+        }
+
+
+    }
+    pub fn render(&mut self, context : &mut FullContext) {
         let mouse = context.mouse();
         let key = mouse[MouseButton::Left];
         if let Some(grid_pos) = context.screen_to_grid(mouse.pos()) {
             context.draw_full_square_on_grid(&grid_pos, Color::WHITE);
-
             match self.selected {
                 ClickMode::Wall => self.draw_wall(context, key, grid_pos),
-                ClickMode::Bed => self.draw_bed(context, key, grid_pos),
+                ClickMode::Bed => {}
             }
-        } else {
-            Ok(())
         }
     }
 }

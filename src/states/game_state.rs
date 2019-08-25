@@ -77,6 +77,13 @@ impl GameState {
                     self.cam.scroll = scroll;
                 };
                 self.characters.update(&mut self.grid);
+                let mut mouse = Mouse {
+                    clicked: &mut self.clicked,
+                    grid: &mut self.grid,
+                    selected: &mut self.selected,
+                };
+                let mut full_context = FullContext::new(window, Context::new(), &mut self.cam, assets);
+                mouse.update(&mut full_context);
             }
         }
         Ok(())
@@ -102,7 +109,7 @@ impl GameState {
                     grid: &mut self.grid,
                     selected: &mut self.selected,
                 };
-                mouse.render(&mut full_context)?;
+                mouse.render(&mut full_context);
                 self.characters.render(&mut full_context);
             }
         }
