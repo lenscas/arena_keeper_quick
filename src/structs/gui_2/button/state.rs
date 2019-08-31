@@ -6,6 +6,7 @@ use quicksilver::graphics::Font;
 use quicksilver::graphics::FontStyle;
 use quicksilver::graphics::Image;
 use quicksilver::lifecycle::Window;
+use quicksilver::geom::Transform;
 use quicksilver::prelude::Background::Img;
 use quicksilver::Result;
 
@@ -51,7 +52,7 @@ impl State {
         })
     }
     pub fn new_single_text(
-        font: Font,
+        font: &Font,
         style: &FontStyle,
         text: &str,
         location: Rectangle,
@@ -70,12 +71,13 @@ impl State {
     }
 }
 impl Widget for State {
-    fn render(&self, window: &mut Window) {
-        match self.interaction {
-            Interaction::None => window.draw(&self.location, Img(&self.normal)),
-            Interaction::Hover => window.draw(&self.location, Img(&self.hovered)),
-            Interaction::Clicked => window.draw(&self.location, Img(&self.active)),
-        }
+    fn render(&self, window: &mut Window, at: &mut u32) {
+        let image = match self.interaction {
+            Interaction::None => &self.normal,
+            Interaction::Hover => &self.hovered,
+            Interaction::Clicked => &self.active,
+        };
+        window.draw_ex(&self.location,Img(image),Transform::IDENTITY,*at)
     }
     fn contains(&self, point: Vector) -> bool {
         point.x >= self.location.pos.x

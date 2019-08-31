@@ -1,19 +1,22 @@
-use quicksilver::prelude::Background::Img;
-use quicksilver::graphics::Image;
-use crate::generated::assets::loaded::Images;
-use crate::structs::FullContext;
-use crate::structs::BuyableCharacter;
-use crate::structs::gui_2::button::Builder;
-use crate::structs::gui_2::button::State;
-use crate::generated::assets::loaded::Fonts;
-use crate::structs::gui_2::Interaction;
-
-use quicksilver::geom::Rectangle;
-use quicksilver::graphics::FontStyle;
-use quicksilver::graphics::Color;
+use quicksilver::{
+	graphics::{Image,FontStyle,Color, Background::Img},geom::Rectangle
+};
+use crate::{
+	generated::assets::loaded::{Images, Fonts},
+	structs::{
+		FullContext,
+		BuyableCharacter,
+		gui_2::{
+			button::State,
+			Interaction,
+			Combined,
+			ButtonBackground,
+		}
+	}
+};
 
 pub struct BuyableInfo {
-	buy_button : State,
+	buy_button : Combined<State,ButtonBackground>,
 	image : Images,
 	name : Image,
 	species : Image
@@ -21,17 +24,15 @@ pub struct BuyableInfo {
 
 impl BuyableInfo {
 	pub fn new(chosen_character : &BuyableCharacter, context : &mut FullContext) -> BuyableInfo {
-		let builder = Builder::new_single_text(chosen_character.cost.to_string());
 		let assets = context.get_assets();
-		let state = builder.to_state(
-			Fonts::Font,
-			FontStyle::new(50.1, Color::BLACK),
-			assets,
-			Rectangle::new((704,503),(78,38))
-		).unwrap();
 		let image = chosen_character.get_image();
+		let buy_button = ButtonBackground::new_success(
+			assets,
+			Rectangle::new((704,503),(78,38)),
+			chosen_character.cost.to_string()
+		);
 		Self {
-			buy_button : state,
+			buy_button,
 			image,
 			name : assets.font(&Fonts::Font).render(&chosen_character.get_name(), &FontStyle::new(50.1, Color::BLACK)).unwrap(),
 			species : assets.font(&Fonts::Font).render(&String::from(chosen_character.get_species()), &FontStyle::new(50.1,Color::BLACK)).unwrap()

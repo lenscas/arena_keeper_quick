@@ -40,13 +40,16 @@ impl<'a> Context<'a> {
     {
         self.elements.push(Box::new(widget));
     }
-    pub fn render(&mut self, window: &mut Window) {
-        self.elements.iter().for_each(|v| v.render(window))
+    pub fn render(&mut self, window: &mut Window, at: &mut u32) {
+        self.elements.iter().for_each(|v| {
+            *at+=1;
+            v.render(window,at)
+        })
     }
 }
 
 pub trait Widget {
-    fn render(&self, window: &mut Window);
+    fn render(&self, window: &mut Window, at : &mut u32);
     fn contains(&self, point: Vector) -> bool;
     fn set_interaction(&mut self, interaction : Interaction);
 }

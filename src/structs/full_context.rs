@@ -56,13 +56,13 @@ impl<'a> FullContext<'a> {
     }
     pub fn draw(&mut self, draw : &impl Drawable, bkg : Background<'a>) {
         self.current_z +=1;
-        self.window.draw_ex(draw, bkg,Transform::rotate(0),self.current_z);
+        self.window.draw_ex(draw, bkg,Transform::IDENTITY,self.current_z);
     }
     pub fn draw_image(&mut self, place : &Rectangle, image : Images) {
         self.draw(place, Img(self.assets.image(&image)));
     }
     pub fn render_gui(&mut self) {
-        self.gui.render(self.window)
+        self.gui.render(self.window,&mut self.current_z)
     }
     pub fn get_interaction(&self, widget: &'a mut impl Widget) -> Interaction {
         self.gui.get_interaction(widget, self.window)
