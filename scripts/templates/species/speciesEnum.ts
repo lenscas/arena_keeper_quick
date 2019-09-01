@@ -40,5 +40,16 @@ impl Species {
         }
     }
 }
+impl From<Species> for String {
+    fn from(species : Species) -> Self {
+        match species {
+            ${list
+                .map(
+                    v=> `Species::${firstToUpper(v.type)} => "${firstToUpper(v.type)}"`
+                )
+            }
+        }.into()
+    }
+}
 `
 )

@@ -5,3 +5,4 @@
 /static/generated/*
 *.png
 *.html
+/.vscode

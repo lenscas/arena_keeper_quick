@@ -1,4 +1,4 @@
-#[derive(Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum Interaction {
     None,
     Clicked,

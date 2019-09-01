@@ -4,9 +4,10 @@ use crate::{
     help_states::{Characters, Grid, Mouse, Shop},
     structs::{grid::Field, gui_2::Context, point::Point, CameraWork, FullContext},
 };
-use quicksilver::{graphics::Color, lifecycle::Window, prelude::Key, Result};
-#[derive(PartialEq)]
-enum OpenWindow {
+use quicksilver::prelude::Background::Col;
+use quicksilver::{geom::Line, graphics::Color, lifecycle::Window, prelude::Key, Result};
+#[derive(PartialEq, Clone, Copy)]
+pub enum OpenWindow {
     Shop,
     Game,
 }
@@ -36,20 +37,26 @@ impl GameState {
                 scroll: 100,
                 width: 800,
                 height: 600,
-                start_z: 0,
             },
             updates: 0,
             open_window: OpenWindow::Shop,
             selected: ClickMode::Bed,
         }
     }
-    pub fn update(&mut self, window: &mut Window) -> Result<()> {
+    pub fn update(&mut self, window: &mut Window, assets: &AssetManager) -> Result<()> {
         let board = window.keyboard();
         if self.open_window != OpenWindow::Game && board[Key::Escape].is_down() {
             self.open_window = OpenWindow::Game;
         }
         match self.open_window {
-            OpenWindow::Shop => {}
+            OpenWindow::Shop => {
+                let mut full_context =
+                    FullContext::new(window, Context::new(), &mut self.cam, assets);
+                self.shop.update(&mut full_context, &mut self.characters);
+                if let Some(next_screen) = full_context.get_next_screen() {
+                    self.open_window = next_screen;
+                }
+            }
             OpenWindow::Game => {
                 if check_multiple(board, &[Key::Left, Key::A]) {
                     self.cam.cam.x = sub_save(self.cam.cam.x, 1);
@@ -71,6 +78,14 @@ impl GameState {
                     self.cam.scroll = scroll;
                 };
                 self.characters.update(&mut self.grid);
+                let mut mouse = Mouse {
+                    clicked: &mut self.clicked,
+                    grid: &mut self.grid,
+                    selected: &mut self.selected,
+                };
+                let mut full_context =
+                    FullContext::new(window, Context::new(), &mut self.cam, assets);
+                mouse.update(&mut full_context);
             }
         }
         Ok(())
@@ -84,20 +99,25 @@ impl GameState {
         let mut full_context = FullContext::new(window, Context::new(), &mut self.cam, assets);
         match self.open_window {
             OpenWindow::Shop => {
-                self.shop.render(&mut full_context, &mut self.characters)?;
+                self.shop.render(&mut full_context)?;
             }
             OpenWindow::Game => {
-                Grid::new(&self.grid).render(&mut full_context)?;
-                Mouse {
+                let mut grid = Grid::new(&self.grid);
+
+                grid.render(&mut full_context)?;
+                let mut mouse = Mouse {
                     clicked: &mut self.clicked,
                     grid: &mut self.grid,
                     selected: &mut self.selected,
-                }
-                .render(&mut full_context)?;
+                };
+                mouse.render(&mut full_context);
                 self.characters.render(&mut full_context);
             }
         }
         full_context.render_gui();
+
+        let line = Line::new((0, 550), (800, 550)).with_thickness(5);
+        full_context.draw(&line, Col(Color::BLACK));
         Ok(())
     }
 }

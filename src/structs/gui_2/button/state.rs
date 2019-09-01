@@ -1,6 +1,7 @@
 use crate::structs::gui_2::context::Widget;
 use crate::structs::gui_2::finalize::Interaction;
 use quicksilver::geom::Rectangle;
+use quicksilver::geom::Transform;
 use quicksilver::geom::Vector;
 use quicksilver::graphics::Font;
 use quicksilver::graphics::FontStyle;
@@ -15,6 +16,7 @@ pub struct State {
     pub hovered: Image,
     pub active: Image,
     pub location: Rectangle,
+    interaction: Interaction,
 }
 
 impl State {
@@ -27,10 +29,11 @@ impl State {
             hovered,
             active,
             location,
+            interaction: Interaction::None,
         }
     }
     pub fn new(
-        font: Font,
+        font: &Font,
         style: &FontStyle,
         normal: &str,
         hover: &str,
@@ -45,10 +48,11 @@ impl State {
             hovered,
             active,
             location,
+            interaction: Interaction::None,
         })
     }
     pub fn new_single_text(
-        font: Font,
+        font: &Font,
         style: &FontStyle,
         text: &str,
         location: Rectangle,
@@ -62,21 +66,26 @@ impl State {
             hovered,
             active,
             location,
+            interaction: Interaction::None,
         })
     }
 }
 impl Widget for State {
-    fn render(&self, window: &mut Window, interaction: Interaction) {
-        match interaction {
-            Interaction::None => window.draw(&self.location, Img(&self.normal)),
-            Interaction::Hover => window.draw(&self.location, Img(&self.hovered)),
-            Interaction::Clicked => window.draw(&self.location, Img(&self.active)),
-        }
+    fn render(&self, window: &mut Window, at: &mut u32) {
+        let image = match self.interaction {
+            Interaction::None => &self.normal,
+            Interaction::Hover => &self.hovered,
+            Interaction::Clicked => &self.active,
+        };
+        window.draw_ex(&self.location, Img(image), Transform::IDENTITY, *at)
     }
     fn contains(&self, point: Vector) -> bool {
         point.x >= self.location.pos.x
             && point.y >= self.location.pos.y
             && point.x <= self.location.pos.x + self.location.size.x
             && point.y <= self.location.pos.y + self.location.size.y
+    }
+    fn set_interaction(&mut self, interaction: Interaction) {
+        self.interaction = interaction
     }
 }

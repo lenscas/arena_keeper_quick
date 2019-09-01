@@ -30,9 +30,7 @@ impl Characters {
         self.update_paralel(grid);
         self.characters.iter_mut().for_each(|v| v.update(grid));
     }
-    pub fn render(&mut self,context : &mut FullContext) {
-        self.characters
-            .iter_mut()
-            .for_each(|v| v.render(context));
+    pub fn render(&mut self, context: &mut FullContext) {
+        self.characters.iter_mut().for_each(|v| v.render(context));
     }
 }

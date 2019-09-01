@@ -40,7 +40,8 @@ impl State for MainState {
     }
     fn update(&mut self, window: &mut Window) -> Result<()> {
         let gamestate = &mut self.game_state;
-        self.assets.execute(|_| gamestate.update(window))
+        self.assets
+            .execute(|assets| gamestate.update(window, assets))
     }
 }
 

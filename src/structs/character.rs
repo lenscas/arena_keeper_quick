@@ -1,10 +1,10 @@
-use crate::structs::full_context::FullContext;
 use super::{
     grid::{CellFeature, Field},
     point::Point,
 };
 use crate::generated::assets::loaded::Images;
 use crate::generated::species::species::Species;
+use crate::structs::full_context::FullContext;
 use crate::structs::BuyableCharacter;
 use pathfinding::prelude::absdiff;
 
@@ -162,8 +162,8 @@ impl Character {
         }
     }
     /// Renders the character.
-    pub fn render(&self, context : &mut FullContext) {
-        context.draw_image_on_square(&self.location, self.image);
+    pub fn render(&self, context: &mut FullContext) {
+        context.draw_image_on_grid(&self.location, self.image);
     }
 
     /// Checks wheter this character can walk on a given tile
