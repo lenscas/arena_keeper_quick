@@ -1,5 +1,5 @@
 use quicksilver::{
-	graphics::{Image,FontStyle,Color, Background::Img},geom::Rectangle
+	graphics::{FontStyle,Color},geom::Rectangle
 };
 use crate::{
 	generated::assets::loaded::{Images, Fonts},
@@ -11,6 +11,7 @@ use crate::{
 			Interaction,
 			Combined,
 			ButtonBackground,
+			Image
 		}
 	}
 };
@@ -33,13 +34,35 @@ impl BuyableInfo {
 			"Buy".to_string()
 		);
 		let text  = String::from("$") + &chosen_character.cost.to_string();
-		let cost = assets.font(&Fonts::Font).render(&text, &FontStyle::new(50.1,Color::BLACK)).unwrap();
+		let cost = Image::new(
+			assets.font(&Fonts::Font)
+				.render(&text, &FontStyle::new(50.1,Color::BLACK))
+				.unwrap(),
+			Rectangle::new((623,503),(78,38))
+		);
+		let name = Image::new(
+			assets.font(&Fonts::Font)
+				.render(
+					&chosen_character.get_name(), 
+					&FontStyle::new(50.1, Color::BLACK)
+				).unwrap(),
+				Rectangle::new((542, 15),(238, 34))
+			);
+		let species = Image::new(
+			assets.font(&Fonts::Font)
+				.render(
+					&String::from(chosen_character.get_species()), 
+					&FontStyle::new(50.1,Color::BLACK)
+				)
+				.unwrap(),
+			Rectangle::new((542,61),(238, 34))
+		);
 		Self {
 			cost,
 			buy_button,
 			image,
-			name : assets.font(&Fonts::Font).render(&chosen_character.get_name(), &FontStyle::new(50.1, Color::BLACK)).unwrap(),
-			species : assets.font(&Fonts::Font).render(&String::from(chosen_character.get_species()), &FontStyle::new(50.1,Color::BLACK)).unwrap()
+			name ,
+			species
 		}
 	}
 	pub fn did_buy(&mut self,context : &mut FullContext ) -> bool {
@@ -48,10 +71,10 @@ impl BuyableInfo {
 	}
 	pub fn draw(&mut self, context : &mut FullContext) {
 		context.push_widget(self.buy_button.clone());
+		context.push_widget(self.cost.clone());
+		context.push_widget(self.name.clone());
+		context.push_widget(self.species.clone());
 		context.draw_image(&Rectangle::new((403, 0),(130, 130)), self.image);
-		context.draw(&Rectangle::new((623,503),(78,38)),Img(Box::leak(Box::new(self.cost.clone()))));
-		context.draw(&Rectangle::new((542, 15),(238, 34)), Img(Box::leak(Box::new(self.name.clone()))));
-		context.draw(&Rectangle::new((542,61),(238, 34)),Img(Box::leak(Box::new(self.species.clone()))));
 	}
 }
 //full info?
