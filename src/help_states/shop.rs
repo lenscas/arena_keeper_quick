@@ -1,24 +1,36 @@
-use crate::help_states::BuyableInfo;
-use crate::generated::assets::loaded::AssetManager;
-use crate::generated::assets::loaded::Fonts;
-use crate::structs::gui_2::button::Builder;
-use crate::structs::gui_2::button::State;
-use crate::structs::gui_2::Interaction;
-use crate::structs::FullContext;
-use crate::{help_states::characters::Characters, structs::BuyableCharacter};
-use quicksilver::geom::Rectangle;
+use crate::{
+    help_states::BuyableInfo,
+    generated::assets::loaded::{AssetManager, Fonts},
+    structs::{
+            gui_2::{
+            button::{
+                Builder,
+                State
+            },
+            Image,
+            Combined,
+            ButtonBackground,
+            Interaction
+        },
+        FullContext,
+    },
+    help_states::characters::Characters, structs::BuyableCharacter,
+    states::game_state::OpenWindow
+};
 use quicksilver::{
-    graphics::{Color, FontStyle},
+    geom::Rectangle,
+    graphics::{Color, FontStyle, Font},
     Result,
 };
-use crate::states::game_state::OpenWindow;
 
 #[derive(Default)]
 pub struct Shop {
     money: u32,
     assets: Vec<(State, BuyableCharacter)>,
-    go_to_game_button : Option<State>,
-    selected : Option<(usize, BuyableInfo)>
+    go_to_game_button : Option<Combined<State,ButtonBackground>>,
+    selected : Option<(usize, BuyableInfo)>,
+    show_money: Option<Image>,
+    up_button : Option<Combined<State,ButtonBackground>>
 }
 
 impl Shop {
@@ -27,7 +39,9 @@ impl Shop {
             money: 100,
             assets: Vec::new(),
             go_to_game_button : None,
-            selected : None
+            selected : None,
+            show_money: None,
+            up_button:None
         }
     }
     pub fn first_render(&mut self, assets: &AssetManager) {
@@ -49,31 +63,40 @@ impl Shop {
                         Fonts::Font,
                         style,
                         assets,
-                        Rectangle::new((10, 10 + (count as i32 * 50)), (90, 50)),
+                        Rectangle::new((10, 90 + (count as i32 * 50)), (90, 50)),
                     )
                     .unwrap();
                 (button, v)
             })
             .collect();
-        let builder = Builder::new_single_text("World".to_string());
-        let style = FontStyle::new(50.1, Color::BLACK);
-        let button = builder
-            .to_state(
-                Fonts::Font,
-                style,
-                assets,
-                Rectangle::new((10,555), (40, 30)),
-            )
-            .unwrap();
-        self.go_to_game_button = Some(button);
+        self.up_button = Some(ButtonBackground::new_success(assets,Rectangle::new((10,40),(90,50)),"Up".to_string()));
+        self.go_to_game_button = Some(ButtonBackground::new_success(assets,Rectangle::new((10,555), (55, 40)),"World".to_string()));
+        self.update_show_money(assets);
+        
+    }
+    fn update_show_money(&mut self, assets : &AssetManager) {
+        self.show_money = {
+            let img = Image::new(
+                Font::render(
+                    assets.font(&Fonts::Font),
+                    &self.money.to_string(),
+                    &FontStyle::new(50.1,Color::BLACK)
+                ).unwrap(),
+                Rectangle::new((10,10),(30,20))
+            );
+            Some(img)
+        }
     }
     pub fn update(&mut self, context : &mut FullContext,characters_state: &mut Characters,) {
         if let Some(selected) = &mut self.selected {
             if selected.1.did_buy(context) {
                 let bought = self.assets.remove(selected.0).1;
                 if bought.cost < self.money {
+                    self.money -= bought.cost;
+                    self.update_show_money(context.get_assets());
                     characters_state.add_character(bought);
                     self.selected = None;
+                    
                 }
             }
         }
@@ -103,6 +126,8 @@ impl Shop {
             .for_each(|(button,_)| {
                 context.push_widget(button);
             });
+        //context.push_widget(self.up_button.clone().unwrap());
+        context.push_widget(self.show_money.clone().unwrap());
         context.push_widget(self.go_to_game_button.clone().unwrap());
         if let Some(info) = &mut self.selected {
             info.1.draw(context);

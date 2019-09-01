@@ -16,6 +16,7 @@ use crate::{
 };
 
 pub struct BuyableInfo {
+	cost : Image,
 	buy_button : Combined<State,ButtonBackground>,
 	image : Images,
 	name : Image,
@@ -29,9 +30,12 @@ impl BuyableInfo {
 		let buy_button = ButtonBackground::new_success(
 			assets,
 			Rectangle::new((704,503),(78,38)),
-			chosen_character.cost.to_string()
+			"Buy".to_string()
 		);
+		let text  = String::from("$") + &chosen_character.cost.to_string();
+		let cost = assets.font(&Fonts::Font).render(&text, &FontStyle::new(50.1,Color::BLACK)).unwrap();
 		Self {
+			cost,
 			buy_button,
 			image,
 			name : assets.font(&Fonts::Font).render(&chosen_character.get_name(), &FontStyle::new(50.1, Color::BLACK)).unwrap(),
@@ -45,6 +49,7 @@ impl BuyableInfo {
 	pub fn draw(&mut self, context : &mut FullContext) {
 		context.push_widget(self.buy_button.clone());
 		context.draw_image(&Rectangle::new((403, 0),(130, 130)), self.image);
+		context.draw(&Rectangle::new((623,503),(78,38)),Img(Box::leak(Box::new(self.cost.clone()))));
 		context.draw(&Rectangle::new((542, 15),(238, 34)), Img(Box::leak(Box::new(self.name.clone()))));
 		context.draw(&Rectangle::new((542,61),(238, 34)),Img(Box::leak(Box::new(self.species.clone()))));
 	}
