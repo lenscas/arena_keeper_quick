@@ -1,5 +1,5 @@
-use crate::structs::FullContext;
 use crate::states::game_state::ClickMode;
+use crate::structs::FullContext;
 use crate::{
     funcs::math::sub_from_highest,
     structs::{
@@ -7,7 +7,7 @@ use crate::{
         point::{Point, PointWithItem},
     },
 };
-use quicksilver::{graphics::Color, prelude::MouseButton, input::ButtonState};
+use quicksilver::{graphics::Color, input::ButtonState, prelude::MouseButton};
 
 pub struct Mouse<'a> {
     pub clicked: &'a mut Option<Point>,
@@ -17,7 +17,7 @@ pub struct Mouse<'a> {
 impl<'a> Mouse<'a> {
     fn draw_wall(
         &mut self,
-        context : &mut FullContext,
+        context: &mut FullContext,
         key: quicksilver::input::ButtonState,
         grid_pos: Point,
     ) {
@@ -65,36 +65,29 @@ impl<'a> Mouse<'a> {
             }
         }
     }
-    fn place_bed(
-        &mut self,
-        click_pos: Point,
-    ) {
+    fn place_bed(&mut self, click_pos: Point) {
         self.grid
             .add_feature_to_cell(&click_pos.add_item(CellFeature::Bed(None)))
     }
-    pub fn update(&mut self, context : &mut FullContext) {
+    pub fn update(&mut self, context: &mut FullContext) {
         let mouse = context.mouse();
         if mouse[MouseButton::Left] == ButtonState::Pressed {
             let click_point = context.screen_to_grid(mouse.pos());
             match self.selected {
-                ClickMode::Wall=> {
+                ClickMode::Wall => {
                     if self.clicked.is_none() {
                         *self.clicked = click_point
                     }
-                },
+                }
                 ClickMode::Bed => {
                     if let Some(click_point) = click_point {
                         self.place_bed(click_point)
                     }
-
                 }
-
             }
         }
-
-
     }
-    pub fn render(&mut self, context : &mut FullContext) {
+    pub fn render(&mut self, context: &mut FullContext) {
         let mouse = context.mouse();
         let key = mouse[MouseButton::Left];
         if let Some(grid_pos) = context.screen_to_grid(mouse.pos()) {

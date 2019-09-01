@@ -1,8 +1,6 @@
-use crate::structs::FullContext;
-use crate::{
-    structs::{
-        grid::{CellFeature, Field},
-    },
+use crate::structs::{
+    grid::{CellFeature, Field},
+    FullContext,
 };
 use quicksilver::{graphics::Color, Result};
 
@@ -13,7 +11,7 @@ impl<'a> Grid<'a> {
     pub fn new(grid: &'a Field) -> Self {
         Grid { grid }
     }
-    pub fn render(&mut self, context : &mut FullContext) -> Result<()> {
+    pub fn render(&mut self, context: &mut FullContext) -> Result<()> {
         let (start, end) = context.get_outer_cell_points();
         let part = self.grid.get_part(start, end);
         part.iter().enumerate().for_each(|v| {
@@ -25,10 +23,7 @@ impl<'a> Grid<'a> {
             if let Some(color) = color {
                 context.draw_full_square_on_grid(&v.1.loc, color);
             } else {
-                context.draw_image_on_grid(
-                    &v.1.loc,
-                    v.1.cell_type.get_image(),
-                );
+                context.draw_image_on_grid(&v.1.loc, v.1.cell_type.get_image());
             }
         });
         Ok(())

@@ -35,6 +35,13 @@ impl Builder {
         location: Rectangle,
     ) -> Result<State> {
         let font = assets.font(&font);
-        State::new(font,&style, &self.normal, &self.hovered, &self.active, location)
+        State::new(
+            font,
+            &style,
+            &self.normal,
+            &self.hovered,
+            &self.active,
+            location,
+        )
     }
 }

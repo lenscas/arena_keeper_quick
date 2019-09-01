@@ -1,12 +1,12 @@
-use quicksilver::prelude::Background::Col;
 use crate::generated::assets::loaded::AssetManager;
 use crate::{
     funcs::{controls::check_multiple, math::sub_save},
     help_states::{Characters, Grid, Mouse, Shop},
     structs::{grid::Field, gui_2::Context, point::Point, CameraWork, FullContext},
 };
-use quicksilver::{graphics::Color, lifecycle::Window,prelude::Key,geom::Line, Result};
-#[derive(PartialEq,Clone,Copy)]
+use quicksilver::prelude::Background::Col;
+use quicksilver::{geom::Line, graphics::Color, lifecycle::Window, prelude::Key, Result};
+#[derive(PartialEq, Clone, Copy)]
 pub enum OpenWindow {
     Shop,
     Game,
@@ -50,7 +50,8 @@ impl GameState {
         }
         match self.open_window {
             OpenWindow::Shop => {
-                let mut full_context = FullContext::new(window, Context::new(), &mut self.cam, assets);
+                let mut full_context =
+                    FullContext::new(window, Context::new(), &mut self.cam, assets);
                 self.shop.update(&mut full_context, &mut self.characters);
                 if let Some(next_screen) = full_context.get_next_screen() {
                     self.open_window = next_screen;
@@ -82,14 +83,14 @@ impl GameState {
                     grid: &mut self.grid,
                     selected: &mut self.selected,
                 };
-                let mut full_context = FullContext::new(window, Context::new(), &mut self.cam, assets);
+                let mut full_context =
+                    FullContext::new(window, Context::new(), &mut self.cam, assets);
                 mouse.update(&mut full_context);
             }
         }
         Ok(())
     }
     pub fn draw(&mut self, window: &mut Window, assets: &AssetManager) -> Result<()> {
-
         self.updates += 1;
         if self.updates == 1 {
             self.shop.first_render(assets);
@@ -115,7 +116,7 @@ impl GameState {
         }
         full_context.render_gui();
 
-        let line = Line::new((0,550),(800,550)).with_thickness(5);
+        let line = Line::new((0, 550), (800, 550)).with_thickness(5);
         full_context.draw(&line, Col(Color::BLACK));
         Ok(())
     }

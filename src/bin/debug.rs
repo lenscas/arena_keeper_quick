@@ -1,8 +1,8 @@
 extern crate arena;
+use arena::funcs::math::sub_from_highest;
 use arena::generated::assets::loaded::AssetManager;
 use arena::generated::assets::to_load::load_all;
 use arena::states::game_state::GameState;
-use arena::funcs::math::sub_from_highest;
 
 use quicksilver::{
     geom::Rectangle,
@@ -24,8 +24,8 @@ pub struct DebugState {
     assets: Asset<AssetManager>,
     pause: bool,
     first_click: Option<Vector>,
-    drawn_rectangles: Vec<(Rectangle,Color)>,
-    current_color : Color
+    drawn_rectangles: Vec<(Rectangle, Color)>,
+    current_color: Color,
 }
 impl State for DebugState {
     fn new() -> Result<Self> {
@@ -35,7 +35,7 @@ impl State for DebugState {
             pause: false,
             first_click: None,
             drawn_rectangles: Vec::new(),
-            current_color : Color::from_rgba(0,0,0,1f32)
+            current_color: Color::from_rgba(0, 0, 0, 1f32),
         })
     }
     fn draw(&mut self, window: &mut Window) -> Result<()> {
@@ -74,7 +74,8 @@ impl State for DebugState {
         }
 
         let gamestate = &mut self.game_state;
-        self.assets.execute(|assets| gamestate.update(window,assets))
+        self.assets
+            .execute(|assets| gamestate.update(window, assets))
     }
 }
 impl DebugState {
@@ -84,13 +85,13 @@ impl DebugState {
         let left_click = mouse[MouseButton::Left];
         if left_click == ButtonState::Pressed {
             if let Some(first_click) = self.first_click {
-                let (left_corner,size) = calc_pos_and_width(&first_click,&pos);
+                let (left_corner, size) = calc_pos_and_width(&first_click, &pos);
                 self.drawn_rectangles
                     .push((Rectangle::new(left_corner, size), self.current_color));
                 self.first_click = None;
                 use rand::random;
-                self.current_color = Color::from_rgba(random(),random(),random(),1f32);
-                println!("Point: {}\nsize: {}", left_corner,size);
+                self.current_color = Color::from_rgba(random(), random(), random(), 1f32);
+                println!("Point: {}\nsize: {}", left_corner, size);
             } else {
                 println!("inside first click");
                 self.first_click = Some(pos);
@@ -100,21 +101,21 @@ impl DebugState {
     fn draw_paused(&mut self, window: &mut Window) {
         self.drawn_rectangles
             .iter()
-            .for_each(|v| window.draw(&v.0, v.1 ));
+            .for_each(|v| window.draw(&v.0, v.1));
         if let Some(first_click) = self.first_click {
-            let (corner,size) = calc_pos_and_width(&first_click,&window.mouse().pos());
-            window.draw(&Rectangle::new(corner,size), self.current_color);
+            let (corner, size) = calc_pos_and_width(&first_click, &window.mouse().pos());
+            window.draw(&Rectangle::new(corner, size), self.current_color);
         }
     }
 }
-fn calc_pos_and_width(pos1: &Vector, pos2: &Vector) -> (Vector,Vector) {
+fn calc_pos_and_width(pos1: &Vector, pos2: &Vector) -> (Vector, Vector) {
     let left_corner = Vector::new(
         if pos1.x < pos2.x { pos1.x } else { pos2.x },
         if pos1.y < pos2.y { pos1.y } else { pos2.y },
     );
-    let width = sub_from_highest(pos1.x,pos2.x);
-    let height = sub_from_highest(pos1.y,pos2.y);
-    (left_corner,(width,height).into())
+    let width = sub_from_highest(pos1.x, pos2.x);
+    let height = sub_from_highest(pos1.y, pos2.y);
+    (left_corner, (width, height).into())
 }
 pub fn main() {
     run::<DebugState>("Arena (debug)", Vector::new(800, 600), Settings::default());

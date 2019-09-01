@@ -1,12 +1,12 @@
 use crate::structs::gui_2::context::Widget;
 use crate::structs::gui_2::finalize::Interaction;
 use quicksilver::geom::Rectangle;
+use quicksilver::geom::Transform;
 use quicksilver::geom::Vector;
 use quicksilver::graphics::Font;
 use quicksilver::graphics::FontStyle;
 use quicksilver::graphics::Image;
 use quicksilver::lifecycle::Window;
-use quicksilver::geom::Transform;
 use quicksilver::prelude::Background::Img;
 use quicksilver::Result;
 
@@ -16,7 +16,7 @@ pub struct State {
     pub hovered: Image,
     pub active: Image,
     pub location: Rectangle,
-    interaction : Interaction
+    interaction: Interaction,
 }
 
 impl State {
@@ -29,7 +29,7 @@ impl State {
             hovered,
             active,
             location,
-            interaction : Interaction::None
+            interaction: Interaction::None,
         }
     }
     pub fn new(
@@ -48,7 +48,7 @@ impl State {
             hovered,
             active,
             location,
-            interaction : Interaction::None
+            interaction: Interaction::None,
         })
     }
     pub fn new_single_text(
@@ -66,7 +66,7 @@ impl State {
             hovered,
             active,
             location,
-            interaction : Interaction::None
+            interaction: Interaction::None,
         })
     }
 }
@@ -77,7 +77,7 @@ impl Widget for State {
             Interaction::Hover => &self.hovered,
             Interaction::Clicked => &self.active,
         };
-        window.draw_ex(&self.location,Img(image),Transform::IDENTITY,*at)
+        window.draw_ex(&self.location, Img(image), Transform::IDENTITY, *at)
     }
     fn contains(&self, point: Vector) -> bool {
         point.x >= self.location.pos.x
@@ -85,7 +85,7 @@ impl Widget for State {
             && point.x <= self.location.pos.x + self.location.size.x
             && point.y <= self.location.pos.y + self.location.size.y
     }
-    fn set_interaction(&mut self, interaction : Interaction) {
+    fn set_interaction(&mut self, interaction: Interaction) {
         self.interaction = interaction
     }
 }
