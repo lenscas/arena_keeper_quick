@@ -99,7 +99,8 @@ impl State for DebugState {
         }
 
         let gamestate = &mut self.game_state;
-        self.assets.execute(|assets| gamestate.update(window,assets))
+        self.assets
+            .execute(|assets| gamestate.update(window, assets))
     }
 }
 impl DebugState {
