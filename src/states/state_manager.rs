@@ -17,9 +17,10 @@ impl StateManager {
         }
     }
     pub fn new(assets: AssetManager) -> Result<Self> {
+        let current_screen = Box::new(MainMenu::new(&assets)) as Box<dyn Screen>;
         Ok(Self {
             assets,
-            current_screen: Box::new(MainMenu::new()), // as Box<dyn Screen>
+            current_screen,
         })
     }
     pub fn draw(&mut self, window: &mut Window) -> Result<()> {
