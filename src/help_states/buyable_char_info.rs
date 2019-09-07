@@ -71,7 +71,9 @@ impl BuyableInfo {
         context.simple_context.push_widget(self.cost.clone());
         context.simple_context.push_widget(self.name.clone());
         context.simple_context.push_widget(self.species.clone());
-        context.simple_context.draw_image(&Rectangle::new((403, 0), (130, 130)), self.image);
+        context
+            .simple_context
+            .draw_image(&Rectangle::new((403, 0), (130, 130)), self.image);
     }
 }
 //full info?

@@ -29,13 +29,13 @@ pub struct Shop {
 }
 
 impl Shop {
-    pub fn new(context : &mut SimpleContext) -> Self {
+    pub fn new(context: &mut SimpleContext) -> Self {
         let chars = vec![
             BuyableCharacter::new(),
             BuyableCharacter::new(),
             BuyableCharacter::new(),
         ];
-        let assets : Vec<_> = chars
+        let assets: Vec<_> = chars
             .iter()
             .cloned()
             .enumerate()
@@ -65,17 +65,17 @@ impl Shop {
             "World".to_string(),
         );
         let money_amount = 100;
-        let show_money = Self::get_show_money_image(context.assets,money_amount);
+        let show_money = Self::get_show_money_image(context.assets, money_amount);
         Self {
             money: money_amount,
             assets,
             go_to_game_button,
             selected: None,
             show_money,
-            _up_button : up_button,
+            _up_button: up_button,
         }
     }
-    fn get_show_money_image (assets: &AssetManager,money : u32) -> Image {
+    fn get_show_money_image(assets: &AssetManager, money: u32) -> Image {
         Image::new(
             Font::render(
                 assets.font(&Fonts::Font),
@@ -92,7 +92,8 @@ impl Shop {
                 let bought = self.assets.remove(selected.0).1;
                 if bought.cost < self.money {
                     self.money -= bought.cost;
-                    self.show_money = Self::get_show_money_image(context.simple_context.get_assets(),self.money);
+                    self.show_money =
+                        Self::get_show_money_image(context.simple_context.get_assets(), self.money);
                     characters_state.add_character(bought);
                     self.selected = None;
                 }
@@ -111,8 +112,10 @@ impl Shop {
         if let Some(selected) = selected {
             self.selected = Some(selected);
         }
-        if
-            context.simple_context.get_interaction(&mut self.go_to_game_button) == Interaction::Clicked
+        if context
+            .simple_context
+            .get_interaction(&mut self.go_to_game_button)
+            == Interaction::Clicked
         {
             context.set_next_screen(Some(OpenWindow::Game));
         }
@@ -123,7 +126,9 @@ impl Shop {
         });
         //context.push_widget(self.up_button.clone().unwrap());
         context.simple_context.push_widget(self.show_money.clone());
-        context.simple_context.push_widget(self.go_to_game_button.clone());
+        context
+            .simple_context
+            .push_widget(self.go_to_game_button.clone());
         if let Some(info) = &mut self.selected {
             info.1.draw(context);
         }

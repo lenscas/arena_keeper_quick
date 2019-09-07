@@ -1,7 +1,7 @@
 extern crate arena;
-use arena::states::StateManager;
 use arena::funcs::math::sub_from_highest;
 use arena::generated::assets::to_load::load_all;
+use arena::states::StateManager;
 
 use std::sync::mpsc;
 use std::sync::mpsc::Receiver;
@@ -19,8 +19,7 @@ use quicksilver::{
     geom::Vector,
     graphics::Color,
     lifecycle::{run, Settings, State, Window},
-    Result,
-    Future
+    Future, Result,
 };
 pub struct DebugState {
     assets: Asset<StateManager>,
@@ -91,8 +90,7 @@ impl State for DebugState {
             self.update_paused(window);
             return Ok(());
         }
-        self.assets
-            .execute(|state| state.update(window))
+        self.assets.execute(|state| state.update(window))
     }
 }
 impl DebugState {

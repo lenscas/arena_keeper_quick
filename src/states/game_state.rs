@@ -1,5 +1,5 @@
-use crate::structs::SimpleContext;
 use crate::states::Screen;
+use crate::structs::SimpleContext;
 use crate::{
     funcs::{controls::check_multiple, math::sub_save},
     help_states::{Characters, Grid, Mouse, Shop},
@@ -27,7 +27,7 @@ pub struct GameState {
     open_window: OpenWindow,
 }
 impl GameState {
-    pub fn new(seed: u32, context : &mut SimpleContext) -> Self {
+    pub fn new(seed: u32, context: &mut SimpleContext) -> Self {
         Self {
             grid: Field::new(101, 81, seed),
             clicked: None,
@@ -46,7 +46,7 @@ impl GameState {
     }
 }
 impl Screen for GameState {
-    fn update(&mut self, context : &mut SimpleContext) -> Result<Option<Box<dyn Screen>>> {
+    fn update(&mut self, context: &mut SimpleContext) -> Result<Option<Box<dyn Screen>>> {
         let board = context.keyboard();
         if self.open_window != OpenWindow::Game && board[Key::Escape].is_down() {
             self.open_window = OpenWindow::Game;
@@ -54,7 +54,7 @@ impl Screen for GameState {
 
         match self.open_window {
             OpenWindow::Shop => {
-                let mut full_context = FullContext::new( &mut self.cam, context);
+                let mut full_context = FullContext::new(&mut self.cam, context);
                 self.shop.update(&mut full_context, &mut self.characters);
                 if let Some(next_screen) = full_context.get_next_screen() {
                     self.open_window = next_screen;
@@ -73,7 +73,7 @@ impl Screen for GameState {
                 if check_multiple(board, &[Key::Down, Key::S]) {
                     self.cam.cam.y += 1;
                 }
-                let mut full_context = FullContext::new( &mut self.cam, context);
+                let mut full_context = FullContext::new(&mut self.cam, context);
                 let scroll = full_context.simple_context.mouse().wheel().y as isize;
                 if scroll > full_context.cam_works.scroll as isize {
                     full_context.cam_works.scroll = 0
@@ -92,7 +92,7 @@ impl Screen for GameState {
         }
         Ok(None)
     }
-    fn draw(&mut self, context : &mut SimpleContext) -> Result<Option<Box<dyn Screen>>> {
+    fn draw(&mut self, context: &mut SimpleContext) -> Result<Option<Box<dyn Screen>>> {
         self.updates += 1;
         /*
         if self.updates == 1 {

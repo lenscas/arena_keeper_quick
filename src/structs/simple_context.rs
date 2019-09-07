@@ -4,13 +4,13 @@ use crate::structs::gui_2::Context;
 use crate::structs::gui_2::Interaction;
 use crate::structs::gui_2::Widget;
 use quicksilver::geom::Rectangle;
-use quicksilver::geom::{Transform};
+use quicksilver::geom::Transform;
 use quicksilver::graphics::Background;
 use quicksilver::graphics::Drawable;
+use quicksilver::input::Keyboard;
 use quicksilver::input::Mouse;
 use quicksilver::lifecycle::Window;
 use quicksilver::prelude::Background::Img;
-use quicksilver::input::Keyboard;
 
 pub struct SimpleContext<'a> {
     window: &'a mut Window,
@@ -19,11 +19,7 @@ pub struct SimpleContext<'a> {
     current_z: u32,
 }
 impl<'a> SimpleContext<'a> {
-    pub fn new(
-        window: &'a mut Window,
-        gui: Context<'a>,
-        assets: &'a AssetManager,
-    ) -> Self {
+    pub fn new(window: &'a mut Window, gui: Context<'a>, assets: &'a AssetManager) -> Self {
         Self {
             window,
             gui,
@@ -57,7 +53,7 @@ impl<'a> SimpleContext<'a> {
     pub fn mouse(&self) -> Mouse {
         self.window.mouse()
     }
-	pub fn keyboard(&self) -> &Keyboard {
-		self.window.keyboard()
-	}
+    pub fn keyboard(&self) -> &Keyboard {
+        self.window.keyboard()
+    }
 }

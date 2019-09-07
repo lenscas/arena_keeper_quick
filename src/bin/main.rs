@@ -1,8 +1,8 @@
 extern crate arena;
-use arena::states::StateManager;
-use quicksilver::Future;
 use arena::generated::assets::to_load::load_all;
+use arena::states::StateManager;
 use quicksilver::lifecycle::Asset;
+use quicksilver::Future;
 use std::rc::Rc;
 use std::sync::Mutex;
 
@@ -19,9 +19,7 @@ pub struct MainState {
 impl State for MainState {
     fn new() -> Result<Self> {
         Ok(Self {
-            assets: Asset::new(load_all().and_then(|v| {
-                StateManager::new(v)
-            })),
+            assets: Asset::new(load_all().and_then(|v| StateManager::new(v))),
         })
     }
     fn draw(&mut self, window: &mut Window) -> Result<()> {
