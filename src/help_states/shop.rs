@@ -1,8 +1,9 @@
+use crate::structs::SimpleContext;
 use crate::{
     generated::assets::loaded::{AssetManager, Fonts},
     help_states::characters::Characters,
     help_states::BuyableInfo,
-    states::game_state::OpenWindow,
+    states::OpenWindow,
     structs::BuyableCharacter,
     structs::{
         gui_2::{
@@ -18,34 +19,23 @@ use quicksilver::{
     Result,
 };
 
-#[derive(Default)]
 pub struct Shop {
     money: u32,
     assets: Vec<(State, BuyableCharacter)>,
-    go_to_game_button: Option<Combined<State, ButtonBackground>>,
+    go_to_game_button: Combined<State, ButtonBackground>,
     selected: Option<(usize, BuyableInfo)>,
-    show_money: Option<Image>,
-    up_button: Option<Combined<State, ButtonBackground>>,
+    show_money: Image,
+    _up_button: Combined<State, ButtonBackground>,
 }
 
 impl Shop {
-    pub fn new() -> Self {
-        Self {
-            money: 100,
-            assets: Vec::new(),
-            go_to_game_button: None,
-            selected: None,
-            show_money: None,
-            up_button: None,
-        }
-    }
-    pub fn first_render(&mut self, assets: &AssetManager) {
+    pub fn new(context : &mut SimpleContext) -> Self {
         let chars = vec![
             BuyableCharacter::new(),
             BuyableCharacter::new(),
             BuyableCharacter::new(),
         ];
-        self.assets = chars
+        let assets : Vec<_> = chars
             .iter()
             .cloned()
             .enumerate()
@@ -57,38 +47,44 @@ impl Shop {
                     .to_state(
                         Fonts::Font,
                         style,
-                        assets,
+                        context.assets,
                         Rectangle::new((10, 90 + (count as i32 * 50)), (90, 50)),
                     )
                     .unwrap();
                 (button, v)
             })
             .collect();
-        self.up_button = Some(ButtonBackground::new_success(
-            assets,
+        let up_button = ButtonBackground::new_success(
+            context.assets,
             Rectangle::new((10, 40), (90, 50)),
             "Up".to_string(),
-        ));
-        self.go_to_game_button = Some(ButtonBackground::new_success(
-            assets,
+        );
+        let go_to_game_button = ButtonBackground::new_success(
+            context.assets,
             Rectangle::new((10, 555), (55, 40)),
             "World".to_string(),
-        ));
-        self.update_show_money(assets);
-    }
-    fn update_show_money(&mut self, assets: &AssetManager) {
-        self.show_money = {
-            let img = Image::new(
-                Font::render(
-                    assets.font(&Fonts::Font),
-                    &self.money.to_string(),
-                    &FontStyle::new(50.1, Color::BLACK),
-                )
-                .unwrap(),
-                Rectangle::new((10, 10), (30, 20)),
-            );
-            Some(img)
+        );
+        let money_amount = 100;
+        let show_money = Self::get_show_money_image(context.assets,money_amount);
+        Self {
+            money: money_amount,
+            assets,
+            go_to_game_button,
+            selected: None,
+            show_money,
+            _up_button : up_button,
         }
+    }
+    fn get_show_money_image (assets: &AssetManager,money : u32) -> Image {
+        Image::new(
+            Font::render(
+                assets.font(&Fonts::Font),
+                &money.to_string(),
+                &FontStyle::new(50.1, Color::BLACK),
+            )
+            .unwrap(),
+            Rectangle::new((10, 10), (30, 20)),
+        )
     }
     pub fn update(&mut self, context: &mut FullContext, characters_state: &mut Characters) {
         if let Some(selected) = &mut self.selected {
@@ -96,7 +92,7 @@ impl Shop {
                 let bought = self.assets.remove(selected.0).1;
                 if bought.cost < self.money {
                     self.money -= bought.cost;
-                    self.update_show_money(context.get_assets());
+                    self.show_money = Self::get_show_money_image(context.simple_context.get_assets(),self.money);
                     characters_state.add_character(bought);
                     self.selected = None;
                 }
@@ -106,7 +102,7 @@ impl Shop {
             .assets
             .iter_mut()
             .enumerate()
-            .map(|(count, button)| (count, context.get_interaction(&mut button.0)))
+            .map(|(count, button)| (count, context.simple_context.get_interaction(&mut button.0)))
             .filter(|v| v.1 == Interaction::Clicked)
             .collect::<Vec<_>>()
             .iter()
@@ -115,22 +111,19 @@ impl Shop {
         if let Some(selected) = selected {
             self.selected = Some(selected);
         }
-        if self
-            .go_to_game_button
-            .iter_mut()
-            .map(|v| context.get_interaction(v))
-            .any(|v| v == Interaction::Clicked)
+        if
+            context.simple_context.get_interaction(&mut self.go_to_game_button) == Interaction::Clicked
         {
             context.set_next_screen(Some(OpenWindow::Game));
         }
     }
     pub fn render(&mut self, context: &mut FullContext) -> Result<()> {
         self.assets.iter().cloned().for_each(|(button, _)| {
-            context.push_widget(button);
+            context.simple_context.push_widget(button);
         });
         //context.push_widget(self.up_button.clone().unwrap());
-        context.push_widget(self.show_money.clone().unwrap());
-        context.push_widget(self.go_to_game_button.clone().unwrap());
+        context.simple_context.push_widget(self.show_money.clone());
+        context.simple_context.push_widget(self.go_to_game_button.clone());
         if let Some(info) = &mut self.selected {
             info.1.draw(context);
         }

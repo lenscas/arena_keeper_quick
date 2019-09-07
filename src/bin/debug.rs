@@ -1,8 +1,7 @@
 extern crate arena;
+use arena::states::StateManager;
 use arena::funcs::math::sub_from_highest;
-use arena::generated::assets::loaded::AssetManager;
 use arena::generated::assets::to_load::load_all;
-use arena::states::game_state::GameState;
 
 use std::sync::mpsc;
 use std::sync::mpsc::Receiver;
@@ -21,10 +20,10 @@ use quicksilver::{
     graphics::Color,
     lifecycle::{run, Settings, State, Window},
     Result,
+    Future
 };
 pub struct DebugState {
-    game_state: GameState,
-    assets: Asset<AssetManager>,
+    assets: Asset<StateManager>,
     pause: bool,
     first_click: Option<Vector>,
     drawn_rectangles: Vec<(Rectangle, Color)>,
@@ -50,8 +49,7 @@ impl State for DebugState {
             tx.send(s).unwrap();
         });
         Ok(Self {
-            game_state: GameState::new(rand::random()),
-            assets: Asset::new(load_all()),
+            assets: Asset::new(load_all().and_then(|v| StateManager::new(v))),
             pause: false,
             first_click: None,
             drawn_rectangles: Vec::new(),
@@ -61,13 +59,12 @@ impl State for DebugState {
         })
     }
     fn draw(&mut self, window: &mut Window) -> Result<()> {
-        let gamestate = &mut self.game_state;
         let test = Rc::new(Mutex::new(window));
 
         self.assets.execute_or(
-            |asset| {
+            |state| {
                 let mut b = test.lock().unwrap();
-                gamestate.draw(&mut b, asset)
+                state.draw(&mut b)
             },
             || {
                 let mut b = test.lock().unwrap();
@@ -94,10 +91,8 @@ impl State for DebugState {
             self.update_paused(window);
             return Ok(());
         }
-
-        let gamestate = &mut self.game_state;
         self.assets
-            .execute(|assets| gamestate.update(window, assets))
+            .execute(|state| state.update(window))
     }
 }
 impl DebugState {

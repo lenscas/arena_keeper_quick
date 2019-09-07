@@ -1,4 +1,4 @@
-use crate::states::game_state::ClickMode;
+use crate::states::ClickMode;
 use crate::structs::FullContext;
 use crate::{
     funcs::math::sub_from_highest,
@@ -70,7 +70,7 @@ impl<'a> Mouse<'a> {
             .add_feature_to_cell(&click_pos.add_item(CellFeature::Bed(None)))
     }
     pub fn update(&mut self, context: &mut FullContext) {
-        let mouse = context.mouse();
+        let mouse = context.simple_context.mouse();
         if mouse[MouseButton::Left] == ButtonState::Pressed {
             let click_point = context.screen_to_grid(mouse.pos());
             match self.selected {
@@ -88,7 +88,7 @@ impl<'a> Mouse<'a> {
         }
     }
     pub fn render(&mut self, context: &mut FullContext) {
-        let mouse = context.mouse();
+        let mouse = context.simple_context.mouse();
         let key = mouse[MouseButton::Left];
         if let Some(grid_pos) = context.screen_to_grid(mouse.pos()) {
             context.draw_full_square_on_grid(&grid_pos, Color::WHITE);

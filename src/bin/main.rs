@@ -1,7 +1,7 @@
 extern crate arena;
-use arena::generated::assets::loaded::AssetManager;
+use arena::states::StateManager;
+use quicksilver::Future;
 use arena::generated::assets::to_load::load_all;
-use arena::states::game_state::GameState;
 use quicksilver::lifecycle::Asset;
 use std::rc::Rc;
 use std::sync::Mutex;
@@ -14,23 +14,22 @@ use quicksilver::{
 };
 
 pub struct MainState {
-    game_state: GameState,
-    assets: Asset<AssetManager>,
+    assets: Asset<StateManager>,
 }
 impl State for MainState {
     fn new() -> Result<Self> {
         Ok(Self {
-            game_state: GameState::new(rand::random()),
-            assets: Asset::new(load_all()),
+            assets: Asset::new(load_all().and_then(|v| {
+                StateManager::new(v)
+            })),
         })
     }
     fn draw(&mut self, window: &mut Window) -> Result<()> {
-        let gamestate = &mut self.game_state;
         let test = Rc::new(Mutex::new(window));
         self.assets.execute_or(
-            |asset| {
+            |state| {
                 let mut b = test.lock().unwrap();
-                gamestate.draw(&mut b, asset)
+                state.draw(&mut b)
             },
             || {
                 let mut b = test.lock().unwrap();
@@ -39,9 +38,7 @@ impl State for MainState {
         )
     }
     fn update(&mut self, window: &mut Window) -> Result<()> {
-        let gamestate = &mut self.game_state;
-        self.assets
-            .execute(|assets| gamestate.update(window, assets))
+        self.assets.execute(|state| state.update(window))
     }
 }
 

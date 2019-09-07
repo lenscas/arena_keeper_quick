@@ -20,7 +20,7 @@ pub struct BuyableInfo {
 
 impl BuyableInfo {
     pub fn new(chosen_character: &BuyableCharacter, context: &mut FullContext) -> BuyableInfo {
-        let assets = context.get_assets();
+        let assets = context.simple_context.get_assets();
         let image = chosen_character.get_image();
         let buy_button = ButtonBackground::new_success(
             assets,
@@ -64,14 +64,14 @@ impl BuyableInfo {
         }
     }
     pub fn did_buy(&mut self, context: &mut FullContext) -> bool {
-        context.get_interaction(&mut self.buy_button) == Interaction::Clicked
+        context.simple_context.get_interaction(&mut self.buy_button) == Interaction::Clicked
     }
     pub fn draw(&mut self, context: &mut FullContext) {
-        context.push_widget(self.buy_button.clone());
-        context.push_widget(self.cost.clone());
-        context.push_widget(self.name.clone());
-        context.push_widget(self.species.clone());
-        context.draw_image(&Rectangle::new((403, 0), (130, 130)), self.image);
+        context.simple_context.push_widget(self.buy_button.clone());
+        context.simple_context.push_widget(self.cost.clone());
+        context.simple_context.push_widget(self.name.clone());
+        context.simple_context.push_widget(self.species.clone());
+        context.simple_context.draw_image(&Rectangle::new((403, 0), (130, 130)), self.image);
     }
 }
 //full info?
