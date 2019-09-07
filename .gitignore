@@ -6,3 +6,4 @@
 *.png
 *.html
 /.vscode
+!/static/test_button.png
