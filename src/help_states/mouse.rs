@@ -21,10 +21,6 @@ impl<'a> Mouse<'a> {
         key: quicksilver::input::ButtonState,
         grid_pos: Point,
     ) {
-        if !key.is_down() {
-            *self.clicked = None;
-            return;
-        }
         if let Some(click_point) = &self.clicked {
             let dif_x = sub_from_highest(grid_pos.x, click_point.x);
             let dif_y = sub_from_highest(grid_pos.y, click_point.y);
