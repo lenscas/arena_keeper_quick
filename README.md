@@ -1,3 +1,4 @@
+[![dependency status](https://deps.rs/repo/github/lenscas/arena_keeper_quick/status.svg)](https://deps.rs/repo/github/lenscas/arena_keeper_quick)
 # arena_keeper_quick
 A continuation of [arena_keeper](https://github.com/lenscas/arena_keeper) but using quicksilver instead of Yew.
 
