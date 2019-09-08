@@ -1,5 +1,5 @@
 use crate::structs::gui_2::finalize::Interaction;
-use quicksilver::geom::Vector;
+use quicksilver::geom::{Vector,Rectangle};
 use quicksilver::input::ButtonState;
 use quicksilver::input::MouseButton;
 use quicksilver::lifecycle::Window;
@@ -52,4 +52,6 @@ pub trait Widget {
     fn render(&self, window: &mut Window, at: &mut u32);
     fn contains(&self, point: Vector) -> bool;
     fn set_interaction(&mut self, interaction: Interaction);
+    fn get_pos(&self) -> &Rectangle;
+    fn set_pos(&mut self, pos : Rectangle);
 }

@@ -31,6 +31,7 @@ impl State for MainState {
             },
             || {
                 let mut b = test.lock().unwrap();
+
                 b.clear(Color::RED)
             },
         )

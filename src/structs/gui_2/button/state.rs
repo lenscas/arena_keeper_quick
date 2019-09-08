@@ -88,4 +88,10 @@ impl Widget for State {
     fn set_interaction(&mut self, interaction: Interaction) {
         self.interaction = interaction
     }
+    fn set_pos(&mut self, location : Rectangle) {
+        self.location = location;
+    }
+    fn get_pos(&self) -> &Rectangle {
+        &self.location
+    }
 }

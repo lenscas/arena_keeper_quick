@@ -38,6 +38,12 @@ impl Widget for ButtonBackground {
     fn set_interaction(&mut self, interaction: Interaction) {
         self.interaction = interaction
     }
+    fn set_pos(&mut self, pos: Rectangle) {
+        self.location = pos;
+    }
+    fn get_pos(&self) -> &Rectangle {
+        &self.location
+    }
 }
 impl ButtonBackground {
     pub fn new_success(
@@ -46,14 +52,20 @@ impl ButtonBackground {
         text: String,
     ) -> Combined<State, Self> {
         let background_location = Rectangle::new_sized(location.size());
-        let button_location = Rectangle::new((5, 5), location.size - (10, 10).into());
+        let skip_x = location.size.x / 100.0 * 15.0;
+        let size_x = location.size.x - (skip_x * 2.0);
+        let skip_y = location.size.y / 100.0 * 30.0;
+        let size_y = location.size.y - (skip_y * 2.0);
+        let button_location = Rectangle::new((skip_x, skip_y), (size_x, (size_y)));
+
         let state = State::new_single_text(
             assets.font(&Fonts::Font),
-            &FontStyle::new(50.1, Color::WHITE),
+            &FontStyle::new(50.0, Color::WHITE),
             &text,
             button_location,
         )
         .unwrap();
+
         let background = Self {
             image: assets.image(&Images::TestButton).clone(),
             color: Color::from_hex(&"#00FF71"),
