@@ -1,17 +1,22 @@
-use crate::states::Screen;
-use crate::structs::SimpleContext;
 use crate::{
     funcs::{controls::check_multiple, math::sub_save},
-    help_states::{Characters, Grid, Mouse, Shop},
-    structs::{grid::Field, point::Point, CameraWork, FullContext},
+    help_states::{Action, Characters, Grid, Mouse, Shop, WorldButtons},
+    states::Screen,
+    structs::{grid::Field, point::Point, CameraWork, FullContext, SimpleContext},
 };
-use quicksilver::prelude::Background::Col;
-use quicksilver::{geom::Line, graphics::Color, prelude::Key, Result};
+use quicksilver::{
+    geom::Line,
+    graphics::Color,
+    prelude::{Col, Key},
+    Result,
+};
+
 #[derive(PartialEq, Clone, Copy)]
 pub enum OpenWindow {
     Shop,
     Game,
 }
+#[derive(PartialEq, Clone, Copy)]
 pub enum ClickMode {
     Wall,
     Bed,
@@ -25,6 +30,7 @@ pub struct GameState {
     shop: Shop,
     updates: u64,
     open_window: OpenWindow,
+    world_buttons: WorldButtons,
 }
 impl GameState {
     pub fn new(seed: u32, context: &mut SimpleContext) -> Self {
@@ -42,6 +48,7 @@ impl GameState {
             updates: 0,
             open_window: OpenWindow::Shop,
             selected: ClickMode::Bed,
+            world_buttons: WorldButtons::new(context.assets),
         }
     }
 }
@@ -81,24 +88,26 @@ impl Screen for GameState {
                     let scroll = (full_context.cam_works.scroll as isize - scroll) as usize;
                     full_context.cam_works.scroll = scroll;
                 };
+                let action = self.world_buttons.update(&mut full_context);
+                match action {
+                    Action::None => {
+                        let mut mouse = Mouse {
+                            clicked: &mut self.clicked,
+                            grid: &mut self.grid,
+                            selected: &mut self.selected,
+                        };
+                        mouse.update(&mut full_context);
+                    }
+                    Action::SwitchTool(tool) => self.selected = tool,
+                    Action::SwitchScreen(screen) => self.open_window = screen,
+                }
                 self.characters.update(&mut self.grid);
-                let mut mouse = Mouse {
-                    clicked: &mut self.clicked,
-                    grid: &mut self.grid,
-                    selected: &mut self.selected,
-                };
-                mouse.update(&mut full_context);
             }
         }
         Ok(None)
     }
     fn draw(&mut self, context: &mut SimpleContext) -> Result<Option<Box<dyn Screen>>> {
         self.updates += 1;
-        /*
-        if self.updates == 1 {
-            self.shop.first_render(assets);
-        }
-        */
         let mut full_context = FullContext::new(&mut self.cam, context);
         match self.open_window {
             OpenWindow::Shop => {
@@ -115,6 +124,7 @@ impl Screen for GameState {
                 };
                 mouse.render(&mut full_context);
                 self.characters.render(&mut full_context);
+                self.world_buttons.draw(&mut full_context);
             }
         }
 
