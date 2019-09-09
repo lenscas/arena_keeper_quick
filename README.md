@@ -5,6 +5,8 @@ A continuation of [arena_keeper](https://github.com/lenscas/arena_keeper) but us
 Arena keeper is a game where you will take care of people from various species and let them fight for money.
 This will allow you to get more people and buy more stuff for them.
 
+An online build is available [here](https://lenscas.github.io/arena_keeper_quick/) though this may not always be up to date. Alternatively, you can build the game yourself using the steps below.
+
 ## Install
 1. Install [rustup and cargo](https://www.rust-lang.org/tools/install)
 2. install [cargo-web](https://github.com/koute/cargo-web)
