@@ -1,5 +1,5 @@
 use crate::structs::gui_2::finalize::Interaction;
-use quicksilver::geom::{Vector,Rectangle};
+use quicksilver::geom::{Rectangle, Vector};
 use quicksilver::input::ButtonState;
 use quicksilver::input::MouseButton;
 use quicksilver::lifecycle::Window;
@@ -16,7 +16,7 @@ impl<'a> Context<'a> {
     }
     pub fn get_interaction<T: 'a>(&self, widget: &mut T, window: &Window) -> Interaction
     where
-        T: Widget + Sized,
+        T: Widget,
     {
         let mouse = window.mouse();
         let mouse_pos = mouse.pos();
@@ -36,7 +36,7 @@ impl<'a> Context<'a> {
     }
     pub fn push<T: 'a>(&mut self, widget: T)
     where
-        T: Widget + Sized,
+        T: Widget,
     {
         self.elements.push(Box::new(widget));
     }
@@ -53,5 +53,5 @@ pub trait Widget {
     fn contains(&self, point: Vector) -> bool;
     fn set_interaction(&mut self, interaction: Interaction);
     fn get_pos(&self) -> &Rectangle;
-    fn set_pos(&mut self, pos : Rectangle);
+    fn set_pos(&mut self, pos: Rectangle);
 }

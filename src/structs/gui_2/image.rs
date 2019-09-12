@@ -11,7 +11,7 @@ pub struct Image {
 }
 
 impl Widget for Image {
-    fn render(&self, window: &mut Window,at: &mut u32) {
+    fn render(&self, window: &mut Window, at: &mut u32) {
         window.draw_ex(&self.position, &self.img, Transform::IDENTITY, *at);
     }
     fn contains(&self, _: Vector) -> bool {
@@ -21,7 +21,7 @@ impl Widget for Image {
     fn get_pos(&self) -> &Rectangle {
         &self.position
     }
-    fn set_pos(&mut self, pos : Rectangle) {
+    fn set_pos(&mut self, pos: Rectangle) {
         self.position = pos;
     }
 }

@@ -71,7 +71,7 @@ impl Character {
             &(self.location.x, self.location.y),
             |&var| {
                 let point: Point = var.into();
-                let mut possibles: Vec<(usize, usize)> = Vec::new();
+                let mut possibles = Vec::new();
                 if point.y > 0 {
                     possibles.push((point.x, point.y - 1));
                 }

@@ -30,14 +30,8 @@ pub struct Shop {
 
 impl Shop {
     pub fn new(context: &mut SimpleContext) -> Self {
-        let chars = vec![
-            BuyableCharacter::new(),
-            BuyableCharacter::new(),
-            BuyableCharacter::new(),
-        ];
-        let assets: Vec<_> = chars
-            .iter()
-            .cloned()
+        let assets = (0..3)
+            .map(|_| BuyableCharacter::new())
             .enumerate()
             .map(|(count, v)| {
                 let name = v.get_name();

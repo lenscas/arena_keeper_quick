@@ -76,7 +76,7 @@ impl Point {
     /// line.iter().enumerate().for_each(|v|assert_eq!(v.1.y,v.0));
     /// ```
     pub fn make_vertical_line(self, number: usize) -> Vec<Point> {
-        let mut line: Vec<Point> = Vec::new();
+        let mut line = Vec::new();
         for y in 0..=number {
             line.push(Point {
                 y: self.y + y,
@@ -86,7 +86,7 @@ impl Point {
         line
     }
     pub fn make_horizontal_line(self, number: usize) -> Vec<Point> {
-        let mut line: Vec<Point> = Vec::new();
+        let mut line = Vec::new();
         for x in 0..=number {
             line.push(Point {
                 x: self.x + x,

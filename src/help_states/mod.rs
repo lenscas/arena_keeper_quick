@@ -4,7 +4,7 @@ pub use characters::Characters;
 pub use grid::Grid;
 pub use mouse::Mouse;
 pub use shop::Shop;
-pub use world_buttons::{WorldButtons,Action};
+pub use world_buttons::{Action, WorldButtons};
 
 mod buyable_char_info;
 mod characters;

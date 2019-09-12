@@ -4,7 +4,7 @@ use crate::{
     funcs::math::sub_from_highest,
     structs::{
         grid::{CellFeature, Field},
-        point::{Point, PointWithItem},
+        point::Point,
     },
 };
 use quicksilver::{graphics::Color, input::ButtonState, prelude::MouseButton};
@@ -54,8 +54,7 @@ impl<'a> Mouse<'a> {
             line.iter()
                 .for_each(|v| context.draw_full_square_on_grid(v, Color::WHITE));
             if !key.is_down() {
-                let line: Vec<PointWithItem<CellFeature>> =
-                    line.iter().map(|v| v.add_item(CellFeature::Wall)).collect();
+                let line = line.iter().map(|v| v.add_item(CellFeature::Wall)).collect();
                 self.grid.add_feature_to_cells(line);
                 *self.clicked = None;
             }
