@@ -46,6 +46,7 @@ impl CameraWork {
     }
     pub fn get_outer_cell_points(&self) -> (Point, Point) {
         let cell_size = self.calc_size();
+        let cell_size = if cell_size == 0 { 1 } else { cell_size };
         let height = self.height / cell_size;
         let width = self.width / cell_size;
         let start_x = CameraWork::calc_start(self.cam.x, width);
