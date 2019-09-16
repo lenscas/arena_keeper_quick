@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/lenscas/arena_keeper_quick#readme",
   "devDependencies": {
-    "ts-node": "^8.3.0",
+    "ts-node": "^8.4.1",
     "typescript": "^3.5.3"
   },
   "dependencies": {
