@@ -3,7 +3,7 @@ use super::{
     point::Point,
 };
 use crate::generated::assets::loaded::Images;
-use crate::generated::species::species::Species;
+use crate::modules::structs::SpeciesType;
 use crate::structs::full_context::FullContext;
 use crate::structs::BuyableCharacter;
 use pathfinding::prelude::absdiff;
@@ -24,7 +24,7 @@ pub struct Character {
     time_till_walk: usize,
     path: Option<VecDeque<Point>>,
     time_until_recalc: usize,
-    species: Species,
+    species: SpeciesType,
     image: Images,
 }
 
@@ -155,7 +155,7 @@ impl Character {
         if let Some(cell) = grid.get_cell(check_on) {
             match &cell.feature {
                 CellFeature::Bed(_) => 5,
-                _ => self.species.calc_speed(cell.cell_type),
+                _ => 5, //self.species.calc_speed(cell.cell_type),
             }
         } else {
             unreachable!()
@@ -163,7 +163,7 @@ impl Character {
     }
     /// Renders the character.
     pub fn render(&self, context: &mut FullContext) {
-        context.draw_image_on_grid(&self.location, self.image);
+        context.draw_image_on_grid(&self.location, self.image.clone());
     }
 
     /// Checks wheter this character can walk on a given tile

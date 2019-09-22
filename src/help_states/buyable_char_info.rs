@@ -49,7 +49,7 @@ impl BuyableInfo {
             assets
                 .font(&Fonts::Font)
                 .render(
-                    &String::from(chosen_character.get_species()),
+                    &chosen_character.get_species(),
                     &FontStyle::new(50.1, Color::BLACK),
                 )
                 .unwrap(),
@@ -73,6 +73,6 @@ impl BuyableInfo {
         context.simple_context.push_widget(self.species.clone());
         context
             .simple_context
-            .draw_image(&Rectangle::new((403, 0), (130, 130)), self.image);
+            .draw_image(&Rectangle::new((403, 0), (130, 130)), self.image.clone());
     }
 }

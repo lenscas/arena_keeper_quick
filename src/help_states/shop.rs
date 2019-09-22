@@ -31,7 +31,7 @@ pub struct Shop {
 impl Shop {
     pub fn new(context: &mut SimpleContext) -> Self {
         let assets = (0..3)
-            .map(|_| BuyableCharacter::new())
+            .map(|_| BuyableCharacter::new(context.assets))
             .enumerate()
             .map(|(count, v)| {
                 let name = v.get_name();

@@ -4,6 +4,7 @@
 pub mod funcs;
 pub mod generated;
 pub mod help_states;
+pub mod modules;
 /// The game states the game can be in.
 pub mod states;
 /// A collection of random but helpfull structures.
