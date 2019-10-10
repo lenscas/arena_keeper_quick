@@ -35,7 +35,7 @@ pub struct GameState {
 impl GameState {
     pub fn new(seed: u32, context: &mut SimpleContext) -> Self {
         Self {
-            grid: Field::new(101, 81, seed),
+            grid: Field::new(101, 81, seed, &context.assets.modules),
             clicked: None,
             characters: Characters::new(),
             shop: Shop::new(context),

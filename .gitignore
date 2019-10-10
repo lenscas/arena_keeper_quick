@@ -1,6 +1,5 @@
 /target
 **/*.rs.bk
-/src/generated/*
 /node_modules/*
 /static/generated/*
 *.png

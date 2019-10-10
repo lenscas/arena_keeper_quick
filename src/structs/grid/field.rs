@@ -1,6 +1,6 @@
 use crate::{
-    generated::tiles::CellType,
     structs::point::{Point, PointWithItem},
+    modules::structs::ModulesContainer
 };
 
 use super::{Cell, CellFeature};
@@ -20,7 +20,7 @@ pub struct Field {
 }
 impl Field {
     /// Generates a new grid with the given height and width
-    pub fn new(len: usize, height: usize, seed: u32) -> Self {
+    pub fn new(len: usize, height: usize, seed: u32, mods : &ModulesContainer) -> Self {
         let mut grid = Vec::<Cell>::new();
         let amount = len * height;
         grid.reserve(amount);
@@ -30,7 +30,12 @@ impl Field {
             .build();
         for cell_spot in 0..=amount {
             let num = map.get_value(cell_spot % len, cell_spot / len);
-            let cell_type = CellType::from(num);
+            let cell_type = mods.f64_to_tile(num);
+            if(cell_type.is_none()){
+                unreachable!(format!("No tile found for: {}", num));
+
+            }
+            let cell_type = cell_type.unwrap();
             let cell = Cell {
                 cell_type,
                 loc: ((cell_spot % len), (cell_spot / len)).into(),
