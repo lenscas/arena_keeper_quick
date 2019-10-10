@@ -168,7 +168,7 @@ impl Character {
 
     /// Checks wheter this character can walk on a given tile
     fn check_walkable_tile(&self, grid: &Field, point: &Point) -> bool {
-        match &grid.get_cell(point) {
+        match grid.get_cell(point) {
             None => false,
             Some(cell) => match &cell.feature {
                 CellFeature::None => true,

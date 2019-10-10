@@ -106,9 +106,7 @@ impl DebugState {
                 self.first_click = None;
                 use rand::random;
                 self.current_color = Color::from_rgba(random(), random(), random(), 1f32);
-                println!("Point: {}\nsize: {}", left_corner, size);
             } else {
-                println!("inside first click");
                 self.first_click = Some(pos);
             }
         }
@@ -126,8 +124,7 @@ impl DebugState {
                             .map(|v| self.drawn_rectangles.get_mut(v))
                     }) {
                         if let Some(square) = square {
-                            if let Some(square) = square {
-                                println!("square: {:?}\ncolor: {:?}", square.0, square.1);
+                            if let Some(_) = square {
                                 std::result::Result::Ok(())
                             } else {
                                 std::result::Result::Err(String::from("Couldn't parse output"))

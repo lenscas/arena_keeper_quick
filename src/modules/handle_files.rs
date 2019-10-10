@@ -17,18 +17,12 @@ where
 }
 
 pub fn get_all_mod_paths() -> impl Future<Item = Vec<String>, Error = Error> {
-    load_file("./mods.json").and_then(|v| {
-        println!("Got here");
-        parse_json(&v)
-    })
+    load_file("./mods.json").and_then(|v| parse_json(&v))
 }
 
 pub fn load_mod_info(path: &str) -> impl Future<Item = Module, Error = Error> {
-    println!("got in load info? {}", path);
     let path = Path::new(&path).with_extension("zip");
-    println!("{:?}", path);
     load_file(path).map(std::io::Cursor::new).map(|v| {
-        println!("test?");
         let mut module = zip::read::ZipArchive::new(v).unwrap();
         let mut modu = Module::new();
         for i in 0..module.len() {
@@ -53,7 +47,6 @@ pub fn load_mod_info(path: &str) -> impl Future<Item = Module, Error = Error> {
                     Err(x) => println!("Failed to load {:?} as image. Error : {:?}", file_name, x),
                 }
             }
-            println!("name: {}", file.name());
         }
         modu
     })
