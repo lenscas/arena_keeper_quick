@@ -1,5 +1,5 @@
 use crate::{
-    generated::assets::loaded::{AssetManager, Fonts},
+    assets::loaded::{AssetManager, Fonts},
     structs::gui_2::{button::State, Combined, Interaction, Widget},
 };
 use quicksilver::{

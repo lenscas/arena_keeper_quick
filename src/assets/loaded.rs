@@ -4,23 +4,7 @@ use quicksilver::graphics::Image;
 use std::collections::HashMap;
 
 pub type Images = String;
-/*
-pub enum Images {
-    GeneratedHumanBarbarianIdle01,
-    GeneratedHumanBarbarianIdle02,
-    GeneratedHumanBarbarianIdle03,
-    GeneratedHumanBarbarianIdle04,
-    GeneratedMerfolkLizardIdle01,
-    GeneratedMerfolkLizardIdle02,
-    GeneratedMerfolkLizardIdle03,
-    GeneratedMerfolkLizardIdle04,
-    GeneratedTilesGrass,
-    GeneratedTilesSand,
-    GeneratedTilesStone,
-    GeneratedTilesWater,
-    TestButton
-}
-*/
+
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum Fonts {
     Font,

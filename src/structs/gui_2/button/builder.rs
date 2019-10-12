@@ -1,9 +1,6 @@
 use super::State;
-use crate::generated::assets::loaded::AssetManager;
-use crate::generated::assets::loaded::Fonts;
-use quicksilver::geom::Rectangle;
-use quicksilver::graphics::FontStyle;
-use quicksilver::Result;
+use crate::assets::loaded::{AssetManager, Fonts};
+use quicksilver::{geom::Rectangle, graphics::FontStyle, Result};
 
 pub struct Builder {
     pub normal: String,

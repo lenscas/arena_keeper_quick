@@ -1,5 +1,5 @@
 use crate::{
-    generated::assets::loaded::{Fonts, Images},
+    assets::loaded::{Fonts, Images},
     structs::{
         gui_2::{button::State, ButtonBackground, Combined, Image, Interaction},
         BuyableCharacter, FullContext,

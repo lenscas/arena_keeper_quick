@@ -1,22 +1,19 @@
-extern crate arena;
-use arena::generated::assets::to_load::load_all;
-use arena::modules::{
-    handle_files::{get_all_mod_paths, load_mod_info},
-    structs::Module,
-};
 use arena::states::StateManager;
-use quicksilver::combinators::join_all;
-use quicksilver::lifecycle::Asset;
-use quicksilver::Future;
-use std::rc::Rc;
-use std::sync::Mutex;
-
+use arena::{
+    assets::to_load::load_all,
+    modules::{
+        handle_files::{get_all_mod_paths, load_mod_info},
+        structs::Module,
+    },
+};
 use quicksilver::{
+    combinators::join_all,
     geom::Vector,
     graphics::Color,
-    lifecycle::{run, Settings, State, Window},
-    Result,
+    lifecycle::{run, Asset, Settings, State, Window},
+    Future, Result,
 };
+use std::{rc::Rc, sync::Mutex};
 
 pub struct MainState {
     assets: Asset<StateManager>,

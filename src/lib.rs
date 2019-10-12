@@ -1,8 +1,8 @@
 #![allow(unknown_lints)]
 #![warn(clippy::all)]
+pub mod assets;
 /// A collection of random but helpfull functions.
 pub mod funcs;
-pub mod generated;
 pub mod help_states;
 pub mod modules;
 /// The game states the game can be in.

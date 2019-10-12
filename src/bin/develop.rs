@@ -1,26 +1,18 @@
-extern crate arena;
-use arena::funcs::math::sub_from_highest;
-use arena::generated::assets::to_load::load_all;
-use arena::states::StateManager;
-
-use std::sync::mpsc;
-use std::sync::mpsc::Receiver;
-use std::{thread, thread::JoinHandle};
-
+use arena::{assets::to_load::load_all, funcs::math::sub_from_highest, states::StateManager};
 use quicksilver::{
-    geom::Rectangle,
-    input::{ButtonState, Key, MouseButton},
-    lifecycle::Asset,
-};
-use std::rc::Rc;
-use std::sync::Mutex;
-
-use quicksilver::{
-    geom::Vector,
+    geom::{Rectangle, Vector},
     graphics::Color,
-    lifecycle::{run, Settings, State, Window},
+    input::{ButtonState, Key, MouseButton},
+    lifecycle::{run, Asset, Settings, State, Window},
     Future, Result,
 };
+use std::{
+    rc::Rc,
+    sync::{mpsc, mpsc::Receiver, Mutex},
+    thread,
+    thread::JoinHandle,
+};
+
 pub struct DebugState {
     assets: Asset<StateManager>,
     pause: bool,

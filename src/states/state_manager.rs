@@ -1,10 +1,9 @@
-use crate::generated::assets::loaded::AssetManager;
-use crate::states::MainMenu;
-use crate::structs::gui_2::Context;
-use crate::structs::SimpleContext;
-use quicksilver::graphics::Color;
-use quicksilver::lifecycle::Window;
-use quicksilver::Result;
+use crate::{
+    assets::loaded::AssetManager,
+    states::MainMenu,
+    structs::{gui_2::Context, SimpleContext},
+};
+use quicksilver::{graphics::Color, lifecycle::Window, Result};
 
 pub struct StateManager {
     assets: AssetManager,

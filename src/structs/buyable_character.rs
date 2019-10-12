@@ -1,5 +1,7 @@
-use crate::generated::assets::loaded::{AssetManager, Images};
-use crate::modules::structs::SpeciesType;
+use crate::{
+    assets::loaded::{AssetManager, Images},
+    modules::structs::SpeciesType,
+};
 use rand::prelude::*;
 
 #[derive(Clone, PartialEq)]

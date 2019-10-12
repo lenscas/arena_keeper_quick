@@ -1,5 +1,5 @@
-use crate::generated::assets::loaded::AssetManager;
 use crate::{
+    assets::loaded::AssetManager,
     states::{GameState, Screen},
     structs::{
         gui_2::{button::State, ButtonBackground, Combined, Interaction},

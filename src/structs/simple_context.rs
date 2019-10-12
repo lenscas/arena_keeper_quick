@@ -1,17 +1,14 @@
-use crate::generated::assets::loaded::AssetManager;
-use crate::generated::assets::loaded::Images;
-use crate::structs::gui_2::Context;
-use crate::structs::gui_2::Interaction;
-use crate::structs::gui_2::Widget;
-use quicksilver::geom::Rectangle;
-use quicksilver::geom::Transform;
-use quicksilver::graphics::Background;
-use quicksilver::graphics::Drawable;
-use quicksilver::input::Keyboard;
-use quicksilver::input::Mouse;
-use quicksilver::lifecycle::Window;
-use quicksilver::prelude::Background::Img;
-
+use crate::{
+    assets::loaded::{AssetManager, Images},
+    structs::gui_2::{Context, Interaction, Widget},
+};
+use quicksilver::{
+    geom::{Rectangle, Transform},
+    graphics::{Background, Drawable},
+    input::{Keyboard, Mouse},
+    lifecycle::Window,
+    prelude::Background::Img,
+};
 pub struct SimpleContext<'a> {
     window: &'a mut Window,
     gui: Context<'a>,

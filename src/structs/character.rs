@@ -3,13 +3,11 @@ use super::{
     point::Point,
 };
 use crate::{
-    generated::assets::loaded::Images,
+    assets::loaded::Images,
     modules::structs::{SpeciesConf, SpeciesType, Tile},
     structs::{full_context::FullContext, BuyableCharacter},
 };
-use pathfinding::prelude::absdiff;
-
-use pathfinding::directed::astar::astar;
+use pathfinding::{directed::astar::astar, prelude::absdiff};
 use rand::prelude::*;
 use std::collections::{HashMap, VecDeque};
 

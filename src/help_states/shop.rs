@@ -1,16 +1,14 @@
-use crate::structs::SimpleContext;
 use crate::{
-    generated::assets::loaded::{AssetManager, Fonts},
+    assets::loaded::{AssetManager, Fonts},
     help_states::characters::Characters,
     help_states::BuyableInfo,
     states::OpenWindow,
-    structs::BuyableCharacter,
     structs::{
         gui_2::{
             button::{Builder, State},
             ButtonBackground, Combined, Image, Interaction,
         },
-        FullContext,
+        BuyableCharacter, FullContext, SimpleContext,
     },
 };
 use quicksilver::{
