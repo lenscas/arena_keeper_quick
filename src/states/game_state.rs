@@ -101,7 +101,8 @@ impl Screen for GameState {
                     Action::SwitchTool(tool) => self.selected = tool,
                     Action::SwitchScreen(screen) => self.open_window = screen,
                 }
-                self.characters.update(&mut self.grid);
+                self.characters
+                    .update(&mut self.grid, &context.assets.modules);
             }
         }
         Ok(None)

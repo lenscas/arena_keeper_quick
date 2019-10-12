@@ -45,11 +45,11 @@ impl BuyableInfo {
                 .unwrap(),
             Rectangle::new((542, 15), (238, 34)),
         );
-        let species = Image::new(
+        let species: Image = Image::new(
             assets
                 .font(&Fonts::Font)
                 .render(
-                    &chosen_character.get_species(),
+                    &String::from(chosen_character.get_species()),
                     &FontStyle::new(50.1, Color::BLACK),
                 )
                 .unwrap(),
