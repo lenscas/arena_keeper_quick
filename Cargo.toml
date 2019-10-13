@@ -8,7 +8,7 @@ default-run = "main"
 [dependencies]
 quicksilver = "*"
 immi = "*"
-noise = "*"
+noise = { version="*", default-features = false, features=[]}
 rand = { version="*", features = ["stdweb"] }
 rayon = "*"
 pathfinding = "*"
