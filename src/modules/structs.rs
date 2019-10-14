@@ -43,6 +43,7 @@ pub enum SpeciesKinds {
 pub struct SpeciesConf {
     kind: SpeciesKinds,
     speeds: HashMap<String, usize>,
+    baseSpeeds: Vec<usize>,
     pub name: SpeciesType,
     possibleNames: Vec<String>,
     images: Vec<ImageName>,
@@ -163,6 +164,16 @@ impl ModulesContainer {
             .choose(&mut rng)
             .unwrap()
             .clone()
+    }
+    pub fn get_random_base_speed(&self, species: &SpeciesType) -> usize {
+        let mut rng = rand::thread_rng();
+        *self
+            .all_species
+            .get(species)
+            .unwrap()
+            .baseSpeeds
+            .choose(&mut rng)
+            .unwrap()
     }
     pub fn f64_to_tile(&self, num: f64) -> Option<String> {
         let found: Option<(&str, &Tile)> = None;

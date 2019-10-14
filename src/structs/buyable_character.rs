@@ -19,9 +19,10 @@ impl BuyableCharacter {
         let species = assets.modules.get_random_species();
         let name = assets.modules.get_random_name_for_species(&species);
         let image = assets.modules.get_random_image_for_species(&species);
+        let walk_speed = assets.modules.get_random_base_speed(&species);
         Self {
             name,
-            walk_speed: rng.gen_range(1, 8),
+            walk_speed,
             cost: rng.gen_range(10, 20),
             species,
             image,
