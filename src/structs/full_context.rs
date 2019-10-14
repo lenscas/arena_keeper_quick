@@ -1,12 +1,13 @@
-use crate::generated::assets::loaded::Images;
-use crate::states::OpenWindow;
-use crate::structs::camera_work::CameraWork;
-use crate::structs::point::Point;
-use crate::structs::simple_context::SimpleContext;
-use quicksilver::geom::Vector;
-use quicksilver::graphics::Color;
-use quicksilver::prelude::Background::Col;
-use quicksilver::prelude::Background::Img;
+use crate::{
+    assets::loaded::Images,
+    states::OpenWindow,
+    structs::{camera_work::CameraWork, point::Point, simple_context::SimpleContext},
+};
+use quicksilver::{
+    geom::Vector,
+    graphics::Color,
+    prelude::Background::{Col, Img},
+};
 
 pub struct FullContext<'a, 'b: 'a> {
     pub simple_context: &'a mut SimpleContext<'b>,
@@ -24,6 +25,15 @@ impl<'a, 'b: 'a> FullContext<'a, 'b> {
     pub fn draw_full_square_on_grid(&mut self, loc: &Point, color: Color) {
         let rec = self.cam_works.pos_to_full_square_on_grid(loc);
         self.simple_context.draw(&rec, Col(color));
+    }
+    pub fn draw_tile_on_grid(&mut self, loc: &Point, tile: &str) {
+        let img = self
+            .simple_context
+            .assets
+            .modules
+            .get_image_by_tile_type(tile);
+        let rec = self.cam_works.pos_to_full_square_on_grid(loc);
+        self.simple_context.draw(&rec, Img(img));
     }
     pub fn draw_image_on_grid(&mut self, loc: &Point, image: Images) {
         let rec = self.cam_works.pos_to_full_square_on_grid(loc);

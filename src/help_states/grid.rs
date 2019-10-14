@@ -23,7 +23,7 @@ impl<'a> Grid<'a> {
             if let Some(color) = color {
                 context.draw_full_square_on_grid(&v.1.loc, color);
             } else {
-                context.draw_image_on_grid(&v.1.loc, v.1.cell_type.get_image());
+                context.draw_tile_on_grid(&v.1.loc, &v.1.cell_type);
             }
         });
         Ok(())

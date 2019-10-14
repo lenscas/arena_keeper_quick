@@ -1,26 +1,18 @@
-extern crate arena;
-use arena::funcs::math::sub_from_highest;
-use arena::generated::assets::to_load::load_all;
-use arena::states::StateManager;
-
-use std::sync::mpsc;
-use std::sync::mpsc::Receiver;
-use std::{thread, thread::JoinHandle};
-
+use arena::{assets::to_load::load_all, funcs::math::sub_from_highest, states::StateManager};
 use quicksilver::{
-    geom::Rectangle,
-    input::{ButtonState, Key, MouseButton},
-    lifecycle::Asset,
-};
-use std::rc::Rc;
-use std::sync::Mutex;
-
-use quicksilver::{
-    geom::Vector,
+    geom::{Rectangle, Vector},
     graphics::Color,
-    lifecycle::{run, Settings, State, Window},
+    input::{ButtonState, Key, MouseButton},
+    lifecycle::{run, Asset, Settings, State, Window},
     Future, Result,
 };
+use std::{
+    rc::Rc,
+    sync::{mpsc, mpsc::Receiver, Mutex},
+    thread,
+    thread::JoinHandle,
+};
+
 pub struct DebugState {
     assets: Asset<StateManager>,
     pause: bool,
@@ -106,9 +98,7 @@ impl DebugState {
                 self.first_click = None;
                 use rand::random;
                 self.current_color = Color::from_rgba(random(), random(), random(), 1f32);
-                println!("Point: {}\nsize: {}", left_corner, size);
             } else {
-                println!("inside first click");
                 self.first_click = Some(pos);
             }
         }
@@ -126,8 +116,7 @@ impl DebugState {
                             .map(|v| self.drawn_rectangles.get_mut(v))
                     }) {
                         if let Some(square) = square {
-                            if let Some(square) = square {
-                                println!("square: {:?}\ncolor: {:?}", square.0, square.1);
+                            if let Some(_) = square {
                                 std::result::Result::Ok(())
                             } else {
                                 std::result::Result::Err(String::from("Couldn't parse output"))

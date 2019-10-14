@@ -1,6 +1,7 @@
-use crate::generated::assets::loaded::Images;
-use crate::generated::species::images::get_random_image;
-use crate::generated::species::{names::get_random_name, species::Species};
+use crate::{
+    assets::loaded::{AssetManager, Images},
+    modules::structs::SpeciesType,
+};
 use rand::prelude::*;
 
 #[derive(Clone, PartialEq)]
@@ -8,24 +9,20 @@ pub struct BuyableCharacter {
     name: String,
     walk_speed: usize,
     pub cost: u32,
-    species: Species,
+    species: SpeciesType,
     image: Images,
-}
-impl Default for BuyableCharacter {
-    fn default() -> Self {
-        Self::new()
-    }
 }
 
 impl BuyableCharacter {
-    pub fn new() -> Self {
+    pub fn new(assets: &AssetManager) -> Self {
         let mut rng = rand::thread_rng();
-        let species: Species = rand::random();
-        let name = get_random_name(species);
-        let image = get_random_image(species);
+        let species = assets.modules.get_random_species();
+        let name = assets.modules.get_random_name_for_species(&species);
+        let image = assets.modules.get_random_image_for_species(&species);
+        let walk_speed = assets.modules.get_random_base_speed(&species);
         Self {
             name,
-            walk_speed: rng.gen_range(1, 8),
+            walk_speed,
             cost: rng.gen_range(10, 20),
             species,
             image,
@@ -37,10 +34,10 @@ impl BuyableCharacter {
     pub fn get_speed(&self) -> usize {
         self.walk_speed
     }
-    pub fn get_species(&self) -> Species {
-        self.species
+    pub fn get_species(&self) -> SpeciesType {
+        self.species.clone()
     }
     pub fn get_image(&self) -> Images {
-        self.image
+        self.image.clone()
     }
 }

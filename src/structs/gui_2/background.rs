@@ -1,5 +1,5 @@
 use crate::{
-    generated::assets::loaded::{AssetManager, Fonts, Images},
+    assets::loaded::{AssetManager, Fonts},
     structs::gui_2::{button::State, Combined, Interaction, Widget},
 };
 use quicksilver::{
@@ -67,7 +67,7 @@ impl ButtonBackground {
         .unwrap();
 
         let background = Self {
-            image: assets.image(&Images::TestButton).clone(),
+            image: assets.image(&"test_button").clone(),
             color: Color::from_hex(&"#00FF71"),
             location: background_location,
             interaction: Interaction::None,

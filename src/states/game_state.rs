@@ -35,7 +35,7 @@ pub struct GameState {
 impl GameState {
     pub fn new(seed: u32, context: &mut SimpleContext) -> Self {
         Self {
-            grid: Field::new(101, 81, seed),
+            grid: Field::new(101, 81, seed, &context.assets.modules),
             clicked: None,
             characters: Characters::new(),
             shop: Shop::new(context),
@@ -101,7 +101,8 @@ impl Screen for GameState {
                     Action::SwitchTool(tool) => self.selected = tool,
                     Action::SwitchScreen(screen) => self.open_window = screen,
                 }
-                self.characters.update(&mut self.grid);
+                self.characters
+                    .update(&mut self.grid, &context.assets.modules);
             }
         }
         Ok(None)

@@ -1,16 +1,14 @@
-use crate::structs::SimpleContext;
 use crate::{
-    generated::assets::loaded::{AssetManager, Fonts},
+    assets::loaded::{AssetManager, Fonts},
     help_states::characters::Characters,
     help_states::BuyableInfo,
     states::OpenWindow,
-    structs::BuyableCharacter,
     structs::{
         gui_2::{
             button::{Builder, State},
             ButtonBackground, Combined, Image, Interaction,
         },
-        FullContext,
+        BuyableCharacter, FullContext, SimpleContext,
     },
 };
 use quicksilver::{
@@ -31,7 +29,7 @@ pub struct Shop {
 impl Shop {
     pub fn new(context: &mut SimpleContext) -> Self {
         let assets = (0..3)
-            .map(|_| BuyableCharacter::new())
+            .map(|_| BuyableCharacter::new(context.assets))
             .enumerate()
             .map(|(count, v)| {
                 let name = v.get_name();

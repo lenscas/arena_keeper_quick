@@ -1,8 +1,10 @@
 use crate::{
-    generated::assets::loaded::AssetManager,
+    assets::loaded::AssetManager,
     states::{ClickMode, OpenWindow},
-    structs::gui_2::{button::State, ButtonBackground, Combined, Interaction},
-    structs::FullContext,
+    structs::{
+        gui_2::{button::State, ButtonBackground, Combined, Interaction},
+        FullContext,
+    },
 };
 
 use quicksilver::geom::Rectangle;

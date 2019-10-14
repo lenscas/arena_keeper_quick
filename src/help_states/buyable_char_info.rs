@@ -1,5 +1,5 @@
 use crate::{
-    generated::assets::loaded::{Fonts, Images},
+    assets::loaded::{Fonts, Images},
     structs::{
         gui_2::{button::State, ButtonBackground, Combined, Image, Interaction},
         BuyableCharacter, FullContext,
@@ -45,7 +45,7 @@ impl BuyableInfo {
                 .unwrap(),
             Rectangle::new((542, 15), (238, 34)),
         );
-        let species = Image::new(
+        let species: Image = Image::new(
             assets
                 .font(&Fonts::Font)
                 .render(
@@ -73,6 +73,6 @@ impl BuyableInfo {
         context.simple_context.push_widget(self.species.clone());
         context
             .simple_context
-            .draw_image(&Rectangle::new((403, 0), (130, 130)), self.image);
+            .draw_image(&Rectangle::new((403, 0), (130, 130)), self.image.clone());
     }
 }

@@ -2,15 +2,14 @@ use super::{
     grid::{CellFeature, Field},
     point::Point,
 };
-use crate::generated::assets::loaded::Images;
-use crate::generated::species::species::Species;
-use crate::structs::full_context::FullContext;
-use crate::structs::BuyableCharacter;
-use pathfinding::prelude::absdiff;
-
-use pathfinding::directed::astar::astar;
+use crate::{
+    assets::loaded::Images,
+    modules::structs::{SpeciesConf, SpeciesType, Tile},
+    structs::{full_context::FullContext, BuyableCharacter},
+};
+use pathfinding::{directed::astar::astar, prelude::absdiff};
 use rand::prelude::*;
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 
 pub type CharId = (usize);
 
@@ -24,7 +23,7 @@ pub struct Character {
     time_till_walk: usize,
     path: Option<VecDeque<Point>>,
     time_until_recalc: usize,
-    species: Species,
+    species: SpeciesType,
     image: Images,
 }
 
@@ -46,11 +45,16 @@ impl Character {
     }
     /// This function updates everything that multiple characters can do at the same time.
     /// Always execute update_par before update
-    pub fn update_par(&mut self, grid: &Field) {
+    pub fn update_par(
+        &mut self,
+        grid: &Field,
+        species: &HashMap<SpeciesType, SpeciesConf>,
+        tiles: &HashMap<String, Tile>,
+    ) {
         if self.path.is_none() {
-            self.calc_path(grid);
+            self.calc_path(grid, species, tiles);
         } else if self.time_until_recalc == 0 {
-            self.calc_path(grid);
+            self.calc_path(grid, species, tiles);
             if let Some(path) = &self.path {
                 self.time_until_recalc = path.len() * 10;
             }
@@ -59,7 +63,12 @@ impl Character {
         }
     }
     /// calculates the path from the current point to the point_of_interest and stores it inside self.path
-    fn calc_path(&mut self, grid: &Field) {
+    fn calc_path(
+        &mut self,
+        grid: &Field,
+        species: &HashMap<SpeciesType, SpeciesConf>,
+        tiles: &HashMap<String, Tile>,
+    ) {
         if (!self.check_walkable_tile(grid, &self.point_of_interest))
             || self.location == self.point_of_interest
         {
@@ -87,7 +96,7 @@ impl Character {
                 possibles
                     .into_iter()
                     .filter(|v| self.check_walkable_tile(grid, &v.into()))
-                    .map(|p| (p, self.calculate_cost(grid, &p.into())))
+                    .map(|p| (p, self.calculate_cost(grid, &p.into(), species, tiles)))
             },
             |&(x, y)| absdiff(x, self.point_of_interest.x) + absdiff(y, self.point_of_interest.y),
             |&p| self.point_of_interest == p.into(),
@@ -97,7 +106,12 @@ impl Character {
     }
     /// This is similar to update_par but updates everything that can't happen at the same time with other characters.
     /// Always execute update_par before update
-    pub fn update(&mut self, grid: &mut Field) {
+    pub fn update(
+        &mut self,
+        grid: &mut Field,
+        species: &HashMap<SpeciesType, SpeciesConf>,
+        tiles: &HashMap<String, Tile>,
+    ) {
         let mut rng = rand::thread_rng();
         if self.time_until_new == 0 || self.location == self.point_of_interest {
             self.time_until_new = rng.gen();
@@ -131,7 +145,7 @@ impl Character {
             self.time_till_walk -= 1;
             return;
         }
-        self.time_till_walk = self.calculate_cost(grid, &self.location);
+        self.time_till_walk = self.calculate_cost(grid, &self.location, species, tiles);
         match &mut self.path {
             None => {}
             Some(path) => match path.pop_front() {
@@ -148,14 +162,28 @@ impl Character {
             },
         }
     }
-    fn calculate_cost(&self, grid: &Field, check_on: &Point) -> usize {
-        self.get_walk_speed_penalty(grid, check_on) * self.walk_speed
+    fn calculate_cost(
+        &self,
+        grid: &Field,
+        check_on: &Point,
+        species: &HashMap<SpeciesType, SpeciesConf>,
+        tiles: &HashMap<String, Tile>,
+    ) -> usize {
+        self.get_walk_speed_penalty(grid, check_on, species, tiles) * self.walk_speed
     }
-    fn get_walk_speed_penalty(&self, grid: &Field, check_on: &Point) -> usize {
+    fn get_walk_speed_penalty(
+        &self,
+        grid: &Field,
+        check_on: &Point,
+        species: &HashMap<SpeciesType, SpeciesConf>,
+        tiles: &HashMap<String, Tile>,
+    ) -> usize {
         if let Some(cell) = grid.get_cell(check_on) {
             match &cell.feature {
                 CellFeature::Bed(_) => 5,
-                _ => self.species.calc_speed(cell.cell_type),
+                _ => self
+                    .species
+                    .get_speed_on_tile(species, tiles, &cell.cell_type),
             }
         } else {
             unreachable!()
@@ -163,12 +191,12 @@ impl Character {
     }
     /// Renders the character.
     pub fn render(&self, context: &mut FullContext) {
-        context.draw_image_on_grid(&self.location, self.image);
+        context.draw_image_on_grid(&self.location, self.image.clone());
     }
 
     /// Checks wheter this character can walk on a given tile
     fn check_walkable_tile(&self, grid: &Field, point: &Point) -> bool {
-        match &grid.get_cell(point) {
+        match grid.get_cell(point) {
             None => false,
             Some(cell) => match &cell.feature {
                 CellFeature::None => true,
