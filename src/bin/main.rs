@@ -1,10 +1,10 @@
-use arena::states::StateManager;
 use arena::{
     assets::to_load::load_all,
     modules::{
         handle_files::{get_all_mod_paths, load_mod_info},
         structs::Module,
     },
+    states::StateManager,
 };
 use quicksilver::{
     combinators::join_all,
