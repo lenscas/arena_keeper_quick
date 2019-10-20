@@ -6,7 +6,7 @@ use quicksilver::graphics::Image;
 #[derive(Default)]
 pub struct Module {
     species: HashMap<SpeciesType, SpeciesConf>,
-    images: HashMap<String, Image>,
+    pub images: HashMap<String, Image>,
     tiles: Option<TilesConf>,
 }
 impl Module {
@@ -32,6 +32,11 @@ impl Module {
     pub fn set_tiles(&mut self, tiles: TilesConf) {
         self.tiles = Some(tiles);
     }
+    pub fn add_to_all_mods(mut self, all_mods: &mut ModulesContainer) -> HashMap<String, Image> {
+        let all_images = self.images.drain().collect();
+        all_mods.add_module(self);
+        all_images
+    }
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
@@ -40,12 +45,13 @@ pub enum SpeciesKinds {
     Water,
 }
 #[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SpeciesConf {
     kind: SpeciesKinds,
     speeds: HashMap<String, usize>,
-    baseSpeeds: Vec<usize>,
+    base_speeds: Vec<usize>,
     pub name: SpeciesType,
-    possibleNames: Vec<String>,
+    possible_names: Vec<String>,
     images: Vec<ImageName>,
 }
 
@@ -98,8 +104,9 @@ impl Tile {
 }
 
 #[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TilesConf {
-    generateChances: HashMap<String, Tile>,
+    generate_chances: HashMap<String, Tile>,
 }
 
 #[derive(PartialEq, Eq, Hash, serde::Deserialize, Clone)]
@@ -139,7 +146,6 @@ pub struct ModulesContainer {
     //modules : Vec<Module>,
     pub all_species: HashMap<SpeciesType, SpeciesConf>,
     pub all_tiles: HashMap<String, Tile>,
-    all_images: HashMap<ImageName, Image>,
 }
 impl ModulesContainer {
     pub fn get_species(&self, species: &SpeciesType) -> &SpeciesConf {
@@ -151,9 +157,8 @@ impl ModulesContainer {
     pub fn add_module(&mut self, module: Module) {
         self.all_species.extend(module.species);
         if let Some(tiles) = module.tiles {
-            self.all_tiles.extend(tiles.generateChances)
+            self.all_tiles.extend(tiles.generate_chances)
         }
-        self.all_images.extend(module.images);
     }
     pub fn get_random_image_for_species(&self, species: &SpeciesType) -> ImageName {
         let mut rng = rand::thread_rng();
@@ -171,7 +176,7 @@ impl ModulesContainer {
             .all_species
             .get(species)
             .unwrap()
-            .baseSpeeds
+            .base_speeds
             .choose(&mut rng)
             .unwrap()
     }
@@ -198,21 +203,13 @@ impl ModulesContainer {
         self.all_species
             .get(species)
             .unwrap()
-            .possibleNames
+            .possible_names
             .choose(&mut rng)
             .unwrap()
             .clone()
     }
-    pub fn get_image_by_name(&self, name: &str) -> &Image {
-        self.all_images.get(name).unwrap()
-    }
     pub fn get_random_species(&self) -> SpeciesType {
         let mut rng = rand::thread_rng();
         self.all_species.keys().choose(&mut rng).unwrap().clone()
-    }
-    pub fn get_image_by_tile_type(&self, tile: &str) -> &Image {
-        self.all_images
-            .get(self.all_tiles.get(tile).unwrap().get_image())
-            .unwrap()
     }
 }

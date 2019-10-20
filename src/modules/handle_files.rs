@@ -1,4 +1,5 @@
-use super::structs::{Module, ModulesContainer, SpeciesConf, TilesConf};
+use super::structs::{Module, SpeciesConf, TilesConf};
+use crate::assets::loaded::AssetManager;
 use quicksilver::{
     combinators::join_all, graphics::Image, load_file, saving::SaveError, Error, Future,
 };
@@ -52,12 +53,16 @@ pub fn load_mod_info(path: &str) -> impl Future<Item = Module, Error = Error> {
     })
 }
 
-pub fn load_everything() -> impl Future<Item = ModulesContainer, Error = Error> {
-    let mut container: ModulesContainer = Default::default();
+pub fn load_everything(
+    mut assets: AssetManager,
+) -> impl Future<Item = AssetManager, Error = Error> {
     get_all_mod_paths()
         .and_then(|v| join_all(v.iter().map(|x| load_mod_info(x)).collect::<Vec<_>>()))
         .map(|mut v| {
-            v.drain(0..v.len()).for_each(|x| container.add_module(x));
-            container
+            v.drain(0..v.len()).for_each(|x| {
+                let images = x.add_to_all_mods(&mut assets.modules);
+                assets.extend_images(images);
+            });
+            assets
         })
 }

@@ -36,6 +36,7 @@ impl Screen for MainMenu {
         if context.get_interaction(&mut self.play_button) == Interaction::Clicked {
             Ok(Some(Box::new(GameState::new(rand::random(), context))))
         } else if context.get_interaction(&mut self.settings_button) == Interaction::Clicked {
+            println!("not implemented");
             Ok(None)
         } else {
             Ok(None)

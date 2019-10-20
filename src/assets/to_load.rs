@@ -14,12 +14,7 @@ pub fn load_all() -> impl Future<Item = AssetManager, Error = Error> {
                 manager.insert_font(Fonts::Font, v);
                 manager
             })
-            .and_then(|mut manager| {
-                load_everything().map(|v| {
-                    manager.modules = v;
-                    manager
-                })
-            })
+            .and_then(load_everything)
             .and_then(|mut manager| {
                 Image::load("test_button.png").map(|v| {
                     manager.insert_image("test_button".to_string(), v);

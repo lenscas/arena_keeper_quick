@@ -25,13 +25,16 @@ impl AssetManager {
             modules: Default::default(),
         }
     }
+    pub fn extend_images(&mut self, extend_with: HashMap<Images, Image>) {
+        self.images.extend(extend_with)
+    }
     pub fn insert_image(&mut self, at: Images, image: Image) {
         self.images.insert(at, image);
     }
     pub fn image(&self, at: &str) -> &Image {
         match self.images.get(at) {
             Some(x) => x,
-            None => self.modules.get_image_by_name(at),
+            None => panic!("image : {} not found", at),
         }
     }
     pub fn insert_font(&mut self, at: Fonts, font: Font) {

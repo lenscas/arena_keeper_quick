@@ -27,13 +27,26 @@ impl<'a, 'b: 'a> FullContext<'a, 'b> {
         self.simple_context.draw(&rec, Col(color));
     }
     pub fn draw_tile_on_grid(&mut self, loc: &Point, tile: &str) {
-        let img = self
+        self.draw_image_on_grid(
+            loc,
+            self.simple_context
+                .assets
+                .modules
+                .all_tiles
+                .get(tile)
+                .unwrap()
+                .get_image()
+                .clone(),
+        );
+        /*let img =
+
+        /*self
             .simple_context
             .assets
-            .modules
-            .get_image_by_tile_type(tile);
+            .images
+            .get(self.simple_context.assets.all_tiles.get(tile).unwrap().get_image())*/
         let rec = self.cam_works.pos_to_full_square_on_grid(loc);
-        self.simple_context.draw(&rec, Img(img));
+        self.simple_context.draw(&rec, Img(img));*/
     }
     pub fn draw_image_on_grid(&mut self, loc: &Point, image: Images) {
         let rec = self.cam_works.pos_to_full_square_on_grid(loc);
