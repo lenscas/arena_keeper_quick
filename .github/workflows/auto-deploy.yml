@@ -22,12 +22,11 @@ jobs:
         run: cargo install cargo-web
       - name: Checkout
         uses: actions/checkout@master
-      - name: Build
-        run: cargo web deploy --release
-      - name: Deploy
+      - name: Build and deploy
         uses: JamesIves/github-pages-deploy-action@master
         env:
           ACCESS_TOKEN: ${{ secrets.AUTH_KEY }}
           BASE_BRANCH: master # The branch the action should deploy from.
           BRANCH: gh-pages # The branch the action should deploy to.
           FOLDER: target/deploy # The folder the action should deploy.
+          BUILD_SCRIPT: cargo web deploy --release
