@@ -1,0 +1,33 @@
+name: Build and Deploy
+on:
+  push:
+    # Sequence of patterns matched against refs/heads
+    branches:
+      - master
+      - gi-actions
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: "hecrj/setup-rust-action@v1"
+        with:
+          rust-version: stable
+      - name: Install the web target
+        run: "rustup target add wasm32-unknown-unknown"
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get install -y libudev-dev zlib1g-dev alsa libasound2-dev
+      - name: Add cargo web
+        run: cargo install cargo-web
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Build
+        run: cargo web deploy --release
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@master
+        env:
+          ACCESS_TOKEN: ${{ secrets.AUTH_KEY }}
+          BASE_BRANCH: master # The branch the action should deploy from.
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: target/deploy # The folder the action should deploy.
