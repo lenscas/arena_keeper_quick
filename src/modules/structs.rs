@@ -1,3 +1,4 @@
+use crate::structs::CharId;
 use rand::seq::{IteratorRandom, SliceRandom};
 use std::{collections::HashMap, path::Path};
 
@@ -5,6 +6,7 @@ use quicksilver::graphics::Image;
 
 #[derive(Default)]
 pub struct Module {
+    features: HashMap<String, TileFeatureRaw>,
     species: HashMap<SpeciesType, SpeciesConf>,
     pub images: HashMap<String, Image>,
     tiles: Option<TilesConf>,
@@ -12,6 +14,7 @@ pub struct Module {
 impl Module {
     pub fn new() -> Self {
         Self {
+            features: HashMap::new(),
             species: HashMap::new(),
             images: HashMap::new(),
             tiles: None,
@@ -31,6 +34,9 @@ impl Module {
     }
     pub fn set_tiles(&mut self, tiles: TilesConf) {
         self.tiles = Some(tiles);
+    }
+    pub fn set_features(&mut self, name: String, features: TileFeatureRaw) {
+        self.features.insert(name, features);
     }
     pub fn add_to_all_mods(mut self, all_mods: &mut ModulesContainer) -> HashMap<String, Image> {
         let all_images = self.images.drain().collect();
@@ -76,14 +82,14 @@ impl Tile {
             Tile::BaseTile { end, .. } | Tile::ExtendingTile { end, .. } => *end,
         }
     }
-    pub fn get_image(&self) -> &String {
+    pub fn get_image(&self) -> &str {
         match &self {
             Tile::BaseTile { image, .. } | Tile::ExtendingTile { image, .. } => image,
         }
     }
     pub fn get_speed(
         &self,
-        tile: &TileType,
+        tile: &str,
         kind: SpeciesKinds,
         overwrites: &HashMap<String, usize>,
         tiles: &HashMap<String, Tile>,
@@ -102,6 +108,84 @@ impl Tile {
         })
     }
 }
+fn def_false() -> bool {
+    false
+}
+
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TileFeatureRaw {
+    pub image: String,
+    pub name: String,
+    pub speed_penalty: Option<usize>,
+    #[serde(default = "def_false")]
+    pub is_transparent: bool,
+    pub is_ownable: bool,
+    pub is_bed: bool,
+    pub can_walk_on: bool,
+}
+
+#[derive(Clone)]
+pub enum TileFeatures {
+    Ownable { owner: Option<CharId>, tile: String },
+    NotOwnable(String),
+}
+
+impl TileFeatures {
+    pub fn get_feature_name(&self) -> &str {
+        match self {
+            TileFeatures::Ownable { tile, .. } | TileFeatures::NotOwnable(tile) => &tile,
+        }
+    }
+    pub fn set_owned(&mut self, id: Option<CharId>) {
+        if let TileFeatures::Ownable { owner, .. } = self {
+            *owner = id
+        }
+    }
+    pub fn can_walk(&self, mods: &ModulesContainer) -> bool {
+        match self {
+            TileFeatures::NotOwnable(tile) | TileFeatures::Ownable { tile, .. } => {
+                mods.get_feature(tile).can_walk_on
+            }
+        }
+    }
+    pub fn is_owned_by(&self, id: CharId) -> bool {
+        match self {
+            TileFeatures::NotOwnable(_) => false,
+            TileFeatures::Ownable {
+                owner: Some(owner), ..
+            } => *owner == id,
+            TileFeatures::Ownable { owner: None, .. } => false,
+        }
+    }
+    pub fn can_sleep(&self, id: CharId, mods: &ModulesContainer) -> bool {
+        match self {
+            TileFeatures::NotOwnable(tile) => mods.get_feature(tile).is_bed,
+            TileFeatures::Ownable { tile, owner } => {
+                let tile = mods.get_feature(tile);
+                match (tile, owner) {
+                    (TileFeatureRaw { is_bed: true, .. }, Some(owner)) => *owner == id,
+                    (TileFeatureRaw { is_bed: false, .. }, _) => false,
+                    (TileFeatureRaw { is_bed: true, .. }, None) => true,
+                }
+            }
+        }
+    }
+    pub fn get_speed_penalty(&self, mods: &ModulesContainer) -> Option<usize> {
+        match self {
+            TileFeatures::NotOwnable(tile) | TileFeatures::Ownable { tile, .. } => {
+                mods.get_feature(tile).speed_penalty
+            }
+        }
+    }
+    pub fn get_image<'a>(&self, mods: &'a ModulesContainer) -> &'a str {
+        match self {
+            TileFeatures::NotOwnable(tile) | TileFeatures::Ownable { tile, .. } => {
+                &mods.get_feature(tile).image
+            }
+        }
+    }
+}
 
 #[derive(serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -116,7 +200,7 @@ impl SpeciesType {
         &self,
         species: &HashMap<SpeciesType, SpeciesConf>,
         tiles: &HashMap<String, Tile>,
-        tile: &TileType,
+        tile: &str,
     ) -> usize {
         let species = species.get(self).unwrap();
         tiles
@@ -146,16 +230,23 @@ pub struct ModulesContainer {
     //modules : Vec<Module>,
     pub all_species: HashMap<SpeciesType, SpeciesConf>,
     pub all_tiles: HashMap<String, Tile>,
+    pub all_features: HashMap<String, TileFeatureRaw>,
 }
 impl ModulesContainer {
     pub fn get_species(&self, species: &SpeciesType) -> &SpeciesConf {
         self.all_species.get(species).unwrap()
     }
-    pub fn get_tile(&self, tile: &TileType) -> &Tile {
+    pub fn get_tile(&self, tile: &str) -> &Tile {
         self.all_tiles.get(tile).unwrap()
+    }
+    pub fn get_feature(&self, feature: &str) -> &TileFeatureRaw {
+        self.all_features
+            .get(feature)
+            .unwrap_or_else(|| panic!("{:?} is not a loaded feature", feature))
     }
     pub fn add_module(&mut self, module: Module) {
         self.all_species.extend(module.species);
+        self.all_features.extend(module.features);
         if let Some(tiles) = module.tiles {
             self.all_tiles.extend(tiles.generate_chances)
         }

@@ -1,0 +1,7 @@
+{
+	"image": "/features/images/basic_wall.png",
+	"name": "wall",
+	"isOwnable": false,
+	"isBed": false,
+	"canWalkOn": false
+}

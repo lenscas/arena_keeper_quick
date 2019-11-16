@@ -1,4 +1,4 @@
-use super::structs::{Module, SpeciesConf, TilesConf};
+use super::structs::{Module, SpeciesConf, TileFeatureRaw, TilesConf};
 use crate::assets::loaded::AssetManager;
 use quicksilver::{
     combinators::join_all, graphics::Image, load_file, saving::SaveError, Error, Future,
@@ -33,7 +33,6 @@ pub fn load_mod_info(path: &str) -> impl Future<Item = Module, Error = Error> {
             file.read_to_end(&mut buff).unwrap();
 
             let file_name = Path::new(file.name());
-
             let conf_extension = Some(std::ffi::OsStr::new("json"));
             if file_name.starts_with("species") && file_name.extension() == conf_extension {
                 let res: SpeciesConf = parse_json(&buff).unwrap();
@@ -41,6 +40,9 @@ pub fn load_mod_info(path: &str) -> impl Future<Item = Module, Error = Error> {
             } else if file_name.starts_with("tiles") && file_name.extension() == conf_extension {
                 let res: TilesConf = parse_json(&buff).unwrap();
                 modu.set_tiles(res);
+            } else if file_name.starts_with("features") && file_name.extension() == conf_extension {
+                let res: TileFeatureRaw = parse_json(&buff).unwrap();
+                modu.set_features(res.name.clone(), res);
             } else if file_name.extension() == Some(std::ffi::OsStr::new("png")) {
                 let res = Image::from_bytes(&buff);
                 match res {

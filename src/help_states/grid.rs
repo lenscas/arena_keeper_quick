@@ -1,8 +1,5 @@
-use crate::structs::{
-    grid::{CellFeature, Field},
-    FullContext,
-};
-use quicksilver::{graphics::Color, Result};
+use crate::structs::{grid::Field, FullContext};
+use quicksilver::Result;
 
 pub struct Grid<'a> {
     grid: &'a Field,
@@ -15,16 +12,22 @@ impl<'a> Grid<'a> {
         let (start, end) = context.get_outer_cell_points();
         let part = self.grid.get_part(start, end);
         part.iter().enumerate().for_each(|v| {
-            let color = match &v.1.feature {
-                CellFeature::Wall => Some(Color::INDIGO),
-                CellFeature::Bed(_) => Some(Color::from_rgba(60, 60, 60, 0.5)),
-                CellFeature::None => None,
-            };
-            if let Some(color) = color {
-                context.draw_full_square_on_grid(&v.1.loc, color);
-            } else {
-                context.draw_tile_on_grid(&v.1.loc, &v.1.cell_type);
-            }
+            let to_draw =
+                v.1.feature
+                    .as_ref()
+                    .map(|feature| {
+                        let feature = context
+                            .simple_context
+                            .assets
+                            .modules
+                            .get_feature(feature.get_feature_name());
+                        if feature.is_transparent {
+                            context.draw_tile_on_grid(&v.1.loc, &v.1.cell_type);
+                        }
+                        &feature.image
+                    })
+                    .unwrap_or_else(|| &v.1.cell_type);
+            context.draw_tile_on_grid(&v.1.loc, to_draw)
         });
         Ok(())
     }

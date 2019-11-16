@@ -1,0 +1,8 @@
+{
+	"image": "/features/images/basic_bed.png",
+	"name": "bed",
+	"speedPenalty": 5,
+	"isOwnable": true,
+	"isBed": true,
+	"canWalkOn": true
+}
