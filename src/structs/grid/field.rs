@@ -1,9 +1,9 @@
 use crate::{
-    modules::structs::ModulesContainer,
+    modules::structs::{ModulesContainer, TileFeatures},
     structs::point::{Point, PointWithItem},
 };
 
-use super::{Cell, CellFeature};
+use super::Cell;
 
 use noise::{
     utils::{NoiseMapBuilder, PlaneMapBuilder},
@@ -38,7 +38,7 @@ impl Field {
             let cell = Cell {
                 cell_type,
                 loc: ((cell_spot % len), (cell_spot / len)).into(),
-                feature: CellFeature::None,
+                feature: None,
             };
             grid.insert(cell_spot, cell);
         }
@@ -82,9 +82,10 @@ impl Field {
     /// field.add_feature_to_cell(&point.add_item(CellFeature::Wall));
     /// assert!(field.get_cell(&point).unwrap().feature == CellFeature::Wall);
     /// ```
-    pub fn add_feature_to_cell(&mut self, cell: &PointWithItem<CellFeature>) {
-        let feature = cell.item.clone();
-        let place = self.calc_cell(&cell.into());
+    pub fn add_feature_to_cell(&mut self, cell: PointWithItem<Option<TileFeatures>>) {
+        let point = (&cell).into();
+        let feature = cell.item;
+        let place = self.calc_cell(&point);
         if let Some(place) = self.grid.get_mut(place) {
             place.feature = feature
         }
@@ -107,8 +108,8 @@ impl Field {
     /// field.add_feature_to_cells(vec![point1.add_item(CellFeature::Wall),point2.add_item(CellFeature::Wall)]);
     /// assert!(field.get_cell(&point1).unwrap().feature == CellFeature::Wall);
     /// assert!(field.get_cell(&point2).unwrap().feature == CellFeature::Wall);
-    pub fn add_feature_to_cells(&mut self, cells: Vec<PointWithItem<CellFeature>>) {
-        cells.iter().for_each(|v| self.add_feature_to_cell(v));
+    pub fn add_feature_to_cells(&mut self, cells: Vec<PointWithItem<Option<TileFeatures>>>) {
+        cells.into_iter().for_each(|v| self.add_feature_to_cell(v));
     }
     pub fn get_cell(&self, point: &Point) -> Option<&Cell> {
         let index = self.calc_cell(point);
@@ -117,17 +118,17 @@ impl Field {
     /// Tries to find a cell that matches a predicate.
     /// Note though that the cell that it will find doesn't have to be the first matching one in the grid.
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn find_cell_by<F>(&mut self, fun: F) -> Option<Cell>
+    pub fn find_cell_by<F>(&self, fun: F) -> Option<&Cell>
     where
         F: Fn(&Cell) -> bool + std::marker::Send + std::marker::Sync,
     {
-        self.grid.par_iter().find_any(|v| fun(v)).cloned()
+        self.grid.par_iter().find_any(|v| fun(v))
     }
     #[cfg(target_arch = "wasm32")]
-    pub fn find_cell_by<F>(&mut self, fun: F) -> Option<Cell>
+    pub fn find_cell_by<F>(&mut self, fun: F) -> Option<&Cell>
     where
         F: Fn(&Cell) -> bool + std::marker::Send + std::marker::Sync,
     {
-        self.grid.iter().find(|v| fun(v)).cloned()
+        self.grid.iter().find(|v| fun(v))
     }
 }

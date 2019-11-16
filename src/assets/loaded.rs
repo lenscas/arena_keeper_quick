@@ -34,7 +34,11 @@ impl AssetManager {
     pub fn image(&self, at: &str) -> &Image {
         match self.images.get(at) {
             Some(x) => x,
-            None => panic!("image : {} not found", at),
+            None => panic!(
+                "image : {} not found. Possible keys: {:?}",
+                at,
+                self.images.keys().collect::<Vec<_>>()
+            ),
         }
     }
     pub fn insert_font(&mut self, at: Fonts, font: Font) {

@@ -34,9 +34,9 @@ impl<'a, 'b: 'a> FullContext<'a, 'b> {
                 .modules
                 .all_tiles
                 .get(tile)
-                .unwrap()
-                .get_image()
-                .clone(),
+                .map(|v| v.get_image())
+                .unwrap_or(tile)
+                .to_string(),
         );
         /*let img =
 

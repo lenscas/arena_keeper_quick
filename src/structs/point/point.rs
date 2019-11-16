@@ -1,7 +1,7 @@
 use super::PointWithItem;
 
 /// A simple single coordinate
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Point {
     pub x: usize,
     pub y: usize,
@@ -125,5 +125,10 @@ impl From<&(usize, usize)> for Point {
 impl PartialEq for Point {
     fn eq(&self, other: &Point) -> bool {
         self.x == other.x && self.y == other.y
+    }
+}
+impl Into<(usize, usize)> for Point {
+    fn into(self) -> (usize, usize) {
+        (self.x, self.y)
     }
 }

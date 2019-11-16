@@ -1,4 +1,5 @@
 pub use self::camera_work::CameraWork;
+pub use self::character::CharId;
 pub use self::character::Character;
 pub use self::full_context::FullContext;
 pub use buyable_character::BuyableCharacter;
