@@ -18,15 +18,16 @@ pub enum OpenWindow {
 }
 #[derive(PartialEq, Clone, Copy)]
 pub enum ClickMode {
-    Wall,
-    Bed,
+    Single,
+    Line,
 }
 pub struct GameState {
     grid: Field,
     cam: CameraWork,
     clicked: Option<(Point)>,
     characters: Characters,
-    selected: ClickMode,
+    mode: ClickMode,
+    selected: String,
     shop: Shop,
     updates: u64,
     open_window: OpenWindow,
@@ -47,7 +48,15 @@ impl GameState {
             },
             updates: 0,
             open_window: OpenWindow::Shop,
-            selected: ClickMode::Bed,
+            mode: ClickMode::Single,
+            selected: context
+                .assets
+                .modules
+                .all_features
+                .keys()
+                .next()
+                .expect("No tile features available")
+                .into(),
             world_buttons: WorldButtons::new(context.assets),
         }
     }
@@ -94,11 +103,15 @@ impl Screen for GameState {
                         let mut mouse = Mouse {
                             clicked: &mut self.clicked,
                             grid: &mut self.grid,
-                            selected: &mut self.selected,
+                            mode: &mut self.mode,
+                            selected: &self.selected,
                         };
                         mouse.update(&mut full_context);
                     }
-                    Action::SwitchTool(tool) => self.selected = tool,
+                    Action::SwitchTool(tool, selected) => {
+                        self.mode = tool;
+                        self.selected = selected
+                    }
                     Action::SwitchScreen(screen) => self.open_window = screen,
                 }
                 self.characters
@@ -121,7 +134,8 @@ impl Screen for GameState {
                 let mut mouse = Mouse {
                     clicked: &mut self.clicked,
                     grid: &mut self.grid,
-                    selected: &mut self.selected,
+                    mode: &mut self.mode,
+                    selected: &self.selected,
                 };
                 mouse.render(&mut full_context);
                 self.characters.render(&mut full_context);
