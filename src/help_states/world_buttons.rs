@@ -14,11 +14,20 @@ pub struct WorldButtons {
 }
 impl WorldButtons {
     pub fn new(assets: &AssetManager) -> Self {
-        let mut buttons = vec![
-            (Action::SwitchTool(ClickMode::Wall), "Wall"),
-            (Action::SwitchTool(ClickMode::Bed), "Bed"),
-            (Action::SwitchScreen(OpenWindow::Shop), "Shop"),
-        ];
+        let mut buttons = vec![(Action::SwitchScreen(OpenWindow::Shop), String::from("Shop"))];
+        buttons.extend(assets.modules.all_features.iter().map(|(key, val)| {
+            (
+                Action::SwitchTool(
+                    if val.is_drawable {
+                        ClickMode::Line
+                    } else {
+                        ClickMode::Single
+                    },
+                    key.clone(),
+                ),
+                val.name.clone(),
+            )
+        }));
         let buttons = buttons
             .drain(0..buttons.len())
             .enumerate()
@@ -28,7 +37,7 @@ impl WorldButtons {
                     ButtonBackground::new_success(
                         assets,
                         Rectangle::new((10 + (v.0 as i32 * 56), 555), (55, 40)),
-                        (v.1).1.into(),
+                        (v.1).1,
                     ),
                 )
             })
@@ -38,11 +47,11 @@ impl WorldButtons {
     pub fn update(&mut self, context: &mut FullContext) -> Action {
         self.buttons
             .iter_mut()
-            .map(|v| (v.0, context.simple_context.get_interaction(&mut v.1)))
+            .map(|v| (&v.0, context.simple_context.get_interaction(&mut v.1)))
             .collect::<Vec<_>>()
             .iter()
             .find(|v| v.1 == Interaction::Clicked)
-            .map(|v| v.0)
+            .map(|v| v.0.clone())
             .unwrap_or(Action::None)
     }
     pub fn draw(&self, context: &mut FullContext) {
@@ -52,9 +61,9 @@ impl WorldButtons {
             .for_each(|v| context.simple_context.push_widget(v));
     }
 }
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub enum Action {
     None,
     SwitchScreen(OpenWindow),
-    SwitchTool(ClickMode),
+    SwitchTool(ClickMode, String),
 }

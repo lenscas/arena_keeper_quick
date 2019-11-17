@@ -123,6 +123,7 @@ pub struct TileFeatureRaw {
     pub is_ownable: bool,
     pub is_bed: bool,
     pub can_walk_on: bool,
+    pub is_drawable: bool,
 }
 
 #[derive(Clone)]

@@ -10,10 +10,11 @@ use quicksilver::{graphics::Color, input::ButtonState, prelude::MouseButton};
 pub struct Mouse<'a> {
     pub clicked: &'a mut Option<Point>,
     pub grid: &'a mut Field,
-    pub selected: &'a mut ClickMode,
+    pub mode: &'a mut ClickMode,
+    pub selected: &'a str,
 }
 impl<'a> Mouse<'a> {
-    fn draw_wall(
+    fn draw_line(
         &mut self,
         context: &mut FullContext,
         key: quicksilver::input::ButtonState,
@@ -54,7 +55,9 @@ impl<'a> Mouse<'a> {
             if !key.is_down() {
                 let line = line
                     .iter()
-                    .map(|v| v.add_item(Some(TileFeatures::NotOwnable(String::from("wall")))))
+                    .map(|v| {
+                        v.add_item(Some(TileFeatures::NotOwnable(String::from(self.selected))))
+                    })
                     .collect();
                 self.grid.add_feature_to_cells(line);
                 *self.clicked = None;
@@ -64,7 +67,7 @@ impl<'a> Mouse<'a> {
     fn place_bed(&mut self, click_pos: Point) {
         self.grid
             .add_feature_to_cell(click_pos.add_item(Some(TileFeatures::Ownable {
-                tile: "bed".into(),
+                tile: self.selected.into(),
                 owner: None,
             })));
     }
@@ -72,13 +75,13 @@ impl<'a> Mouse<'a> {
         let mouse = context.simple_context.mouse();
         if mouse[MouseButton::Left] == ButtonState::Pressed {
             let click_point = context.screen_to_grid(mouse.pos());
-            match self.selected {
-                ClickMode::Wall => {
+            match self.mode {
+                ClickMode::Line => {
                     if self.clicked.is_none() {
                         *self.clicked = click_point
                     }
                 }
-                ClickMode::Bed => {
+                ClickMode::Single => {
                     if let Some(click_point) = click_point {
                         self.place_bed(click_point)
                     }
@@ -91,9 +94,9 @@ impl<'a> Mouse<'a> {
         let key = mouse[MouseButton::Left];
         if let Some(grid_pos) = context.screen_to_grid(mouse.pos()) {
             context.draw_full_square_on_grid(&grid_pos, Color::WHITE);
-            match self.selected {
-                ClickMode::Wall => self.draw_wall(context, key, grid_pos),
-                ClickMode::Bed => {}
+            match self.mode {
+                ClickMode::Line => self.draw_line(context, key, grid_pos),
+                ClickMode::Single => {}
             }
         }
     }
