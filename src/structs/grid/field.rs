@@ -125,7 +125,7 @@ impl Field {
         self.grid.par_iter().find_any(|v| fun(v))
     }
     #[cfg(target_arch = "wasm32")]
-    pub fn find_cell_by<F>(&mut self, fun: F) -> Option<&Cell>
+    pub fn find_cell_by<F>(&self, fun: F) -> Option<&Cell>
     where
         F: Fn(&Cell) -> bool + std::marker::Send + std::marker::Sync,
     {

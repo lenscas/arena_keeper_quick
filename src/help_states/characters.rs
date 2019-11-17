@@ -21,7 +21,7 @@ impl Characters {
     fn update_paralel(&mut self, grid: &Field, mods: &ModulesContainer) {
         self.characters
             .iter_mut()
-            .for_each(|v| v.update_par(grid, &mods.all_species, &mods.all_tiles));
+            .for_each(|v| v.update_par(grid, &mods));
     }
     #[cfg(not(target_arch = "wasm32"))]
     fn update_paralel(&mut self, grid: &Field, mods: &ModulesContainer) {
