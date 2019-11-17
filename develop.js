@@ -10,7 +10,7 @@ if( typeof Rust === "undefined" ) {
     } else if( typeof module === "object" && module.exports ) {
         module.exports = factory();
     } else {
-        Rust.main = factory();
+        Rust.develop = factory();
     }
 }( this, function() {
     return (function( module_factory ) {
@@ -19,13 +19,13 @@ if( typeof Rust === "undefined" ) {
         if( typeof process === "object" && typeof process.versions === "object" && typeof process.versions.node === "string" ) {
             var fs = require( "fs" );
             var path = require( "path" );
-            var wasm_path = path.join( __dirname, "main.wasm" );
+            var wasm_path = path.join( __dirname, "develop.wasm" );
             var buffer = fs.readFileSync( wasm_path );
             var mod = new WebAssembly.Module( buffer );
             var wasm_instance = new WebAssembly.Instance( mod, instance.imports );
             return instance.initialize( wasm_instance );
         } else {
-            var file = fetch( "main.wasm", {credentials: "same-origin"} );
+            var file = fetch( "develop.wasm", {credentials: "same-origin"} );
 
             var wasm_instance = ( typeof WebAssembly.instantiateStreaming === "function"
                 ? WebAssembly.instantiateStreaming( file, instance.imports )
@@ -39,11 +39,11 @@ if( typeof Rust === "undefined" ) {
             return wasm_instance
                 .then( function( wasm_instance ) {
                     var exports = instance.initialize( wasm_instance );
-                    console.log( "Finished loading Rust wasm module 'main'" );
+                    console.log( "Finished loading Rust wasm module 'develop'" );
                     return exports;
                 })
                 .catch( function( error ) {
-                    console.log( "Error loading Rust wasm module 'main':", error );
+                    console.log( "Error loading Rust wasm module 'develop':", error );
                     throw error;
                 });
         }
