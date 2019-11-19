@@ -13,8 +13,8 @@ use std::{
     thread::JoinHandle,
 };
 
-pub struct DebugState {
-    assets: Asset<StateManager>,
+pub struct DebugState<'a> {
+    assets: Asset<StateManager<'a>>,
     pause: bool,
     first_click: Option<Vector>,
     drawn_rectangles: Vec<(Rectangle, Color)>,
@@ -22,7 +22,7 @@ pub struct DebugState {
     _command_reader: JoinHandle<()>,
     command_getter: Receiver<String>,
 }
-impl State for DebugState {
+impl State for DebugState<'static> {
     fn new() -> Result<Self> {
         let (tx, rx) = mpsc::channel();
         use std::io::stdin;
@@ -85,7 +85,7 @@ impl State for DebugState {
         self.assets.execute(|state| state.update(window))
     }
 }
-impl DebugState {
+impl DebugState<'static> {
     fn update_paused(&mut self, window: &mut Window) {
         let mouse = window.mouse();
         let pos = mouse.pos();

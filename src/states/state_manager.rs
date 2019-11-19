@@ -3,13 +3,19 @@ use crate::{
     states::MainMenu,
     structs::{gui_2::Context, SimpleContext},
 };
-use quicksilver::{graphics::Color, lifecycle::Window, Result};
+use mergui::Context as GContext;
+use quicksilver::{
+    graphics::Color,
+    lifecycle::{Event, Window},
+    Result,
+};
 
-pub struct StateManager {
+pub struct StateManager<'a> {
     assets: AssetManager,
     current_screen: Box<dyn Screen>,
+    context: GContext<'a>,
 }
-impl StateManager {
+impl<'a> StateManager<'a> {
     fn set_current_screen(&mut self, screen: Option<Box<dyn Screen>>) {
         if let Some(screen) = screen {
             self.current_screen = screen;
@@ -17,9 +23,19 @@ impl StateManager {
     }
     pub fn new(assets: AssetManager) -> Result<Self> {
         let current_screen = Box::new(MainMenu::new(&assets)) as Box<dyn Screen>;
+        let mut context = GContext::new((0, 0).into(), 1000);
+        let layer_id = context.add_layer();
+        let _widget_id = context.add_widget(
+            mergui::widgets::Image {
+                image: "test_button".to_string(),
+                location: quicksilver::prelude::Rectangle::new((100, 100), (200, 100)),
+            },
+            layer_id,
+        );
         Ok(Self {
             assets,
             current_screen,
+            context,
         })
     }
     pub fn draw(&mut self, window: &mut Window) -> Result<()> {
@@ -31,14 +47,16 @@ impl StateManager {
             screen
         };
         self.set_current_screen(screen);
+        self.context.render(&self.assets, window);
         Ok(())
     }
-    pub fn event(&mut self, window: &mut Window) -> Result<()> {
+    pub fn event(&mut self, event: &Event, window: &mut Window) -> Result<()> {
         let screen = {
             let mut context = SimpleContext::new(window, Context::new(), &self.assets);
-            self.current_screen.event(&mut context)?
+            self.current_screen.event(event, &mut context)?
         };
         self.set_current_screen(screen);
+        self.context.event(event, window);
         Ok(())
     }
     pub fn update(&mut self, window: &mut Window) -> Result<()> {
@@ -54,7 +72,7 @@ impl StateManager {
 pub trait Screen {
     fn update(&mut self, context: &mut SimpleContext) -> Result<Option<Box<dyn Screen>>>;
     fn draw(&mut self, context: &mut SimpleContext) -> Result<Option<Box<dyn Screen>>>;
-    fn event(&mut self, _: &mut SimpleContext) -> Result<Option<Box<dyn Screen>>> {
+    fn event(&mut self, _event: &Event, _: &mut SimpleContext) -> Result<Option<Box<dyn Screen>>> {
         Ok(None)
     }
 }
