@@ -10,16 +10,16 @@ use quicksilver::{
     combinators::join_all,
     geom::Vector,
     graphics::Color,
-    lifecycle::{run, Asset, Settings, State, Window},
+    lifecycle::{run, Asset, Event, Settings, State, Window},
     Future, Result,
 };
 use std::{rc::Rc, sync::Mutex};
 
-pub struct MainState {
-    assets: Asset<StateManager>,
+pub struct MainState<'a> {
+    assets: Asset<StateManager<'a>>,
     test: Asset<Vec<Module>>,
 }
-impl State for MainState {
+impl State for MainState<'static> {
     fn new() -> Result<Self> {
         let b = get_all_mod_paths()
             .and_then(|v| join_all(v.iter().map(|x| load_mod_info(x)).collect::<Vec<_>>()));
@@ -45,6 +45,9 @@ impl State for MainState {
     }
     fn update(&mut self, window: &mut Window) -> Result<()> {
         self.assets.execute(|state| state.update(window))
+    }
+    fn event(&mut self, event: &Event, window: &mut Window) -> Result<()> {
+        self.assets.execute(|state| state.event(event, window))
     }
 }
 

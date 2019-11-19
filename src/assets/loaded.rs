@@ -16,7 +16,11 @@ pub struct AssetManager {
     fonts: HashMap<Fonts, Font>,
     pub modules: ModulesContainer,
 }
-
+impl mergui::Assets for AssetManager {
+    fn get_image(&self, img: &str) -> &Image {
+        self.image(img)
+    }
+}
 impl AssetManager {
     pub fn new() -> Self {
         Self {
