@@ -1,59 +1,77 @@
 use crate::{
     assets::loaded::{Fonts, Images},
-    structs::{
-        gui_2::{button::State, ButtonBackground, Combined, Image, Interaction},
-        BuyableCharacter, FullContext,
-    },
+    structs::{gui_2::success_button, BuyableCharacter, FullContext},
 };
 use quicksilver::{
     geom::Rectangle,
     graphics::{Color, FontStyle},
+    prelude::{Image, Img, Transform},
+};
+
+use mergui::{
+    channels::{BasicClickable, Clickable},
+    Context, Response,
 };
 
 pub struct BuyableInfo {
-    cost: Image,
-    buy_button: Combined<State, ButtonBackground>,
+    cost: (Rectangle, Image),
+    buy_button: Response<BasicClickable>,
     image: Images,
-    name: Image,
-    species: Image,
+    name: (Rectangle, Image),
+    species: (Rectangle, Image),
+    layer: u64,
 }
 
 impl BuyableInfo {
     pub fn new(chosen_character: &BuyableCharacter, context: &mut FullContext) -> BuyableInfo {
-        let assets = context.simple_context.get_assets();
+        let layer = context.simple_context.gui.add_layer();
         let image = chosen_character.get_image();
-        let buy_button = ButtonBackground::new_success(
-            assets,
-            Rectangle::new((704, 503), (78, 38)),
-            "Buy".to_string(),
-        );
+        let buy_button = context
+            .simple_context
+            .gui
+            .add_widget(
+                success_button(
+                    context.simple_context.assets,
+                    Rectangle::new((704, 503), (78, 38)),
+                    "Buy",
+                )
+                .unwrap(),
+                layer,
+            )
+            .unwrap();
         let text = String::from("$") + &chosen_character.cost.to_string();
-        let cost = Image::new(
-            assets
+        let cost = (
+            Rectangle::new((623, 503), (78, 38)),
+            context
+                .simple_context
+                .assets
                 .font(&Fonts::Font)
                 .render(&text, &FontStyle::new(50.1, Color::BLACK))
                 .unwrap(),
-            Rectangle::new((623, 503), (78, 38)),
         );
-        let name = Image::new(
-            assets
+        let name = (
+            Rectangle::new((542, 15), (238, 34)),
+            context
+                .simple_context
+                .assets
                 .font(&Fonts::Font)
                 .render(
                     &chosen_character.get_name(),
                     &FontStyle::new(50.1, Color::BLACK),
                 )
                 .unwrap(),
-            Rectangle::new((542, 15), (238, 34)),
         );
-        let species: Image = Image::new(
-            assets
+        let species = (
+            Rectangle::new((542, 61), (238, 34)),
+            context
+                .simple_context
+                .assets
                 .font(&Fonts::Font)
                 .render(
                     &String::from(chosen_character.get_species()),
                     &FontStyle::new(50.1, Color::BLACK),
                 )
                 .unwrap(),
-            Rectangle::new((542, 61), (238, 34)),
         );
         Self {
             cost,
@@ -61,18 +79,51 @@ impl BuyableInfo {
             image,
             name,
             species,
+            layer,
         }
     }
     pub fn did_buy(&mut self, context: &mut FullContext) -> bool {
-        context.simple_context.get_interaction(&mut self.buy_button) == Interaction::Clicked
+        if self.buy_button.channel.has_clicked() {
+            context.simple_context.gui.remove_layer(self.layer);
+            true
+        } else {
+            false
+        }
+    }
+    pub fn set_state<'a>(&self, context: &mut Context<'a>, state: bool) {
+        context.set_layer_state(self.layer, state);
     }
     pub fn draw(&mut self, context: &mut FullContext) {
+        let z = context.simple_context.get_z();
+        context.simple_context.window.draw_ex(
+            &self.cost.0,
+            Img(&self.cost.1),
+            Transform::IDENTITY,
+            z,
+        );
+        let z = context.simple_context.get_z();
+        context.simple_context.window.draw_ex(
+            &self.name.0,
+            Img(&self.name.1),
+            Transform::IDENTITY,
+            z,
+        );
+        let z = context.simple_context.get_z();
+        context.simple_context.window.draw_ex(
+            &self.species.0,
+            Img(&self.species.1),
+            Transform::IDENTITY,
+            z,
+        );
+        /*
         context.simple_context.push_widget(self.buy_button.clone());
         context.simple_context.push_widget(self.cost.clone());
         context.simple_context.push_widget(self.name.clone());
         context.simple_context.push_widget(self.species.clone());
-        context
-            .simple_context
-            .draw_image(&Rectangle::new((403, 0), (130, 130)), self.image.clone());
+        */
+        context.simple_context.window.draw(
+            &Rectangle::new((403, 0), (130, 130)),
+            Img(context.simple_context.assets.image(&self.image)),
+        );
     }
 }

@@ -1,9 +1,5 @@
-use crate::{
-    assets::loaded::AssetManager,
-    states::MainMenu,
-    structs::{gui_2::Context, SimpleContext},
-};
-use mergui::Context as GContext;
+use crate::{assets::loaded::AssetManager, states::MainMenu, structs::SimpleContext};
+use mergui::Context;
 use quicksilver::{
     graphics::Color,
     lifecycle::{Event, Window},
@@ -13,7 +9,7 @@ use quicksilver::{
 pub struct StateManager<'a> {
     assets: AssetManager,
     current_screen: Box<dyn Screen>,
-    context: GContext<'a>,
+    context: Context<'a>,
 }
 impl<'a> StateManager<'a> {
     fn set_current_screen(&mut self, screen: Option<Box<dyn Screen>>) {
@@ -22,16 +18,8 @@ impl<'a> StateManager<'a> {
         }
     }
     pub fn new(assets: AssetManager) -> Result<Self> {
-        let current_screen = Box::new(MainMenu::new(&assets)) as Box<dyn Screen>;
-        let mut context = GContext::new((0, 0).into(), 1000);
-        let layer_id = context.add_layer();
-        let _widget_id = context.add_widget(
-            mergui::widgets::Image {
-                image: "test_button".to_string(),
-                location: quicksilver::prelude::Rectangle::new((100, 100), (200, 100)),
-            },
-            layer_id,
-        );
+        let mut context = Context::new((0, 0).into(), 10000);
+        let current_screen = Box::new(MainMenu::new(&assets, &mut context)) as Box<dyn Screen>;
         Ok(Self {
             assets,
             current_screen,
@@ -41,9 +29,11 @@ impl<'a> StateManager<'a> {
     pub fn draw(&mut self, window: &mut Window) -> Result<()> {
         window.clear(Color::WHITE)?;
         let screen = {
-            let mut context = SimpleContext::new(window, Context::new(), &self.assets);
-            let screen = self.current_screen.draw(&mut context)?;
-            context.render_gui();
+            let screen = {
+                let mut context = SimpleContext::new(window, &mut self.context, &self.assets);
+                let screen = self.current_screen.draw(&mut context)?;
+                screen
+            };
             screen
         };
         self.set_current_screen(screen);
@@ -52,7 +42,7 @@ impl<'a> StateManager<'a> {
     }
     pub fn event(&mut self, event: &Event, window: &mut Window) -> Result<()> {
         let screen = {
-            let mut context = SimpleContext::new(window, Context::new(), &self.assets);
+            let mut context = SimpleContext::new(window, &mut self.context, &self.assets);
             self.current_screen.event(event, &mut context)?
         };
         self.set_current_screen(screen);
@@ -61,7 +51,7 @@ impl<'a> StateManager<'a> {
     }
     pub fn update(&mut self, window: &mut Window) -> Result<()> {
         let screen = {
-            let mut context = SimpleContext::new(window, Context::new(), &self.assets);
+            let mut context = SimpleContext::new(window, &mut self.context, &self.assets);
             self.current_screen.update(&mut context)?
         };
         self.set_current_screen(screen);

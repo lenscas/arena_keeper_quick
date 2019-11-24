@@ -9,13 +9,16 @@ use quicksilver::{
     prelude::Background::{Col, Img},
 };
 
-pub struct FullContext<'a, 'b: 'a> {
-    pub simple_context: &'a mut SimpleContext<'b>,
-    pub cam_works: &'a mut CameraWork,
+pub struct FullContext<'a, 'b, 'c> {
+    pub simple_context: &'c mut SimpleContext<'a, 'b>,
+    pub cam_works: &'c mut CameraWork,
     next_screen: Option<OpenWindow>,
 }
-impl<'a, 'b: 'a> FullContext<'a, 'b> {
-    pub fn new(cam_works: &'a mut CameraWork, simple_context: &'a mut SimpleContext<'b>) -> Self {
+impl<'a, 'b, 'c> FullContext<'a, 'b, 'c> {
+    pub fn new(
+        cam_works: &'c mut CameraWork,
+        simple_context: &'c mut SimpleContext<'a, 'b>,
+    ) -> Self {
         Self {
             cam_works,
             next_screen: None,
