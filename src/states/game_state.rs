@@ -4,6 +4,7 @@ use crate::{
     states::Screen,
     structs::{grid::Field, point::Point, CameraWork, FullContext, SimpleContext},
 };
+use mergui::Context;
 use quicksilver::{
     geom::Line,
     graphics::Color,
@@ -35,6 +36,8 @@ pub struct GameState {
 }
 impl GameState {
     pub fn new(seed: u32, context: &mut SimpleContext) -> Self {
+        let world_buttons = WorldButtons::new(context);
+        world_buttons.set_state(context.gui, false);
         Self {
             grid: Field::new(101, 81, seed, &context.assets.modules),
             clicked: None,
@@ -57,14 +60,33 @@ impl GameState {
                 .next()
                 .expect("No tile features available")
                 .into(),
-            world_buttons: WorldButtons::new(context.assets),
+            world_buttons,
         }
+    }
+    fn enable_gui_next_screen<'a>(&self, context: &mut Context<'a>, next_screen: &OpenWindow) {
+        match self.open_window {
+            OpenWindow::Shop => self.shop.set_state(context, false),
+            OpenWindow::Game => self.world_buttons.set_state(context, false),
+        }
+        match next_screen {
+            OpenWindow::Shop => self.shop.set_state(context, true),
+            OpenWindow::Game => self.world_buttons.set_state(context, true),
+        }
+    }
+    fn set_enable_gui_next_screen<'a>(
+        &mut self,
+        context: &mut Context<'a>,
+        next_screen: OpenWindow,
+    ) {
+        self.enable_gui_next_screen(context, &next_screen);
+        self.open_window = next_screen;
     }
 }
 impl Screen for GameState {
     fn update(&mut self, context: &mut SimpleContext) -> Result<Option<Box<dyn Screen>>> {
-        let board = context.keyboard();
+        let board = context.window.keyboard();
         if self.open_window != OpenWindow::Game && board[Key::Escape].is_down() {
+            self.enable_gui_next_screen(context.gui, &OpenWindow::Game);
             self.open_window = OpenWindow::Game;
         }
 
@@ -73,7 +95,7 @@ impl Screen for GameState {
                 let mut full_context = FullContext::new(&mut self.cam, context);
                 self.shop.update(&mut full_context, &mut self.characters);
                 if let Some(next_screen) = full_context.get_next_screen() {
-                    self.open_window = next_screen;
+                    self.set_enable_gui_next_screen(context.gui, next_screen);
                 }
             }
             OpenWindow::Game => {
@@ -112,7 +134,10 @@ impl Screen for GameState {
                         self.mode = tool;
                         self.selected = selected
                     }
-                    Action::SwitchScreen(screen) => self.open_window = screen,
+                    Action::SwitchScreen(screen) => {
+                        self.world_buttons.set_state(context.gui, false);
+                        self.set_enable_gui_next_screen(context.gui, screen);
+                    }
                 }
                 self.characters
                     .update(&mut self.grid, &context.assets.modules);

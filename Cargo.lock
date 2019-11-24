@@ -76,7 +76,7 @@ dependencies = [
 name = "arena"
 version = "0.1.0"
 dependencies = [
- "mergui 0.1.0",
+ "mergui 0.0.1",
  "noise 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pathfinding 1.1.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "quicksilver 0.3.20 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1229,7 +1229,7 @@ dependencies = [
 
 [[package]]
 name = "mergui"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "indexmap 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quicksilver 0.3.20 (registry+https://github.com/rust-lang/crates.io-index)",
