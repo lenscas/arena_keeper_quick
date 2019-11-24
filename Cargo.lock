@@ -76,7 +76,7 @@ dependencies = [
 name = "arena"
 version = "0.1.0"
 dependencies = [
- "mergui 0.0.1",
+ "mergui 0.0.1 (git+https://github.com/lenscas/mergui.git)",
  "noise 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pathfinding 1.1.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "quicksilver 0.3.20 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1230,6 +1230,7 @@ dependencies = [
 [[package]]
 name = "mergui"
 version = "0.0.1"
+source = "git+https://github.com/lenscas/mergui.git#1c198349ae7be59fcc0c327bbb83bab0eae1ea63"
 dependencies = [
  "indexmap 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quicksilver 0.3.20 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2783,6 +2784,7 @@ dependencies = [
 "checksum memchr 2.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "88579771288728879b57485cc7d6b07d648c9f0141eb955f8ab7f9d45394468e"
 "checksum memmap 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "6585fd95e7bb50d6cc31e20d4cf9afb4e2ba16c5846fc76793f11218da9c475b"
 "checksum memoffset 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "ce6075db033bbbb7ee5a0bbd3a3186bbae616f57fb001c485c7ff77955f8177f"
+"checksum mergui 0.0.1 (git+https://github.com/lenscas/mergui.git)" = "<none>"
 "checksum minimp3 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "542e9bed56860c5070a09939eee0e2df6f8f73f60304ddf56d620947e7017239"
 "checksum minimp3-sys 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "c109ae05c00ad6e3a53fab101e2f234545bdd010f0fffd399355efaf70817817"
 "checksum miniz_oxide 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "304f66c19be2afa56530fa7c39796192eef38618da8d19df725ad7c6d6b2aaae"
