@@ -1230,7 +1230,7 @@ dependencies = [
 [[package]]
 name = "mergui"
 version = "0.0.1"
-source = "git+https://github.com/lenscas/mergui.git#ff1d9023a0fae611a3eca3b048e78b5329294e8b"
+source = "git+https://github.com/lenscas/mergui.git#f5649db5cb7753a8d175207afa81673f60cbe59c"
 dependencies = [
  "indexmap 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quicksilver 0.3.20 (registry+https://github.com/rust-lang/crates.io-index)",
