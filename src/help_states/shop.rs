@@ -15,7 +15,7 @@ use quicksilver::{
 use mergui::{
     channels::{BasicClickable, Clickable},
     core::TextButtonConfig,
-    Context, Response,
+    LayerId, Response,
 };
 
 pub struct Shop {
@@ -24,7 +24,7 @@ pub struct Shop {
     go_to_game_button: Response<BasicClickable>,
     selected: Option<(usize, BuyableInfo)>,
     show_money: Image,
-    layer: u64,
+    layer: LayerId,
 }
 
 impl Shop {
@@ -47,7 +47,7 @@ impl Shop {
                         .unwrap(),
                     location: Rectangle::new((10, 90 + (count as i32 * 50)), (90, 50)),
                 };
-                let button = context.gui.add_widget(button, layer).unwrap();
+                let button = context.gui.add_widget(button, &layer).unwrap();
                 (button, v)
             })
             .collect();
@@ -56,7 +56,7 @@ impl Shop {
             .add_widget(
                 success_button(context.assets, Rectangle::new((10, 555), (55, 40)), "World")
                     .unwrap(),
-                layer,
+                &layer,
             )
             .unwrap();
         let money_amount = 100;
@@ -81,13 +81,12 @@ impl Shop {
     pub fn update(&mut self, context: &mut FullContext, characters_state: &mut Characters) {
         if let Some(selected) = &mut self.selected {
             if selected.1.did_buy(context) {
-                let (widget, bought) = self.assets.remove(selected.0);
+                let (_, bought) = self.assets.remove(selected.0);
                 if bought.cost < self.money {
                     self.money -= bought.cost;
                     self.show_money =
                         Self::get_show_money_image(context.simple_context.get_assets(), self.money);
                     characters_state.add_character(bought);
-                    context.simple_context.gui.remove_widget(widget.id);
                     self.selected = None;
                 }
             }
@@ -103,17 +102,14 @@ impl Shop {
             self.selected = Some(selected);
         }
         if self.go_to_game_button.channel.has_clicked() {
-            context
-                .simple_context
-                .gui
-                .set_layer_state(self.layer, false);
+            self.layer.set_is_active(false);
             context.set_next_screen(Some(OpenWindow::Game));
         }
     }
-    pub fn set_state<'a>(&self, context: &mut Context<'a>, state: bool) {
-        context.set_layer_state(self.layer, state);
+    pub fn set_state<'a>(&self, state: bool) {
+        self.layer.set_is_active(state);
         if let Some(selected) = &self.selected {
-            selected.1.set_state(context, state);
+            selected.1.set_state(state);
         }
     }
     pub fn render(&mut self, context: &mut FullContext) -> Result<()> {

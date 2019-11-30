@@ -10,7 +10,7 @@ use quicksilver::{
 
 use mergui::{
     channels::{BasicClickable, Clickable},
-    Context, Response,
+    LayerId, Response,
 };
 
 pub struct BuyableInfo {
@@ -19,7 +19,7 @@ pub struct BuyableInfo {
     image: Images,
     name: (Rectangle, Image),
     species: (Rectangle, Image),
-    layer: u64,
+    layer: LayerId,
 }
 
 impl BuyableInfo {
@@ -36,7 +36,7 @@ impl BuyableInfo {
                     "Buy",
                 )
                 .unwrap(),
-                layer,
+                &layer,
             )
             .unwrap();
         let text = String::from("$") + &chosen_character.cost.to_string();
@@ -82,16 +82,11 @@ impl BuyableInfo {
             layer,
         }
     }
-    pub fn did_buy(&mut self, context: &mut FullContext) -> bool {
-        if self.buy_button.channel.has_clicked() {
-            context.simple_context.gui.remove_layer(self.layer);
-            true
-        } else {
-            false
-        }
+    pub fn did_buy(&mut self, _context: &mut FullContext) -> bool {
+        self.buy_button.channel.has_clicked()
     }
-    pub fn set_state<'a>(&self, context: &mut Context<'a>, state: bool) {
-        context.set_layer_state(self.layer, state);
+    pub fn set_state<'a>(&self, state: bool) {
+        self.layer.set_is_active(state);
     }
     pub fn draw(&mut self, context: &mut FullContext) {
         let z = context.simple_context.get_z();

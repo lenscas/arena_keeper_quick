@@ -5,13 +5,13 @@ use crate::{
 
 use mergui::{
     channels::{BasicClickable, Clickable},
-    Context, Response,
+    LayerId, Response,
 };
 use quicksilver::geom::Rectangle;
 
 pub struct WorldButtons {
     buttons: Vec<(Action, Response<BasicClickable>)>,
-    layer: u64,
+    layer: LayerId,
 }
 impl WorldButtons {
     pub fn new(context: &mut SimpleContext) -> Self {
@@ -52,7 +52,7 @@ impl WorldButtons {
                                 &(v.1).1,
                             )
                             .unwrap(),
-                            layer,
+                            &layer,
                         )
                         .unwrap(),
                 )
@@ -70,8 +70,8 @@ impl WorldButtons {
             .unwrap_or(Action::None);
         res
     }
-    pub fn set_state<'a>(&self, context: &mut Context<'a>, state: bool) {
-        context.set_layer_state(self.layer, state)
+    pub fn set_state<'a>(&self, state: bool) {
+        self.layer.set_is_active(state)
     }
     pub fn draw(&self, _: &mut FullContext) {}
 }
