@@ -85,7 +85,7 @@ impl BuyableInfo {
     pub fn did_buy(&mut self, _context: &mut FullContext) -> bool {
         self.buy_button.channel.has_clicked()
     }
-    pub fn set_state<'a>(&self, state: bool) {
+    pub fn set_state(&self, state: bool) {
         self.layer.set_is_active(state);
     }
     pub fn draw(&mut self, context: &mut FullContext) {

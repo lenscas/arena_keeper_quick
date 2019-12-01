@@ -62,7 +62,7 @@ impl GameState {
             world_buttons,
         }
     }
-    fn enable_gui_next_screen<'a>(&self, next_screen: &OpenWindow) {
+    fn enable_gui_next_screen(&self, next_screen: OpenWindow) {
         match self.open_window {
             OpenWindow::Shop => self.shop.set_state(false),
             OpenWindow::Game => self.world_buttons.set_state(false),
@@ -72,8 +72,8 @@ impl GameState {
             OpenWindow::Game => self.world_buttons.set_state(true),
         }
     }
-    fn set_enable_gui_next_screen<'a>(&mut self, next_screen: OpenWindow) {
-        self.enable_gui_next_screen(&next_screen);
+    fn set_enable_gui_next_screen(&mut self, next_screen: OpenWindow) {
+        self.enable_gui_next_screen(next_screen);
         self.open_window = next_screen;
     }
 }
@@ -81,7 +81,7 @@ impl Screen for GameState {
     fn update(&mut self, context: &mut SimpleContext) -> Result<Option<Box<dyn Screen>>> {
         let board = context.window.keyboard();
         if self.open_window != OpenWindow::Game && board[Key::Escape].is_down() {
-            self.enable_gui_next_screen(&OpenWindow::Game);
+            self.enable_gui_next_screen(OpenWindow::Game);
             self.open_window = OpenWindow::Game;
         }
 

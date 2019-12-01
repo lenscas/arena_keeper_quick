@@ -61,16 +61,14 @@ impl WorldButtons {
         Self { buttons, layer }
     }
     pub fn update(&mut self, _: &mut FullContext) -> Action {
-        let res = self
-            .buttons
+        self.buttons
             .iter_mut()
             .map(|v| (&v.0, v.1.channel.has_clicked()))
             .find(|v| v.1)
             .map(|v| v.0.clone())
-            .unwrap_or(Action::None);
-        res
+            .unwrap_or(Action::None)
     }
-    pub fn set_state<'a>(&self, state: bool) {
+    pub fn set_state(&self, state: bool) {
         self.layer.set_is_active(state)
     }
     pub fn draw(&self, _: &mut FullContext) {}
