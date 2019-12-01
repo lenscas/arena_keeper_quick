@@ -116,6 +116,7 @@ impl Screen for GameState {
                 };
                 let action = self.world_buttons.update(&mut full_context);
                 match action {
+                    Action::Captured => {}
                     Action::None => {
                         let mut mouse = Mouse {
                             clicked: &mut self.clicked,
