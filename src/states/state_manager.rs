@@ -29,12 +29,10 @@ impl<'a> StateManager<'a> {
     pub fn draw(&mut self, window: &mut Window) -> Result<()> {
         window.clear(Color::WHITE)?;
         let screen = {
-            let screen = {
+            {
                 let mut context = SimpleContext::new(window, &mut self.context, &self.assets);
-                let screen = self.current_screen.draw(&mut context)?;
-                screen
-            };
-            screen
+                self.current_screen.draw(&mut context)?
+            }
         };
         self.set_current_screen(screen);
         self.context.render(&self.assets, window);

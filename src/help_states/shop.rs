@@ -106,7 +106,7 @@ impl Shop {
             context.set_next_screen(Some(OpenWindow::Game));
         }
     }
-    pub fn set_state<'a>(&self, state: bool) {
+    pub fn set_state(&self, state: bool) {
         self.layer.set_is_active(state);
         if let Some(selected) = &self.selected {
             selected.1.set_state(state);
