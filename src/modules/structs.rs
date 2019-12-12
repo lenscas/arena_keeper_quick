@@ -10,6 +10,7 @@ pub struct Module {
     species: HashMap<SpeciesType, SpeciesConf>,
     pub images: HashMap<String, Image>,
     tiles: Option<TilesConf>,
+    categories: HashMap<String, Vec<String>>,
 }
 impl Module {
     pub fn new() -> Self {
@@ -17,6 +18,7 @@ impl Module {
             features: HashMap::new(),
             species: HashMap::new(),
             images: HashMap::new(),
+            categories: HashMap::new(),
             tiles: None,
         }
     }
@@ -36,6 +38,10 @@ impl Module {
         self.tiles = Some(tiles);
     }
     pub fn set_features(&mut self, name: String, features: TileFeatureRaw) {
+        self.categories
+            .entry(features.category.clone())
+            .or_insert_with(Vec::new)
+            .push(name.clone());
         self.features.insert(name, features);
     }
     pub fn add_to_all_mods(mut self, all_mods: &mut ModulesContainer) -> HashMap<String, Image> {
@@ -115,6 +121,7 @@ fn def_false() -> bool {
 #[derive(serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TileFeatureRaw {
+    pub category: String,
     pub image: String,
     pub name: String,
     pub speed_penalty: Option<usize>,
@@ -232,6 +239,7 @@ pub struct ModulesContainer {
     pub all_species: HashMap<SpeciesType, SpeciesConf>,
     pub all_tiles: HashMap<String, Tile>,
     pub all_features: HashMap<String, TileFeatureRaw>,
+    pub all_categories: HashMap<String, Vec<String>>,
 }
 impl ModulesContainer {
     pub fn get_species(&self, species: &SpeciesType) -> &SpeciesConf {
@@ -248,6 +256,7 @@ impl ModulesContainer {
     pub fn add_module(&mut self, module: Module) {
         self.all_species.extend(module.species);
         self.all_features.extend(module.features);
+        self.all_categories.extend(module.categories);
         if let Some(tiles) = module.tiles {
             self.all_tiles.extend(tiles.generate_chances)
         }
