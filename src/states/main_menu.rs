@@ -1,7 +1,8 @@
 use crate::{
     assets::loaded::AssetManager,
+    mergui_wrapper::success_button,
     states::{GameState, Screen},
-    structs::{gui_2::success_button, SimpleContext},
+    structs::SimpleContext,
 };
 use quicksilver::{geom::Rectangle, Result};
 

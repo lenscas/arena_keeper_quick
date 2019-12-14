@@ -9,3 +9,5 @@ pub mod modules;
 pub mod states;
 /// A collection of random but helpfull structures.
 pub mod structs;
+
+pub mod mergui_wrapper;

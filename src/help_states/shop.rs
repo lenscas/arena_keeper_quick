@@ -2,8 +2,9 @@ use crate::{
     assets::loaded::{AssetManager, Fonts},
     help_states::characters::Characters,
     help_states::BuyableInfo,
+    mergui_wrapper::success_button,
     states::OpenWindow,
-    structs::{gui_2::success_button, BuyableCharacter, FullContext, SimpleContext},
+    structs::{BuyableCharacter, FullContext, SimpleContext},
 };
 use quicksilver::{
     geom::Rectangle,

@@ -1,6 +1,7 @@
 use crate::{
+    mergui_wrapper::success_button,
     states::{ClickMode, OpenWindow},
-    structs::{gui_2::success_button, FullContext, SimpleContext},
+    structs::{FullContext, SimpleContext},
 };
 use std::collections::HashMap;
 use std::marker::PhantomData;

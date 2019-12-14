@@ -1,6 +1,7 @@
 use crate::{
     assets::loaded::{Fonts, Images},
-    structs::{gui_2::success_button, BuyableCharacter, FullContext},
+    mergui_wrapper::success_button,
+    structs::{BuyableCharacter, FullContext},
 };
 use quicksilver::{
     geom::Rectangle,
