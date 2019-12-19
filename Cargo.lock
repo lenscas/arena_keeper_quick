@@ -78,7 +78,7 @@ version = "0.1.0"
 dependencies = [
  "mergui 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "noise 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "pathfinding 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pathfinding 2.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "quicksilver 0.3.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1498,7 +1498,7 @@ dependencies = [
 
 [[package]]
 name = "pathfinding"
-version = "2.0.0"
+version = "2.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "fixedbitset 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2838,7 +2838,7 @@ dependencies = [
 "checksum osmesa-sys 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "88cfece6e95d2e717e0872a7f53a8684712ad13822a7979bc760b9c77ec0013b"
 "checksum parking_lot 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f842b1982eb6c2fe34036a4fbfb06dd185a3f5c8edfaacdf7d1ea10b07de6252"
 "checksum parking_lot_core 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)" = "b876b1b9e7ac6e1a74a6da34d25c42e17e8862aa409cbbbdcfc8d86c6f3bc62b"
-"checksum pathfinding 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "4bf90bbcaa527ca0d8e734ea1cdb3452f89d9b9f7cbe28ab2c832758f80170fa"
+"checksum pathfinding 2.0.3 (registry+https://github.com/rust-lang/crates.io-index)" = "7c84b3f8a97e544e03c0b8865ddff93de5d8c3c96962b51bfc9639e5dddf299b"
 "checksum peeking_take_while 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "19b17cddbe7ec3f8bc800887bab5e717348c95ea2ca0b1bf0837fb964dc67099"
 "checksum percent-encoding 2.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d4fd5641d01c8f18a23da7b6fe29298ff4b55afcccdf78973b24cf3175fee32e"
 "checksum petgraph 0.4.13 (registry+https://github.com/rust-lang/crates.io-index)" = "9c3659d1ee90221741f65dd128d9998311b0e40c5d3c23a62445938214abce4f"
