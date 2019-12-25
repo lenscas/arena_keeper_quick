@@ -9,10 +9,11 @@ use noise::{
     utils::{NoiseMapBuilder, PlaneMapBuilder},
     OpenSimplex, Seedable,
 };
-
 use rayon::prelude::*;
+use serde::{Deserialize, Serialize};
 
 /// A structure that contains the map
+#[derive(Serialize, Deserialize)]
 pub struct Field {
     grid: Vec<Cell>,
     pub len: usize,

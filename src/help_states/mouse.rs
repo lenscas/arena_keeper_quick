@@ -1,15 +1,11 @@
 use crate::states::ClickMode;
 use crate::structs::FullContext;
-use crate::{
-    funcs::math::sub_from_highest,
-    modules::structs::TileFeatures,
-    structs::{grid::Field, point::Point},
-};
+use crate::{funcs::math::sub_from_highest, modules::structs::TileFeatures, structs::point::Point};
 use quicksilver::{graphics::Color, input::ButtonState, prelude::MouseButton};
 
 pub struct Mouse<'a> {
     pub clicked: &'a mut Option<Point>,
-    pub grid: &'a mut Field,
+    //pub grid: &'a mut Field,
     pub mode: &'a mut ClickMode,
     pub selected: &'a str,
 }
@@ -59,13 +55,15 @@ impl<'a> Mouse<'a> {
                         v.add_item(Some(TileFeatures::NotOwnable(String::from(self.selected))))
                     })
                     .collect();
-                self.grid.add_feature_to_cells(line);
+                context.state.grid.add_feature_to_cells(line);
                 *self.clicked = None;
             }
         }
     }
-    fn place_bed(&mut self, click_pos: Point) {
-        self.grid
+    fn place_bed(&mut self, click_pos: Point, context: &mut FullContext) {
+        context
+            .state
+            .grid
             .add_feature_to_cell(click_pos.add_item(Some(TileFeatures::Ownable {
                 tile: self.selected.into(),
                 owner: None,
@@ -83,7 +81,7 @@ impl<'a> Mouse<'a> {
                 }
                 ClickMode::Single => {
                     if let Some(click_point) = click_point {
-                        self.place_bed(click_point)
+                        self.place_bed(click_point, context)
                     }
                 }
             }

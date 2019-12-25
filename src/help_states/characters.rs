@@ -1,9 +1,10 @@
 use crate::{
     modules::structs::ModulesContainer,
-    structs::{grid::Field, BuyableCharacter, Character, FullContext},
+    structs::{grid::Field, BuyableCharacter, CameraWork, Character, SimpleContext},
 };
+use serde::{Deserialize, Serialize};
 
-#[derive(Default)]
+#[derive(Serialize, Deserialize)]
 pub struct Characters {
     characters: Vec<Character>,
 }
@@ -36,7 +37,9 @@ impl Characters {
             .iter_mut()
             .for_each(|v| v.update(grid, mods));
     }
-    pub fn render(&mut self, context: &mut FullContext) {
-        self.characters.iter_mut().for_each(|v| v.render(context));
+    pub fn render(&mut self, context: &mut SimpleContext, cam: &CameraWork) {
+        self.characters
+            .iter_mut()
+            .for_each(|v| v.render(context, cam));
     }
 }

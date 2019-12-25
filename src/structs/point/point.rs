@@ -1,7 +1,7 @@
 use super::PointWithItem;
-
+use serde::{Deserialize, Serialize};
 /// A simple single coordinate
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Point {
     pub x: usize,
     pub y: usize,
