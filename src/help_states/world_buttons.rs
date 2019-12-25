@@ -166,7 +166,6 @@ impl WorldButtons {
     pub fn set_state(&self, state: bool) {
         self.layer.set_is_active(state)
     }
-    pub fn draw(&self, _: &mut FullContext) {}
 }
 #[derive(Clone)]
 pub enum Action {

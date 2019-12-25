@@ -12,29 +12,37 @@ use mergui::{
 };
 
 pub struct MainMenu {
-    play_button: Response<BasicClickable>,
+    new_world_button: Response<BasicClickable>,
+    open_world_button: Response<BasicClickable>,
     settings_button: Response<BasicClickable>,
     _layer: LayerId,
 }
 impl MainMenu {
     pub fn new(assets: &AssetManager, gui: &mut Context) -> Self {
         let layer = gui.add_layer();
-        let play_button =
-            success_button(assets, Rectangle::new((200, 150), (400, 100)), "Play").unwrap();
+        let new_world_button =
+            success_button(assets, Rectangle::new((200, 120), (400, 100)), "New world").unwrap();
+        let open_world_button =
+            success_button(assets, Rectangle::new((200, 240), (400, 100)), "Load world").unwrap();
+
         let settings_button =
-            success_button(assets, Rectangle::new((200, 270), (400, 100)), "Settings").unwrap();
-        let play_button = gui.add_widget(play_button, &layer).unwrap();
+            success_button(assets, Rectangle::new((200, 360), (400, 100)), "Settings").unwrap();
+        let new_world_button = gui.add_widget(new_world_button, &layer).unwrap();
+        let open_world_button = gui.add_widget(open_world_button, &layer).unwrap();
         let settings_button = gui.add_widget(settings_button, &layer).unwrap();
         Self {
             _layer: layer,
-            play_button,
+            new_world_button,
+            open_world_button,
             settings_button,
         }
     }
 }
 impl Screen for MainMenu {
     fn update(&mut self, context: &mut SimpleContext) -> Result<Option<Box<dyn Screen>>> {
-        if self.play_button.channel.has_clicked() {
+        if self.new_world_button.channel.has_clicked() {
+            Ok(Some(Box::new(GameState::new(rand::random(), context))))
+        } else if self.open_world_button.channel.has_clicked() {
             Ok(Some(Box::new(GameState::new(rand::random(), context))))
         } else if self.settings_button.channel.has_clicked() {
             println!("not implemented");

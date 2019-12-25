@@ -1,6 +1,11 @@
-use crate::structs::point::Point;
-use quicksilver::geom::Rectangle;
+use crate::{
+    assets::loaded::Images,
+    structs::{point::Point, SimpleContext},
+};
+use quicksilver::{geom::Rectangle, prelude::Background::Img};
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct CameraWork {
     pub cam: Point,
     pub scroll: usize,
@@ -55,9 +60,13 @@ impl CameraWork {
         let end_y = 1 + start_y + height;
         ((start_x, start_y).into(), (end_x, end_y).into())
     }
-    pub fn pos_to_full_square_on_grid(&mut self, loc: &Point) -> Rectangle {
+    pub fn pos_to_full_square_on_grid(&self, loc: &Point) -> Rectangle {
         let screen_pos = self.grid_to_screen(loc);
         let cell_sizef = self.calc_size() as f32;
         Rectangle::new(screen_pos, (cell_sizef, cell_sizef))
+    }
+    pub fn draw_image_on_grid(&self, loc: &Point, image: Images, context: &mut SimpleContext) {
+        let rec = self.pos_to_full_square_on_grid(loc);
+        context.draw(&rec, Img(context.assets.image(&image)));
     }
 }

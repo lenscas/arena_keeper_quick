@@ -1,16 +1,11 @@
-use crate::structs::{grid::Field, FullContext};
+use crate::structs::FullContext;
 use quicksilver::Result;
 
-pub struct Grid<'a> {
-    grid: &'a Field,
-}
-impl<'a> Grid<'a> {
-    pub fn new(grid: &'a Field) -> Self {
-        Grid { grid }
-    }
-    pub fn render(&mut self, context: &mut FullContext) -> Result<()> {
+pub struct Grid {}
+impl Grid {
+    pub fn render(context: &mut FullContext) -> Result<()> {
         let (start, end) = context.get_outer_cell_points();
-        let part = self.grid.get_part(start, end);
+        let part = context.state.grid.get_part(start, end);
         part.iter().enumerate().for_each(|v| {
             let to_draw =
                 v.1.feature

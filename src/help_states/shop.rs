@@ -1,6 +1,5 @@
 use crate::{
     assets::loaded::{AssetManager, Fonts},
-    help_states::characters::Characters,
     help_states::BuyableInfo,
     mergui_wrapper::success_button,
     states::OpenWindow,
@@ -20,19 +19,44 @@ use mergui::{
 };
 
 pub struct Shop {
-    money: u32,
     assets: Vec<(Response<BasicClickable>, BuyableCharacter)>,
     go_to_game_button: Response<BasicClickable>,
     selected: Option<(usize, BuyableInfo)>,
-    show_money: Image,
+    show_money: (u32, Image),
     layer: LayerId,
 }
 
 impl Shop {
-    pub fn new(context: &mut SimpleContext) -> Self {
+    pub fn new(context: &mut SimpleContext, buyable_chars: &[BuyableCharacter]) -> Self {
         let layer = context.gui.add_layer();
-        let assets = (0..3)
-            .map(|_| BuyableCharacter::new(context.assets))
+        let assets = Self::make_buttons_for_buyable(buyable_chars, context, &layer);
+
+        let go_to_game_button = context
+            .gui
+            .add_widget(
+                success_button(context.assets, Rectangle::new((10, 555), (55, 40)), "World")
+                    .unwrap(),
+                &layer,
+            )
+            .unwrap();
+        let money_amount = 100;
+        let show_money = Self::get_show_money_image(context.assets, money_amount);
+        Self {
+            assets,
+            go_to_game_button,
+            selected: None,
+            show_money: (money_amount, show_money),
+            layer,
+        }
+    }
+    fn make_buttons_for_buyable(
+        characters: &[BuyableCharacter],
+        context: &mut SimpleContext,
+        layer: &LayerId,
+    ) -> Vec<(Response<BasicClickable>, BuyableCharacter)> {
+        characters
+            .iter()
+            .cloned()
             .enumerate()
             .collect::<Vec<_>>()
             .into_iter()
@@ -51,25 +75,7 @@ impl Shop {
                 let button = context.gui.add_widget(button, &layer).unwrap();
                 (button, v)
             })
-            .collect();
-        let go_to_game_button = context
-            .gui
-            .add_widget(
-                success_button(context.assets, Rectangle::new((10, 555), (55, 40)), "World")
-                    .unwrap(),
-                &layer,
-            )
-            .unwrap();
-        let money_amount = 100;
-        let show_money = Self::get_show_money_image(context.assets, money_amount);
-        Self {
-            money: money_amount,
-            assets,
-            go_to_game_button,
-            selected: None,
-            show_money,
-            layer,
-        }
+            .collect()
     }
     fn get_show_money_image(assets: &AssetManager, money: u32) -> Image {
         Font::render(
@@ -79,15 +85,41 @@ impl Shop {
         )
         .unwrap()
     }
-    pub fn update(&mut self, context: &mut FullContext, characters_state: &mut Characters) {
+    pub fn reset_if_changed(&mut self, context: &mut FullContext) {
+        if self.show_money.0 != context.state.money {
+            self.show_money.0 = context.state.money;
+            self.show_money.1 =
+                Self::get_show_money_image(context.simple_context.assets, self.show_money.0);
+        }
+        let count = context.state.buyable_charachters.len() != self.assets.len();
+        if count
+            || context
+                .state
+                .buyable_charachters
+                .iter()
+                .enumerate()
+                .any(|(key, character)| {
+                    let owned = &self.assets[key];
+                    owned.1 != *character
+                })
+        {
+            self.assets = Self::make_buttons_for_buyable(
+                &context.state.buyable_charachters,
+                context.simple_context,
+                &self.layer,
+            );
+            self.selected = None;
+        }
+    }
+    pub fn update(&mut self, context: &mut FullContext) {
+        self.reset_if_changed(context);
         if let Some(selected) = &mut self.selected {
             if selected.1.did_buy(context) {
-                let (_, bought) = self.assets.remove(selected.0);
-                if bought.cost < self.money {
-                    self.money -= bought.cost;
-                    self.show_money =
-                        Self::get_show_money_image(context.simple_context.get_assets(), self.money);
-                    characters_state.add_character(bought);
+                let bought = &context.state.buyable_charachters[selected.0];
+                if bought.cost < self.show_money.0 {
+                    let bought = context.state.buyable_charachters.remove(selected.0);
+                    context.state.money -= bought.cost;
+                    context.state.bought_characters.add_character(bought);
                     self.selected = None;
                 }
             }
@@ -114,12 +146,13 @@ impl Shop {
         }
     }
     pub fn render(&mut self, context: &mut FullContext) -> Result<()> {
+        self.reset_if_changed(context);
         //context.push_widget(self.up_button.clone().unwrap());
         //context.simple_context.push_widget(self.show_money.clone());
         let z = context.simple_context.get_z();
         context.simple_context.window.draw_ex(
             &Rectangle::new((10, 10), (30, 20)),
-            Img(&self.show_money),
+            Img(&self.show_money.1),
             Transform::IDENTITY,
             z,
         );

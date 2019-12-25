@@ -1,8 +1,8 @@
 use crate::structs::CharId;
-use rand::seq::{IteratorRandom, SliceRandom};
-use std::{collections::HashMap, path::Path};
-
 use quicksilver::graphics::Image;
+use rand::seq::{IteratorRandom, SliceRandom};
+use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, path::Path};
 
 #[derive(Default)]
 pub struct Module {
@@ -133,7 +133,7 @@ pub struct TileFeatureRaw {
     pub is_drawable: bool,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub enum TileFeatures {
     Ownable { owner: Option<CharId>, tile: String },
     NotOwnable(String),
@@ -201,7 +201,7 @@ pub struct TilesConf {
     generate_chances: HashMap<String, Tile>,
 }
 
-#[derive(PartialEq, Eq, Hash, serde::Deserialize, Clone)]
+#[derive(PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, Clone)]
 pub struct SpeciesType(String);
 impl SpeciesType {
     pub fn get_speed_on_tile(

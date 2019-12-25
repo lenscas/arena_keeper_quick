@@ -1,10 +1,10 @@
 use crate::{
-    assets::loaded::{AssetManager, Images},
-    modules::structs::SpeciesType,
+    assets::loaded::Images, modules::structs::ModulesContainer, modules::structs::SpeciesType,
 };
 use rand::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 pub struct BuyableCharacter {
     name: String,
     walk_speed: usize,
@@ -14,12 +14,12 @@ pub struct BuyableCharacter {
 }
 
 impl BuyableCharacter {
-    pub fn new(assets: &AssetManager) -> Self {
+    pub fn new(modules: &ModulesContainer) -> Self {
         let mut rng = rand::thread_rng();
-        let species = assets.modules.get_random_species();
-        let name = assets.modules.get_random_name_for_species(&species);
-        let image = assets.modules.get_random_image_for_species(&species);
-        let walk_speed = assets.modules.get_random_base_speed(&species);
+        let species = modules.get_random_species();
+        let name = modules.get_random_name_for_species(&species);
+        let image = modules.get_random_image_for_species(&species);
+        let walk_speed = modules.get_random_base_speed(&species);
         Self {
             name,
             walk_speed,

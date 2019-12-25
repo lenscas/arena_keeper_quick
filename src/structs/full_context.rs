@@ -1,7 +1,9 @@
 use crate::{
     assets::loaded::Images,
     states::OpenWindow,
-    structs::{camera_work::CameraWork, point::Point, simple_context::SimpleContext},
+    structs::{
+        camera_work::CameraWork, point::Point, simple_context::SimpleContext, SaveableState,
+    },
 };
 use quicksilver::{
     geom::Vector,
@@ -10,6 +12,7 @@ use quicksilver::{
 };
 
 pub struct FullContext<'a, 'b, 'c> {
+    pub state: &'c mut SaveableState,
     pub simple_context: &'c mut SimpleContext<'a, 'b>,
     pub cam_works: &'c mut CameraWork,
     next_screen: Option<OpenWindow>,
@@ -18,11 +21,13 @@ impl<'a, 'b, 'c> FullContext<'a, 'b, 'c> {
     pub fn new(
         cam_works: &'c mut CameraWork,
         simple_context: &'c mut SimpleContext<'a, 'b>,
+        state: &'c mut SaveableState,
     ) -> Self {
         Self {
             cam_works,
             next_screen: None,
             simple_context,
+            state,
         }
     }
     pub fn draw_full_square_on_grid(&mut self, loc: &Point, color: Color) {

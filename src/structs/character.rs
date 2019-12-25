@@ -3,14 +3,16 @@ use crate::modules::structs::ModulesContainer;
 use crate::{
     assets::loaded::Images,
     modules::structs::SpeciesType,
-    structs::{full_context::FullContext, BuyableCharacter},
+    structs::{BuyableCharacter, CameraWork, SimpleContext},
 };
 use pathfinding::{directed::astar::astar, prelude::absdiff};
 use rand::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 
-pub type CharId = (usize);
+pub type CharId = usize;
 
+#[derive(Serialize, Deserialize)]
 pub struct Character {
     id: CharId,
     _name: String,
@@ -177,8 +179,8 @@ impl Character {
             .unwrap_or_else(|| panic!("{:?} is out of bounds", check_on))
     }
     /// Renders the character.
-    pub fn render(&self, context: &mut FullContext) {
-        context.draw_image_on_grid(&self.location, self.image.clone());
+    pub fn render(&self, context: &mut SimpleContext, cam: &CameraWork) {
+        cam.draw_image_on_grid(&self.location, self.image.clone(), context);
     }
 
     /// Checks wheter this character can walk on a given tile
