@@ -43,7 +43,9 @@ impl Screen for MainMenu {
         if self.new_world_button.channel.has_clicked() {
             Ok(Some(Box::new(GameState::new(rand::random(), context))))
         } else if self.open_world_button.channel.has_clicked() {
-            Ok(Some(Box::new(GameState::new(rand::random(), context))))
+            let state = quicksilver::saving::load("arena_keeper", "1")?;
+            Ok(Some(Box::new(GameState::from_saved(state, context))))
+        //Ok(Some(Box::new(GameState::new(rand::random(), context))))
         } else if self.settings_button.channel.has_clicked() {
             println!("not implemented");
             Ok(None)

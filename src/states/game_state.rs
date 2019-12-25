@@ -28,10 +28,9 @@ pub struct GameState {
     world_buttons: WorldButtons,
 }
 impl GameState {
-    pub fn new(seed: u32, context: &mut SimpleContext) -> Self {
+    pub fn from_saved(state: SaveableState, context: &mut SimpleContext) -> Self {
         let world_buttons = WorldButtons::new(context);
         world_buttons.set_state(false);
-        let state = SaveableState::new((101, 81), seed, &context.assets.modules);
         let shop = Shop::new(context, &state.buyable_charachters);
         Self {
             state,
@@ -56,6 +55,10 @@ impl GameState {
                 .into(),
             world_buttons,
         }
+    }
+    pub fn new(seed: u32, context: &mut SimpleContext) -> Self {
+        let state = SaveableState::new((101, 81), seed, &context.assets.modules);
+        Self::from_saved(state, context)
     }
     fn enable_gui_next_screen(&self, next_screen: OpenWindow) {
         match self.open_window {
