@@ -18,6 +18,7 @@ pub struct WorldButtons {
     actions: HashMap<String, Action>,
     shop_button: Response<BasicClickable>,
     layer: LayerId,
+    save_game: Response<BasicClickable>,
 }
 impl WorldButtons {
     pub fn new(context: &mut SimpleContext) -> Self {
@@ -82,6 +83,7 @@ impl WorldButtons {
                 )
             })
             .enumerate()
+            .map(|(index, button)| (index + 1, button))
             .map(|(key, buttons)| ConcealerConfig {
                 button: success_button(
                     assets,
@@ -128,11 +130,30 @@ impl WorldButtons {
                     &layer,
                 )
                 .unwrap(),
+            save_game: context
+                .gui
+                .add_widget(
+                    success_button(
+                        context.assets,
+                        Rectangle::new(
+                            (
+                                start_first_button + button_marging + button_size_x,
+                                button_y,
+                            ),
+                            button_size.clone(),
+                        ),
+                        "Save",
+                    )
+                    .unwrap(),
+                    &layer,
+                )
+                .unwrap(),
             layer,
         }
     }
     pub fn update(&mut self, _: &mut FullContext) -> Action {
         let has_clicked_shop = self.shop_button.channel.has_clicked();
+        let has_clicked_save = self.save_game.channel.has_clicked();
         let has_clicked_actions = self
             .item_buttons
             .channel
@@ -141,6 +162,8 @@ impl WorldButtons {
             .fold(false, |cur, now| cur || now);
         if has_clicked_shop {
             Action::SwitchScreen(OpenWindow::Shop)
+        } else if has_clicked_save {
+            Action::SaveGame
         } else if has_clicked_actions {
             Action::Captured
         } else {
@@ -171,6 +194,7 @@ impl WorldButtons {
 pub enum Action {
     None,
     Captured,
+    SaveGame,
     SwitchScreen(OpenWindow),
     SwitchTool(ClickMode, String),
 }

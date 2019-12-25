@@ -112,6 +112,9 @@ impl Screen for GameState {
                 let action = self.world_buttons.update(&mut full_context);
                 match action {
                     Action::Captured => {}
+                    Action::SaveGame => {
+                        quicksilver::saving::save("arena_keeper", "1", &self.state).unwrap()
+                    }
                     Action::None => {
                         let mut mouse = Mouse {
                             clicked: &mut self.clicked,
