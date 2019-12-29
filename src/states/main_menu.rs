@@ -1,7 +1,7 @@
 use crate::{
     assets::loaded::AssetManager,
     mergui_wrapper::success_button,
-    states::{GameState, Screen},
+    states::{GameState, OptionsScreen, Screen},
     structs::SimpleContext,
 };
 use quicksilver::{geom::Rectangle, Result};
@@ -45,10 +45,8 @@ impl Screen for MainMenu {
         } else if self.open_world_button.channel.has_clicked() {
             let state = quicksilver::saving::load("arena_keeper", "1")?;
             Ok(Some(Box::new(GameState::from_saved(state, context))))
-        //Ok(Some(Box::new(GameState::new(rand::random(), context))))
         } else if self.settings_button.channel.has_clicked() {
-            println!("not implemented");
-            Ok(None)
+            Ok(Some(Box::new(OptionsScreen::new(context)?)))
         } else {
             Ok(None)
         }
