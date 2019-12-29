@@ -2,7 +2,4 @@
 **/*.rs.bk
 /node_modules/*
 /static/generated/*
-*.png
-*.html
 /.vscode
-!/static/test_button.png
